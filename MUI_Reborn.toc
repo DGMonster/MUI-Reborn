@@ -1,16 +1,16 @@
-## Interface: 120100, 120105
+## Interface: 120105, 16001
 ## Title: |cff00ccffMUI Reborn|r
 ## IconTexture: Interface/AddOns/MUI_Reborn/Assets/Logo
 ## SavedVariables: MayronUIdb, MUI_TimerBarsDb, MUI_AurasDB, MUI_InventoryDB
 ## Dependencies: ShadowedUnitFrames, Bartender4
 ## OptionalDeps: Masque, Bagnon
-## Notes: Vollständige Ein-Addon-Fortführung von MayronUI Compat22 für Retail 12.1.
+## Notes: Vollständige Ein-Addon-Fortführung von MayronUI für Retail 12.1.5 & Forever
 ## Author: Mayron and contributors; MUI Reborn maintained by Monster
 ## Version: 1.0.0-alpha.20
 ## X-Discord: https://discord.gg/eqpFHhJyyV
 ## X-GitHub-Repo: https://github.com/DGMonster/MUI-Reborn
 ## X-Original-Project: https://github.com/cradzwill/MayronUI-Official
-## X-Original-Creators: Mayron, MayronUI contributors
+## X-Original-Creators: Mayron 
 ## X-Community-Support-Team: Monster/ Alizmer [GER]
 ## X-Translation-Support: Monster/ Alizmer [GER], Royking89, ExLinux, Pharma, EarlGrey
 ## X-Development-and-Bug-Fixes: Monster
