@@ -1,0 +1,10 @@
+<Ui>
+  <Script file="Pkg-MayronObjects\MayronObjects.lua" />
+
+  <Script file="Pkg-MayronDB\MayronDB.lua" />
+
+  <Script file="Pkg-Collections\LinkedList.lua" />
+  <Script file="Pkg-Collections\List.lua" />
+  <Script file="Pkg-Collections\Map.lua" />
+  <Script file="Pkg-Collections\Stack.lua" />
+</Ui>

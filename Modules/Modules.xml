@@ -1,0 +1,66 @@
+<Ui>
+  <Script file="MainContainer.lua" />
+
+  <Script file="UnitPanels.lua" />
+  <Script file="UnitPanels\UnitNames.lua" />
+  <Script file="UnitPanels\PortraitGradient.lua" />
+  <Script file="UnitPanels\RestingPulse.lua" />
+
+  <Script file="ResourceBars.lua" />
+  <Script file="ResourceBars\ExperienceBar.lua" />
+  <Script file="ResourceBars\ReputationBar.lua" />
+  <Script file="ResourceBars\ArtifactBar.lua" />
+  <Script file="ResourceBars\AzeriteBar.lua" />
+  
+  <Script file="ActionBars\BottomBars.lua" />
+  <Script file="ActionBars\SideBars.lua" />
+  <Script file="ActionBars\EditModeMicroMenu.lua" />
+
+  <Script file="ErrorHandler.lua" />
+  <Script file="ObjectiveTracker.lua" />
+  <Script file="AFKDisplay.lua" />
+  <Script file="MovableFrames.lua" />
+  <Script file="Tutorial.lua" />
+
+  <Script file="Auras\Auras.lua" />
+  <Script file="Auras\Auras.config.lua" />
+
+  <Script file="CastBars\CastBars.lua" />
+  <Script file="CastBars\CastBars.config.lua" />
+
+  <Script file="Chat\Chat.lua" />
+  <Script file="Chat\ButtonHandlers.lua" />
+  <Script file="Chat\ChatFrame.lua" />
+  <Script file="Chat\BlizzardFrames\ChatFrame.lua" />
+  <Script file="Chat\BlizzardFrames\RaidFrameManager.lua" />
+  <Script file="Chat\Chat.config.lua" />
+
+  <Script file="DataText\DataText.lua" />
+  <Script file="DataText\Components\CombatTimer.lua" />
+  <Script file="DataText\Components\Money.lua" />
+  <Script file="DataText\Components\Durability.lua" />
+  <Script file="DataText\Components\Friends.lua" />
+  <Script file="DataText\Components\Guild.lua" />
+  <Script file="DataText\Components\Inventory.lua" />
+  <Script file="DataText\Components\Memory.lua" />
+  <Script file="DataText\Components\Quest.lua" />
+  <Script file="DataText\Components\None.lua" />
+  <Script file="DataText\Components\Performance.lua" />
+  <Script file="DataText\Components\Specialization.lua" />
+  <Script file="DataText\Components\VolumeOptions.lua" />
+  <Script file="DataText\DataText.config.lua" />
+
+  <Script file="MiniMap\MiniMap.lua" />
+  <Script file="MiniMap\MiniMap.config.lua" />
+
+  <Script file="TimerBars\TimerBars.lua" />
+  <Script file="TimerBars\TimerBars.config.lua" />
+
+  <Script file="ToolTips\ToolTips.lua" />
+  <Script file="ToolTips\ToolTips.config.lua" />
+
+  <Script file="CombatAlerts.lua" />
+
+  <Script file="Inventory\Inventory.lua" />
+  <Script file="Inventory\inventory.config.lua" />
+</Ui>
