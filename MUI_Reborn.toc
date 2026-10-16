@@ -4,7 +4,7 @@
 ## SavedVariables: MayronUIdb, MUI_TimerBarsDb, MUI_AurasDB, MUI_InventoryDB
 ## Dependencies: ShadowedUnitFrames, Bartender4
 ## OptionalDeps: Masque, Bagnon
-## Notes: Vollständige Ein-Addon-Fortführung von MayronUI Compat22 für Retail 12.1.
+## Notes: Vollständige Ein-Addon-Fortführung von MayronUI für Retail 12.1.
 ## Author: Mayron and contributors; MUI Reborn maintained by Monster
 ## Version: 1.0.0-alpha.20
 ## X-Discord: https://discord.gg/eqpFHhJyyV
