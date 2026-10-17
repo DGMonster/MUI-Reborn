@@ -301,6 +301,11 @@ local UnitBuff, tostring, BUFF_MAX_DISPLAY =
 function Events:UNIT_AURA(castBar, castBarData, unitID)
   if (unitID ~= castBarData.unitID) then return end
 
+  -- The food/drink cast bar is a player-only feature. Modern Retail can mark
+  -- aura data from other units as secret, and querying it from addon code
+  -- causes a taint error. Never scan target, focus or pet auras here.
+  if (unitID ~= "player" or not db.global.castBars.showFoodDrink) then return end
+
   for auraID = 1, BUFF_MAX_DISPLAY do
     local name, iconTexture, _, _, duration, expirationTime, _, _, _, auraId = UnitBuff(unitID, auraID);
 
@@ -612,7 +617,7 @@ if (unitID == "mirror") then
             bar:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_STOP", data.unitID);
           end
 
-          if (db.global.castBars.showFoodDrink) then
+          if (data.unitID == "player" and db.global.castBars.showFoodDrink) then
             bar:RegisterUnitEvent("UNIT_AURA", data.unitID);
           end
 
@@ -899,7 +904,7 @@ function C_CastBar:CheckStatus(data)
     self:StartCasting(false, false);
   elseif (UnitChannelInfo(data.unitID)) then
     self:StartCasting(true, false);
-  else
+  elseif (data.unitID == "player" and db.global.castBars.showFoodDrink) then
     Events:UNIT_AURA(self, data, data.unitID)
   end
 end
