@@ -302,9 +302,14 @@ function Events:UNIT_AURA(castBar, castBarData, unitID)
   if (unitID ~= castBarData.unitID) then return end
 
   -- The food/drink cast bar is a player-only feature. Modern Retail can mark
-  -- aura data from other units as secret, and querying it from addon code
-  -- causes a taint error. Never scan target, focus or pet auras here.
+  -- aura data as secret during combat, and querying it from addon code causes
+  -- a taint error. Never scan target, focus or pet auras, or any aura while
+  -- the player is in combat. Food and drink can only be used out of combat.
   if (unitID ~= "player" or not db.global.castBars.showFoodDrink) then return end
+  if ((_G.InCombatLockdown and _G.InCombatLockdown()) or
+      (_G.UnitAffectingCombat and _G.UnitAffectingCombat("player"))) then
+    return
+  end
 
   for auraID = 1, BUFF_MAX_DISPLAY do
     local name, iconTexture, _, _, duration, expirationTime, _, _, _, auraId = UnitBuff(unitID, auraID);

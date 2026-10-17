@@ -2,7 +2,7 @@
 
 > A complete, customizable user interface for World of Warcraft Retail.
 
-[![Version](https://img.shields.io/badge/version-1.0.0--alpha.21-00ccff)](https://github.com/DGMonster/MUI-Reborn)
+[![Version](https://img.shields.io/badge/version-1.0.0--alpha.22-00ccff)](https://github.com/DGMonster/MUI-Reborn)
 [![WoW Retail](https://img.shields.io/badge/WoW_Retail-12.1-blue)](https://worldofwarcraft.blizzard.com/)
 [![Development status](https://img.shields.io/badge/status-public_alpha-orange)](https://github.com/DGMonster/MUI-Reborn/issues)
 [![Discord](https://img.shields.io/badge/Discord-MUI_Reborn-5865F2?logo=discord&logoColor=white)](https://discord.gg/eqpFHhJyyV)
