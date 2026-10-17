@@ -1,73 +1,123 @@
-# MUI Reborn 1.0.0-alpha.20
+# MUI Reborn
 
-This development build merges the complete MayronUI Compat22 Core, Config and
-Setup packages into the single `MUI_Reborn` addon folder. It is intended for
-Retail interfaces 120100 and 120105.
+> A modern Retail continuation of MayronUI, rebuilt as a single addon for World of Warcraft.
 
-## External addons
+[![Version](https://img.shields.io/badge/version-1.0.0--alpha.20-00ccff)](https://github.com/DGMonster/MUI-Reborn)
+[![WoW Retail](https://img.shields.io/badge/WoW_Retail-12.1-blue)](https://worldofwarcraft.blizzard.com/)
+[![Development status](https://img.shields.io/badge/status-public_alpha-orange)](https://github.com/DGMonster/MUI-Reborn/issues)
+[![Discord](https://img.shields.io/badge/Discord-MUI_Reborn-5865F2?logo=discord&logoColor=white)](https://discord.gg/eqpFHhJyyV)
 
-- Bartender4 is required and remains a separate addon.
-- Shadowed Unit Frames Redux is required and remains a separate addon under
-  the compatible `ShadowedUnitFrames` addon identity.
-- Masque and Bagnon remain optional external addons.
+MUI Reborn continues the design and functionality of **MayronUI Compat22** for
+modern World of Warcraft Retail clients. The former Core, Config and Setup
+packages are now combined in one `MUI_Reborn` addon folder.
 
-MUI Reborn includes the complete internal configuration and setup systems. The
-setup imports the appropriate external-addon profiles but does not bundle their
-code.
+## Development status
 
-## Test status
+MUI Reborn is currently a **public alpha**. The full interface is usable and
+the installer, configuration menu and layout tools are included, but bugs and
+visual inconsistencies may still occur.
 
-Alpha 16 is the current structural one-folder merge. It retains the Compat22
-saved-variable names. Because World of Warcraft stores them in a file named
-after the addon folder, an existing profile is only reused after copying
-`MUI_Core.lua` to `MUI_Reborn.lua` while the game is closed. Otherwise the
-integrated setup creates a fresh configuration. In-game testing is required
-before this branch replaces the smaller Alpha 11 prototype.
+Please report reproducible problems through the
+[GitHub issue tracker](https://github.com/DGMonster/MUI-Reborn/issues). Include
+the complete Lua error, the steps that caused it and the versions of MUI Reborn,
+Bartender4 and Shadowed Unit Frames Redux.
 
-Alpha 14 deferred the installer warning's theme coloring until database startup.
-This fixes the initial `themeColor` error and the resulting missing
-`SetUpModule` registration from Alpha 13.
+## Features
 
-Alpha 15 no longer forces Blizzard's global UI scale to 0.70 during setup. The
-setup slider remains available as an explicit manual option, while fresh
-defaults mirror the current Blizzard scale.
+- Complete MUI interface in a single addon folder
+- Integrated installer, configuration menu and profile manager
+- MUI layouts, panels, chat styling, inventory tools, auras and timer bars
+- Retail 12.1 compatibility for interface versions `120100` and `120105`
+- Blizzard Edit Mode compatibility for the Bartender4 Micro Menu
+- Eleven synchronized localization files
+- Existing MayronUI saved-variable names retained for profile compatibility
 
-Alpha 16 adds a compatibility bridge between Blizzard Edit Mode and the
-Bartender4 Micro Menu used by MUI. Orientation, order, menu size, and eye size
-from the Blizzard Micro Menu settings are mirrored to the corresponding
-Bartender4 bars. The green Bartender4 Micro Menu overlay remains the frame to
-drag while Edit Mode is open.
+## Requirements
 
-Alpha 17 updates the installer with the MUI Reborn Pandaren banner, modernizes
-the Retail 12.1 color picker integration, and synchronizes all locale files to
-the same set of 797 translation keys. The German interface translation also
-received a broad terminology and grammar cleanup. The Info and Credits content
-remains intentionally unchanged for the maintainer to revise separately.
+The following addons remain separate projects and are **not bundled** with
+MUI Reborn:
 
-Alpha 18 corrects the vertical TGA orientation of the new installer banner so
-it is displayed upright by the World of Warcraft client.
+| Addon | Status | Purpose |
+| --- | --- | --- |
+| [Bartender4](https://www.curseforge.com/wow/addons/bartender4) | Required | Action bars and Micro Menu |
+| [Shadowed Unit Frames Redux](https://www.curseforge.com/wow/addons/shadowed-unit-frames-redux) | Required | Player, target, party and raid frames |
+| [Masque](https://www.curseforge.com/wow/addons/masque) | Optional | Button skin support |
+| [Bagnon](https://www.curseforge.com/wow/addons/bagnon) | Optional | Bag integration |
 
-Alpha 19 updates visible legacy branding to MUI Reborn while retaining the
-internal MayronUI identifiers required for profile and saved-variable
-compatibility. It also changes the German LFD label to LFG and connects the
-installer, Discord link and issue reporter to the new MUI Reborn project.
-
-Alpha 20 replaces the legacy information and acknowledgements pages. Patreon,
-YouTube and the historical patron list are no longer presented as current MUI
-Reborn resources. The original MayronUI project remains credited as the source
-and foundation, while current development and support are listed separately.
+> Install **Shadowed Unit Frames Redux**, not an outdated original release. It
+> retains the compatible `ShadowedUnitFrames` addon identity required by MUI.
 
 ## Installation
 
-1. Close World of Warcraft and back up the current AddOns and WTF folders.
-2. Install current Bartender4 and Shadowed Unit Frames Redux separately.
-3. Remove or disable the separate `MUI_Core`, `MUI_Config` and `MUI_Setup`
-   folders.
-4. Copy the `MUI_Reborn` folder into `_retail_/Interface/AddOns`.
-5. For migration, copy
-   `WTF/Account/ACCOUNT/SavedVariables/MUI_Core.lua` to `MUI_Reborn.lua`.
-   Skip this step when a fresh setup is preferred.
-6. Start with Lua errors enabled and run the setup through `/mui install` if
-   necessary.
+1. Close World of Warcraft.
+2. Back up your current `Interface/AddOns` and `WTF` folders.
+3. Install the current versions of **Bartender4** and
+   **Shadowed Unit Frames Redux**.
+4. Remove or disable the old `MUI_Core`, `MUI_Config` and `MUI_Setup` folders.
+5. Copy the `MUI_Reborn` folder into:
+   `_retail_/Interface/AddOns/`
+6. Start World of Warcraft and enable MUI Reborn and its required addons.
+7. Run `/mui install` if the installer does not open automatically.
 
-See `CREDITS.md` for project origin and attribution.
+The correct folder structure is:
+
+```text
+World of Warcraft/
+└── _retail_/
+    └── Interface/
+        └── AddOns/
+            └── MUI_Reborn/
+                ├── MUI_Reborn.toc
+                ├── Config/
+                ├── Engine/
+                ├── Modules/
+                └── Setup/
+```
+
+## Migrating an existing Compat22 profile
+
+World of Warcraft stores saved variables under the addon folder name. To reuse
+an existing Compat22 profile:
+
+1. Close World of Warcraft completely.
+2. Open `WTF/Account/<ACCOUNT>/SavedVariables/`.
+3. Back up `MUI_Core.lua`.
+4. Copy `MUI_Core.lua` and rename the copy to `MUI_Reborn.lua`.
+5. Start the game and verify the profile before deleting any backup.
+
+Skip these steps if you prefer a clean installation.
+
+## Useful commands
+
+| Command | Action |
+| --- | --- |
+| `/mui` | Show all MUI commands |
+| `/mui config` | Open the configuration menu |
+| `/mui install` | Open the installer |
+| `/mui layouts` | Open the layout tool |
+| `/mui profiles` | Open the profile manager |
+| `/mui report` | Open the issue reporter |
+| `/mui version` | Show the installed version |
+
+## Credits
+
+MUI Reborn is based on **MayronUI**. The original design, architecture and
+substantial portions of the implementation were created by **Mayron and the
+MayronUI contributors**. Their work remains the foundation of this project.
+
+- Original project: [MayronUI Official](https://github.com/cradzwill/MayronUI-Official)
+- MUI Reborn maintenance, development and bug fixes: **Monster**
+- Community support: **Monster / Alizmer [GER]**
+- Translation support: **Monster / Alizmer [GER], Royking89, ExLinux, Pharma and EarlGrey**
+
+Bartender4, Shadowed Unit Frames Redux, Masque and Bagnon are independent
+projects owned and maintained by their respective authors.
+
+See [CREDITS.md](CREDITS.md) for additional project-origin information.
+
+## Community and support
+
+- [Join the MUI Reborn Discord](https://discord.gg/eqpFHhJyyV)
+- [Report a bug or request an improvement](https://github.com/DGMonster/MUI-Reborn/issues)
+
+Thank you for testing MUI Reborn and helping bring this interface back to life.
