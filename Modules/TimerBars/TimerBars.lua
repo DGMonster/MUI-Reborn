@@ -48,7 +48,8 @@ MayronUI:AddComponent("TimerBarsDatabase", db);
 local TimerBars = MayronUI:ImportModule("TimerBars");
 
 local _, _, _, interfaceVersion = _G.GetBuildInfo();
-local supportsCombatLogTimerBars = (interfaceVersion or 0) < 120100;
+local supportsCombatLogTimerBars = not tk:IsForever() and
+  (tonumber(interfaceVersion) or 0) < 120100;
 
 ---@class TimerField
 local C_TimerField = obj:CreateClass("TimerField");

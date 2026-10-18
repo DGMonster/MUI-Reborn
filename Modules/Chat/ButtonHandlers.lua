@@ -90,6 +90,50 @@ else
 end
 
 local clickHandlers = {};
+local foreverSecureButtons = setmetatable({}, { __mode = "k" });
+
+local function SetForeverSecureAction(button)
+  if (not tk:IsForever()) then
+    return;
+  end
+
+  local buttonText = button:GetText();
+  button:SetAttribute("type", nil);
+  button:SetAttribute("clickbutton", nil);
+
+  if (buttonText == buttonKeys.Character or buttonText == buttonKeys.Reputation) then
+    if (obj:IsWidget(_G.CharacterMicroButton)) then
+      button:SetAttribute("type", "click");
+      button:SetAttribute("clickbutton", _G.CharacterMicroButton);
+    end
+  elseif (buttonText == buttonKeys.LFD and obj:IsWidget(_G.LFDMicroButton)) then
+    button:SetAttribute("type", "click");
+    button:SetAttribute("clickbutton", _G.LFDMicroButton);
+  end
+end
+
+local function RefreshForeverSecureActions()
+  if (not tk:IsForever() or InCombatLockdown()) then
+    return;
+  end
+
+  for button in pairs(foreverSecureButtons) do
+    SetForeverSecureAction(button);
+  end
+end
+
+if (tk:IsForever()) then
+  local refreshFrame = _G.CreateFrame("Frame");
+  refreshFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
+  refreshFrame:RegisterEvent("PLAYER_REGEN_ENABLED");
+  refreshFrame:SetScript("OnEvent", function()
+    if (_G.C_Timer and obj:IsFunction(_G.C_Timer.After)) then
+      _G.C_Timer.After(0, RefreshForeverSecureActions);
+    else
+      RefreshForeverSecureActions();
+    end
+  end);
+end
 
 local function ToggleRetailPlayerSpells(tabName, fallbackTab)
   if (obj:IsFunction(_G.TogglePlayerSpellsFrame)) then
@@ -282,15 +326,48 @@ local function ChatButton_OnClick(self)
 	end
 end
 
+local function ChatButton_PostClick(self)
+  if (tk:IsForever()) then
+    local buttonText = self:GetText();
+
+    -- SecureActionButtonTemplate already clicked the real Blizzard button.
+    if ((buttonText == buttonKeys.Character or buttonText == buttonKeys.LFD) and
+        self:GetAttribute("clickbutton")) then
+      return;
+    end
+
+    if (buttonText == buttonKeys.Reputation and self:GetAttribute("clickbutton")) then
+      local reputationTab = _G.CharacterFrameModeTab2;
+      if (reputationTab and obj:IsFunction(reputationTab.OnMouseUp) and
+          _G.CharacterFrame and _G.CharacterFrame:IsShown()) then
+        reputationTab:OnMouseUp("LeftButton", true);
+      end
+      return;
+    end
+  end
+
+  ChatButton_OnClick(self);
+end
+
 local function ChatFrame_OnModifierStateChanged(_, _, data)
+  -- Protected button attributes cannot be changed during combat in Forever.
+  if (tk:IsForever() and InCombatLockdown()) then
+    return;
+  end
+
   if (data.chatModuleSettings.swapInCombat or not InCombatLockdown()) then
     for _, buttonStateData in ipairs(data.settings.buttons) do
       if (not buttonStateData.key or tk:IsModComboActive(buttonStateData.key)) then
         data.buttons[1]:SetText(buttonStateData[1]);
         data.buttons[2]:SetText(buttonStateData[2]);
         data.buttons[3]:SetText(buttonStateData[3]);
+
+        SetForeverSecureAction(data.buttons[1]);
+        SetForeverSecureAction(data.buttons[2]);
+        SetForeverSecureAction(data.buttons[3]);
       end
     end
+
   end
 end
 
@@ -310,7 +387,23 @@ function C_ChatFrame:SetUpButtonHandler(data, buttonSettings)
   listener:RegisterEvent("MODIFIER_STATE_CHANGED");
   em:TriggerEventListenerByID(listenerID);
 
-  data.buttons[1]:SetScript("OnClick", ChatButton_OnClick);
-  data.buttons[2]:SetScript("OnClick", ChatButton_OnClick);
-  data.buttons[3]:SetScript("OnClick", ChatButton_OnClick);
+  if (tk:IsForever()) then
+    foreverSecureButtons[data.buttons[1]] = true;
+    foreverSecureButtons[data.buttons[2]] = true;
+    foreverSecureButtons[data.buttons[3]] = true;
+
+    data.buttons[1]:SetScript("PostClick", ChatButton_PostClick);
+    data.buttons[2]:SetScript("PostClick", ChatButton_PostClick);
+    data.buttons[3]:SetScript("PostClick", ChatButton_PostClick);
+
+    RefreshForeverSecureActions();
+    if (_G.C_Timer and obj:IsFunction(_G.C_Timer.After)) then
+      _G.C_Timer.After(0, RefreshForeverSecureActions);
+      _G.C_Timer.After(1, RefreshForeverSecureActions);
+    end
+  else
+    data.buttons[1]:SetScript("OnClick", ChatButton_OnClick);
+    data.buttons[2]:SetScript("OnClick", ChatButton_OnClick);
+    data.buttons[3]:SetScript("OnClick", ChatButton_OnClick);
+  end
 end

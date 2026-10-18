@@ -2,7 +2,7 @@
 
 > A complete, customizable user interface for World of Warcraft Retail.
 
-[![Version](https://img.shields.io/badge/version-1.0.0--alpha.22-00ccff)](https://github.com/DGMonster/MUI-Reborn)
+[![Version](https://img.shields.io/badge/version-1.0.0--beta.1-00ccff)](https://github.com/DGMonster/MUI-Reborn)
 [![WoW Retail](https://img.shields.io/badge/WoW_Retail-12.1-blue)](https://worldofwarcraft.blizzard.com/)
 [![Development status](https://img.shields.io/badge/status-public_alpha-orange)](https://github.com/DGMonster/MUI-Reborn/issues)
 [![Discord](https://img.shields.io/badge/Discord-MUI_Reborn-5865F2?logo=discord&logoColor=white)](https://discord.gg/eqpFHhJyyV)
@@ -54,7 +54,7 @@ Reborn:
 1. Close World of Warcraft.
 2. Install the current versions of **Bartender4** and
    **Shadowed Unit Frames Redux**.
-3. Copy the `MUI_Reborn` folder into:
+3. Copy the `MUI-Reborn` folder into:
    `_retail_/Interface/AddOns/`
 4. Start World of Warcraft and enable MUI Reborn and its required addons.
 5. Follow the installer or enter `/mui install` in chat.
@@ -66,8 +66,8 @@ World of Warcraft/
 └── _retail_/
     └── Interface/
         └── AddOns/
-            └── MUI_Reborn/
-                ├── MUI_Reborn.toc
+            └── MUI-Reborn/
+                ├── MUI-Reborn.toc
                 ├── Config/
                 ├── Engine/
                 ├── Modules/

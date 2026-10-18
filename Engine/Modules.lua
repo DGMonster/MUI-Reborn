@@ -76,7 +76,7 @@ end
 
 local function LoadMuiAddOn(name)
   -- Config and Setup are internal modules in the single-folder MUI Reborn
-  -- package. Their files have already been loaded by MUI_Reborn.toc.
+  -- package. Their files have already been loaded by MUI-Reborn.toc.
   if (name == "MUI_Config" or name == "MUI_Setup") then
     return true;
   end

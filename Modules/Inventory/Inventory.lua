@@ -2157,7 +2157,17 @@ function C_InventoryModule:OnInitialize()
     inventoryFrame:EnableMouse(true);
     inventoryFrame:Hide();
 
-    tk:HookFunc("ToggleAllBags", function()
+    local inventoryTogglePending = false;
+    local function ToggleMUIInventory()
+      if (inventoryTogglePending) then
+        return;
+      end
+
+      inventoryTogglePending = true;
+      _G.C_Timer.After(0, function()
+        inventoryTogglePending = false;
+      end);
+
       if (inventoryFrame:IsShown()) then
         PlaySound(SoundKit.IG_BACKPACK_CLOSE);
         inventoryFrame:Hide();
@@ -2165,7 +2175,14 @@ function C_InventoryModule:OnInitialize()
         PlaySound(SoundKit.IG_BACKPACK_OPEN);
         inventoryFrame:Show();
       end
-    end);
+    end
+
+    tk:HookFunc("ToggleAllBags", ToggleMUIInventory);
+
+    if (tk:IsForever()) then
+      -- Forever's default B binding calls ToggleBackpack instead of ToggleAllBags.
+      tk:HookFunc("ToggleBackpack", ToggleMUIInventory);
+    end
 
     gui:AddDialogTexture(inventoryFrame, "High");
     inventoryFrame:SetFrameStrata(tk.Constants.FRAME_STRATAS.HIGH);

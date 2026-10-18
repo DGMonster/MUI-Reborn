@@ -524,7 +524,7 @@ function C_ConfigMenuModule:SetSelectedContentButton(data, btn)
       if (not breadcrumbText) then
         breadcrumbText = previousBtn.name;
       else
-        breadcrumbText = strformat("%s |TInterface/Addons/MUI_Reborn/Assets/Icons/crumb:16:16|t %s", breadcrumbText, previousBtn.name);
+        breadcrumbText = strformat("%s |TInterface/Addons/MUI-Reborn/Assets/Icons/crumb:16:16|t %s", breadcrumbText, previousBtn.name);
       end
     end
 

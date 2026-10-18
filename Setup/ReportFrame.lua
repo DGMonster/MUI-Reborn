@@ -1,5 +1,6 @@
 -- luacheck: ignore self 143 631
 local _G = _G;
+local addonName = ...;
 local MayronUI = _G.MayronUI;
 local tk, db, _, gui, obj, L = MayronUI:GetCoreComponents();
 
@@ -438,7 +439,7 @@ do
 
     -- Get MUI Version Info:
     AppendLine("MUI Version Info", true);
-    f("- MUI Reborn: %s", GetAddOnMetadata("MUI_Reborn", "Version"));
+    f("- MUI Reborn: %s", GetAddOnMetadata(addonName, "Version"));
 
     -- Get WoW Client Info:
     AppendLine("WoW Client Info", true);

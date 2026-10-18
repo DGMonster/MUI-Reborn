@@ -1,12 +1,12 @@
 -- luacheck: ignore MayronUI self 143 631
-local _, namespace = ...;
+local addonName, namespace = ...;
 namespace.import = {};
 
 local _G = _G;
 local MayronUI, table, pairs = _G.MayronUI, _G.table, _G.pairs;
 local tk, db, _, gui, obj, L = MayronUI:GetCoreComponents();
 local Private = {};
-local mediaFolder = "Interface\\AddOns\\MUI_Reborn\\media\\";
+local mediaFolder = "Interface\\AddOns\\MUI-Reborn\\media\\";
 
 local tabText = {
   -- This should use the locales!
@@ -505,7 +505,7 @@ local function GetInfoLinks(...)
   local links = obj:PopTable(...);
 
   for i, name in ipairs(links) do
-    links[i] = ("|cffffff9a%s|r"):format(GetAddOnMetadata("MUI_Reborn", name));
+    links[i] = ("|cffffff9a%s|r"):format(GetAddOnMetadata(addonName, name));
   end
 
   return obj:UnpackTable(links);
@@ -515,7 +515,7 @@ local function GetCreditsSections(...)
   local sections = obj:PopTable(...);
 
   for s, sectionName in ipairs(sections) do
-    local names = (GetAddOnMetadata("MUI_Reborn", sectionName));
+    local names = (GetAddOnMetadata(addonName, sectionName));
     names = obj:PopTable(strsplit(",", names))
 
     for i, name in ipairs(names) do
@@ -910,7 +910,7 @@ function SetUpModule:Install(data)
   db.global.installed[tk:GetPlayerKey()] = true;
   db.profile.freshInstall = true;
 
-  PlaySoundFile("Interface\\AddOns\\MUI_Reborn\\install.ogg");
+  PlaySoundFile("Interface\\AddOns\\MUI-Reborn\\install.ogg");
   ReloadUI();
 end
 

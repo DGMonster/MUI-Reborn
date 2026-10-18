@@ -1148,8 +1148,10 @@ function C_CastBarsModule:OnInitialize(data)
 end
 
 function C_CastBarsModule:OnInitialized(data)
-  if (data.settings.enabled) then
+  if (data.settings.enabled and not tk:IsForever()) then
     self:SetEnabled(true);
+  elseif (data.settings.enabled and tk:IsForever()) then
+    tk:Print("MUI Reborn: Custom cast bars are unavailable on Forever Beta. Blizzard cast bars will remain enabled.");
   end
 end
 

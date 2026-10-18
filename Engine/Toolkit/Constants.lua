@@ -6,8 +6,15 @@ local LibStub = _G.LibStub;
 ---@class MayronUI.Toolkit
 local tk, _, _, _, _, L = MayronUI:GetCoreComponents();
 
+local _, _, _, interfaceVersion = _G.GetBuildInfo();
+interfaceVersion = tonumber(interfaceVersion);
+
+function tk:IsForever()
+  return interfaceVersion == 16001;
+end
+
 function tk:IsRetail()
-  return _G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE;
+  return _G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE or self:IsForever();
 end
 
 function tk:IsClassic()
@@ -26,7 +33,7 @@ end
 ---@field ThemeColor ColorMixin
 tk.Constants = {
   DRAGONFLIGHT_BAR_LAYOUT_PATCH = "DragonflightBarLayout_V2";
-  ASSETS_FOLDER = "Interface\\addons\\MUI_Reborn\\Assets";
+  ASSETS_FOLDER = "Interface\\addons\\MUI-Reborn\\Assets";
   CLICK = 856;
   MENU_OPENED_CLICK = 852;
   DUMMY_FUNC = function() end;
@@ -38,13 +45,13 @@ tk.Constants = {
   LSM = LibStub("LibSharedMedia-3.0");
 
   BACKDROP = {
-    edgeFile = "interface\\addons\\MUI_Reborn\\Assets\\Borders\\Solid",
+    edgeFile = "interface\\addons\\MUI-Reborn\\Assets\\Borders\\Solid",
     edgeSize = 1,
   };
 
   BACKDROP_WITH_BACKGROUND = {
     bgFile = "Interface\\Buttons\\WHITE8X8",
-    edgeFile = "interface\\addons\\MUI_Reborn\\Assets\\Borders\\Solid",
+    edgeFile = "interface\\addons\\MUI-Reborn\\Assets\\Borders\\Solid",
     edgeSize = 1,
   };
 

@@ -1004,13 +1004,15 @@ function C_MiniMapModule:OnInitialized(data)
 end
 
 function C_MiniMapModule:OnEnable(data)
-  if (obj:IsWidget(_G.MinimapBorder)) then
-    tk:KillElement(_G.MinimapBorder);
-    tk:KillElement(_G.MinimapBorderTop);
-    tk:KillElement(_G.MinimapZoomIn);
-    tk:KillElement(_G.MinimapZoomOut);
-    tk:KillElement(_G.MinimapNorthTag);
-  end
+  -- These are textures in some clients and frames in others, so do not gate
+  -- the whole cleanup behind IsWidget(MinimapBorder).
+  tk:KillAllElements(
+    _G.MinimapBorder,
+    _G.MinimapBorderTop,
+    _G.MinimapZoomIn,
+    _G.MinimapZoomOut,
+    _G.MinimapNorthTag
+  );
 
   if (tk:IsRetail() and obj:IsWidget(_G.MinimapCluster) and obj:IsWidget(_G.MinimapCluster.BorderTop)) then
     _G.MinimapCluster.BorderTop:Hide();
@@ -1020,7 +1022,7 @@ function C_MiniMapModule:OnEnable(data)
     tk:KillElement(_G.MinimapCluster.BorderTop);
   end
 
-  _G.GameTimeFrame:Hide();
+  tk:KillElement(_G.GameTimeFrame);
 
   tk:KillElement(_G.MiniMapWorldMapButton);
 
@@ -1045,6 +1047,24 @@ function C_MiniMapModule:OnEnable(data)
   _G.MinimapCluster:EnableMouse(false);
 
   Minimap:SetMaskTexture("Interface\\ChatFrame\\ChatFrameBackground"); -- make rectangle
+
+  if (tk:IsForever()) then
+    -- Forever reapplies the Classic round mask and decorations late during login.
+    local function ApplyForeverMinimapStyle()
+      tk:KillAllElements(
+        _G.MinimapBorder,
+        _G.MinimapBorderTop,
+        _G.MinimapNorthTag,
+        _G.MinimapCompassTexture,
+        _G.GameTimeFrame,
+        _G.MinimapCluster and _G.MinimapCluster.BorderTop
+      );
+      Minimap:SetMaskTexture("Interface\\ChatFrame\\ChatFrameBackground");
+    end
+
+    C_Timer.After(0, ApplyForeverMinimapStyle);
+    C_Timer.After(1, ApplyForeverMinimapStyle);
+  end
   Minimap:EnableMouse(true);
   Minimap:EnableMouseWheel(true);
   Minimap:SetResizable(true);

@@ -1,5 +1,6 @@
 -- luacheck: ignore self 143 631
 local _G = _G;
+local addonName = ...;
 local MayronUI = _G.MayronUI;
 local tk, db, em, gui, obj, L = MayronUI:GetCoreComponents(); -- luacheck: ignore
 
@@ -123,7 +124,7 @@ local function LoadTutorial(panel)
       frame:Show();
     end
 
-    db.profile.actionbars.bottom.tutorial = GetAddOnMetadata("MUI_Reborn", "Version");
+    db.profile.actionbars.bottom.tutorial = GetAddOnMetadata(addonName, "Version");
     self:Destroy();
   end);
 

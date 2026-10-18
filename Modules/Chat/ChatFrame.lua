@@ -107,7 +107,11 @@ function C_ChatFrame:CreateButtons(data)
 	data.buttons = obj:PopTable();
 
 	for buttonID = 1, 3 do
-		local btn = tk:CreateFrame("Button", data.buttonsBar);
+		-- Forever protects several Blizzard menu actions.  The visible button
+		-- itself must receive the hardware click; forwarding a click from Lua
+		-- to a hidden secure proxy is rejected by the client.
+		local buttonTemplate = tk:IsForever() and "SecureActionButtonTemplate" or nil;
+		local btn = tk:CreateFrame("Button", data.buttonsBar, nil, buttonTemplate);
 		data.buttons[buttonID] = btn;
 
 		btn:SetSize(135, 20);

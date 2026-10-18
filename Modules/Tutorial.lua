@@ -1,5 +1,6 @@
 -- luacheck: ignore MayronUI self 143 631
 local _G = _G;
+local addonName = ...;
 local MayronUI = _G.MayronUI;
 local tk, db, _, gui, _, L = MayronUI:GetCoreComponents(); -- luacheck: ignore
 local GetLocale = _G.GetLocale;
@@ -30,7 +31,7 @@ function C_Tutorial:OnEnable()
   gui:AddDialogTexture(frame, "High");
   gui:AddCloseButton(frame);
 
-  local version = GetAddOnMetadata("MUI_Reborn", "Version");
+  local version = GetAddOnMetadata(addonName, "Version");
 
   local title = tk.Strings:Concat(L["Version"], "[", version, "]");
   gui:AddTitleBar(frame, title);

@@ -750,9 +750,10 @@ do
 end
 
 local GetAddOnMetadata = _G.GetAddOnMetadata;
+local addonName = _G.MUI_REBORN_ADDON_NAME or "MUI-Reborn";
 
 function tk:GetTutorialShowState(oldVersion, afterInstall)
-  local currentVersion = GetAddOnMetadata("MUI_Reborn", "Version");
+  local currentVersion = GetAddOnMetadata(addonName, "Version");
   local major, minor, patch = tk.Strings:Split(currentVersion, ".");
   major = tonumber(major) or 0;
   minor = tonumber(minor) or 0;
@@ -788,7 +789,9 @@ end
 function tk:GetVersion(colorKey, raw)
   local client = tk.Strings.Empty;
 
-  if (tk:IsRetail()) then
+  if (tk:IsForever()) then
+    client = "-forever";
+  elseif (tk:IsRetail()) then
     client = "-retail";
   elseif (tk:IsWrathClassic()) then
     client = "-wrath";
@@ -798,7 +801,7 @@ function tk:GetVersion(colorKey, raw)
     client = "-classic";
   end
 
-  local muiVersion = GetAddOnMetadata("MUI_Reborn", "Version") or "unknown";
+  local muiVersion = GetAddOnMetadata(addonName, "Version") or "unknown";
   local version = string.format("%s%s", muiVersion, client);
 
   if (not raw) then

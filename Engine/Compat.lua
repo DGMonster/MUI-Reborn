@@ -1,7 +1,13 @@
--- MUI_Reborn/Engine/Compat.lua
+-- MUI-Reborn/Engine/Compat.lua
 -- Central compatibility layer for Retail/Classic API differences.
 
 _G.MUI_COMPAT_ACTIVE = true
+
+-- Keep the runtime addon identifier in one place. The public addon folder and
+-- TOC use a hyphen (MUI-Reborn); SavedVariables and localization keys keep
+-- their existing underscore names for backwards compatibility.
+local addonName = ...
+_G.MUI_REBORN_ADDON_NAME = addonName or "MUI-Reborn"
 
 
 local _G = _G
