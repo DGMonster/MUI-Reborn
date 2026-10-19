@@ -35,6 +35,27 @@ local CreateLabel;
 do
   local onLabelClickFunc;
 
+  local function OpenWhisper(target, isBattleNet)
+    ChatFrame1EditBox:SetAttribute("tellTarget", target);
+
+    if (isBattleNet and _G.ChatFrameUtil and _G.ChatFrameUtil.SendBNetTell) then
+      _G.ChatFrameUtil.SendBNetTell(target);
+    elseif (isBattleNet and _G.ChatFrame_SendBNetTell) then
+      _G.ChatFrame_SendBNetTell(target);
+    elseif (ChatMenu_SetChatType) then
+      ChatMenu_SetChatType(ChatFrame1, "SMART_WHISPER");
+    elseif (_G.ChatFrameUtil and _G.ChatFrameUtil.SendTell) then
+      _G.ChatFrameUtil.SendTell(target, ChatFrame1);
+    elseif (_G.ChatFrame_SendTell) then
+      _G.ChatFrame_SendTell(target, ChatFrame1);
+    elseif (_G.ChatFrame_OpenChat) then
+      _G.ChatFrame_OpenChat("/w " .. target .. " ", ChatFrame1);
+    else
+      ChatFrame1EditBox:Show();
+      ChatFrame1EditBox:SetFocus();
+    end
+  end
+
   function CreateLabel(contentFrame, slideController)
     local label = tk:CreateFrame("Button", contentFrame);
 
@@ -46,8 +67,7 @@ do
 
     if (not onLabelClickFunc) then
       onLabelClickFunc = function(self)
-        ChatFrame1EditBox:SetAttribute("tellTarget", self.id);
-        ChatMenu_SetChatType(ChatFrame1, "SMART_WHISPER");
+        OpenWhisper(self.id, self.isBattleNet);
         slideController:Start(slideController.Static.FORCE_RETRACT);
       end
     end
@@ -168,6 +188,7 @@ function Friends:CheckBattleNetFriendsList(data)
       self.MenuLabels[totalLabelsShown] = label;
 
       label.id = accountName;
+      label.isBattleNet = true;
       label:SetNormalTexture(1);
       label:GetNormalTexture():SetColorTexture(r * 0.4, g * 0.4, b * 0.4, 0.2);
       label:SetHighlightTexture(1);
@@ -206,6 +227,7 @@ function Friends:CheckWowFriendsList(data, totalLabelsShown)
       self.MenuLabels[totalLabelsShown] = label; -- old: numBNFriends + i
 
       label.id = friendInfo.name;
+      label.isBattleNet = false;
       label:SetNormalTexture(1);
       label:GetNormalTexture():SetColorTexture(0, 0, 0, 0.2);
       label:SetHighlightTexture(1);

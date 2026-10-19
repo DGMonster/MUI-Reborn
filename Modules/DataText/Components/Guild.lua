@@ -73,6 +73,23 @@ local CreateLabel
 do
   local onLabelClickFunc
 
+  local function OpenWhisper(target)
+    ChatFrame1EditBox:SetAttribute("tellTarget", target)
+
+    if ChatMenu_SetChatType then
+      ChatMenu_SetChatType(ChatFrame1, "SMART_WHISPER")
+    elseif _G.ChatFrameUtil and _G.ChatFrameUtil.SendTell then
+      _G.ChatFrameUtil.SendTell(target, ChatFrame1)
+    elseif _G.ChatFrame_SendTell then
+      _G.ChatFrame_SendTell(target, ChatFrame1)
+    elseif _G.ChatFrame_OpenChat then
+      _G.ChatFrame_OpenChat("/w " .. target .. " ", ChatFrame1)
+    else
+      ChatFrame1EditBox:Show()
+      ChatFrame1EditBox:SetFocus()
+    end
+  end
+
   local function LabelOnEnter(self)
     if not self.guildRosterInfo then return end
 
@@ -128,8 +145,7 @@ do
     if not onLabelClickFunc then
       onLabelClickFunc = function(self)
         if not self.id then return end
-        ChatFrame1EditBox:SetAttribute("tellTarget", self.id)
-        ChatMenu_SetChatType(ChatFrame1, "SMART_WHISPER")
+        OpenWhisper(self.id)
         slideController:Start(slideController.Static.FORCE_RETRACT)
       end
     end
