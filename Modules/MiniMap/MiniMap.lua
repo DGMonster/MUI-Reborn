@@ -45,6 +45,28 @@ local function HideMenu()
   end
 end
 
+local function AddMenuEntries(menuDescription, entries)
+  for _, entry in ipairs(entries) do
+    if (entry.text) then
+      if (entry.menuList) then
+        local submenu = menuDescription:CreateButton(entry.text);
+        AddMenuEntries(submenu, entry.menuList);
+      else
+        menuDescription:CreateButton(entry.text, function()
+          if (entry.func) then
+            entry.func(entry, entry.arg1, entry.arg2);
+          elseif (entry.customFrame) then
+            local onClick = entry.customFrame:GetScript("OnClick");
+            if (onClick) then
+              onClick(entry.customFrame, "LeftButton");
+            end
+          end
+        end);
+      end
+    end
+  end
+end
+
 local function CanViewMissions()
   if not C_Garrison or not C_Garrison.GetLandingPageGarrisonType then
     return false
@@ -1216,7 +1238,13 @@ function C_MiniMapModule:OnEnable(data)
 
   Minimap:SetScript("OnMouseUp", function(self, btn)
     if (btn == "RightButton") then
-      EasyMenu(data.menuList, menuFrame, "cursor", 0, 0, "MENU", 1);
+      if (EasyMenu) then
+        EasyMenu(data.menuList, menuFrame, "cursor", 0, 0, "MENU", 1);
+      elseif (_G.MenuUtil and _G.MenuUtil.CreateContextMenu) then
+        _G.MenuUtil.CreateContextMenu(self, function(_, rootDescription)
+          AddMenuEntries(rootDescription, data.menuList);
+        end);
+      end
       PlaySound(tk.Constants.CLICK);
     else
       HideMenu();
