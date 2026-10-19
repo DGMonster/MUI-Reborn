@@ -1059,11 +1059,43 @@ function C_MiniMapModule:OnEnable(data)
         _G.GameTimeFrame,
         _G.MinimapCluster and _G.MinimapCluster.BorderTop
       );
+
+      -- Forever's Diel.lua creates an anonymous day/night frame below the
+      -- minimap. Its stable identifier is its anchor on MinimapContainer.
+      local container = _G.MinimapCluster and _G.MinimapCluster.MinimapContainer;
+      local function RemoveDielFrame(parent)
+        if (not parent or not parent.GetChildren) then
+          return;
+        end
+
+        for _, child in ipairs({ parent:GetChildren() }) do
+          local isDielFrame = false;
+          for index = 1, child:GetNumPoints() do
+            local point, relativeTo, relativePoint, x, y = child:GetPoint(index);
+            if (point == "CENTER" and relativeTo == container and
+                relativePoint == "CENTER" and math.abs((x or 0) - 55) < 1 and
+                math.abs((y or 0) - 86) < 1) then
+              isDielFrame = true;
+              break;
+            end
+          end
+
+          if (isDielFrame) then
+            tk:KillElement(child);
+          else
+            RemoveDielFrame(child);
+          end
+        end
+      end
+
+      RemoveDielFrame(container);
+
       Minimap:SetMaskTexture("Interface\\ChatFrame\\ChatFrameBackground");
     end
 
     C_Timer.After(0, ApplyForeverMinimapStyle);
     C_Timer.After(1, ApplyForeverMinimapStyle);
+    C_Timer.After(3, ApplyForeverMinimapStyle);
   end
   Minimap:EnableMouse(true);
   Minimap:EnableMouseWheel(true);

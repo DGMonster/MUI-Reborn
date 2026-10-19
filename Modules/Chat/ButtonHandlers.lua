@@ -100,15 +100,20 @@ local function SetForeverSecureAction(button)
   local buttonText = button:GetText();
   button:SetAttribute("type", nil);
   button:SetAttribute("clickbutton", nil);
+  button:SetAttribute("macrotext", nil);
+  -- Forever's protected menu bindings fire on key/button down. Triggering the
+  -- secure proxy on release is silently ignored by the protected Blizzard UI.
+  button:RegisterForClicks("AnyDown");
 
-  if (buttonText == buttonKeys.Character or buttonText == buttonKeys.Reputation) then
-    if (obj:IsWidget(_G.CharacterMicroButton)) then
-      button:SetAttribute("type", "click");
-      button:SetAttribute("clickbutton", _G.CharacterMicroButton);
-    end
-  elseif (buttonText == buttonKeys.LFD and obj:IsWidget(_G.LFDMicroButton)) then
-    button:SetAttribute("type", "click");
-    button:SetAttribute("clickbutton", _G.LFDMicroButton);
+  if (buttonText == buttonKeys.Character) then
+    button:SetAttribute("type", "macro");
+    button:SetAttribute("macrotext", "/click CharacterMicroButton");
+  elseif (buttonText == buttonKeys.Reputation) then
+    button:SetAttribute("type", "macro");
+    button:SetAttribute("macrotext", "/click CharacterMicroButton\n/click CharacterFrameModeTab2");
+  elseif (buttonText == buttonKeys.LFD) then
+    button:SetAttribute("type", "macro");
+    button:SetAttribute("macrotext", "/click LFDMicroButton");
   end
 end
 
@@ -330,17 +335,23 @@ local function ChatButton_PostClick(self)
   if (tk:IsForever()) then
     local buttonText = self:GetText();
 
-    -- SecureActionButtonTemplate already clicked the real Blizzard button.
+    -- SecureActionButtonTemplate already ran the matching Blizzard action.
     if ((buttonText == buttonKeys.Character or buttonText == buttonKeys.LFD) and
-        self:GetAttribute("clickbutton")) then
+        self:GetAttribute("macrotext")) then
       return;
     end
 
-    if (buttonText == buttonKeys.Reputation and self:GetAttribute("clickbutton")) then
-      local reputationTab = _G.CharacterFrameModeTab2;
-      if (reputationTab and obj:IsFunction(reputationTab.OnMouseUp) and
-          _G.CharacterFrame and _G.CharacterFrame:IsShown()) then
-        reputationTab:OnMouseUp("LeftButton", true);
+    if (buttonText == buttonKeys.Reputation and self:GetAttribute("macrotext")) then
+      -- The character window is not fully visible until the secure click has
+      -- completed. Select its reputation mode on the following frame.
+      if (_G.C_Timer and obj:IsFunction(_G.C_Timer.After)) then
+        _G.C_Timer.After(0, function()
+          local reputationTab = _G.CharacterFrameModeTab2;
+          if (reputationTab and obj:IsFunction(reputationTab.OnMouseUp) and
+              _G.CharacterFrame and _G.CharacterFrame:IsShown()) then
+            reputationTab:OnMouseUp("LeftButton", true);
+          end
+        end);
       end
       return;
     end

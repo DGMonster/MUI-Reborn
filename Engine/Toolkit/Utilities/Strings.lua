@@ -191,6 +191,13 @@ function tk.Strings:GetUnitNameText(unitID, overflow, includeRealmName)
   local unitName, realm = UnitFullName(unitID);
   unitID = (unitID or ""):lower();
 
+  -- Forever characters can have first and last names. UnitFullName only
+  -- returns the first name there, while GetUnitName(..., true) returns the
+  -- complete display name (for example "Aelyra Sternenwind").
+  if (tk:IsForever() and obj:IsFunction(_G.GetUnitName)) then
+    unitName = _G.GetUnitName(unitID, true) or unitName;
+  end
+
   if (unitID ~= "player" and includeRealmName and obj:IsString(realm) and not tk.Strings:IsNilOrWhiteSpace(realm)) then
     unitName = unitName.."-"..realm;
   end
