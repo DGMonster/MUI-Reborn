@@ -3,3 +3,4 @@ package-as: MUI-Reborn
 ignore:
   - README.md
   - .github
+  - .git
