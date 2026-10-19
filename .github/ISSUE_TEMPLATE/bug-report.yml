@@ -1,0 +1,106 @@
+name: Bug report
+description: Report a reproducible problem with MUI Reborn
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve MUI Reborn. Please complete all required fields.
+
+  - type: input
+    id: mui-version
+    attributes:
+      label: MUI Reborn version
+      description: Which exact version of MUI Reborn are you using?
+      placeholder: "Example: 1.0.0-beta.14"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: wow-client
+    attributes:
+      label: World of Warcraft client
+      options:
+        - Retail
+        - WoW Forever
+    validations:
+      required: true
+
+  - type: input
+    id: wow-version
+    attributes:
+      label: World of Warcraft version
+      description: Enter the game version shown in the client.
+      placeholder: "Example: Retail 12.1 or Forever 1.60.1"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the problem and what you expected to happen instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: List the exact steps that consistently cause the problem.
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. The error appears
+    validations:
+      required: true
+
+  - type: textarea
+    id: lua-error
+    attributes:
+      label: Complete Lua error
+      description: Paste the complete Lua error, including the stack trace and locals. Enter "No Lua error" if none appeared.
+      render: text
+    validations:
+      required: true
+
+  - type: input
+    id: bartender-version
+    attributes:
+      label: Bartender4 version
+      placeholder: Enter the installed version
+    validations:
+      required: true
+
+  - type: input
+    id: suf-version
+    attributes:
+      label: Shadowed Unit Frames Redux version
+      placeholder: Enter the installed version
+    validations:
+      required: true
+
+  - type: textarea
+    id: other-addons
+    attributes:
+      label: Other active addons
+      description: List other enabled addons, especially addons that modify the affected area.
+      placeholder: "Example: Details, Prat, WeakAuras"
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Drag and drop screenshots here if they help demonstrate the problem.
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I tested the problem with the latest available version of MUI Reborn.
+          required: true
+        - label: I searched the existing issues and did not find the same problem.
+          required: true
