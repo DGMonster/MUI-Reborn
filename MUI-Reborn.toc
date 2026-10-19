@@ -4,9 +4,9 @@
 ## SavedVariables: MayronUIdb, MUI_TimerBarsDb, MUI_AurasDB, MUI_InventoryDB
 ## Dependencies: ShadowedUnitFrames, Bartender4
 ## OptionalDeps: Masque, Bagnon
-## Notes: Öffentliche Retail-Beta der vollständigen Ein-Addon-Fortführung von MayronUI Compat22.
+## Notes: Öffentliche Retail-Beta der vollständigen Ein-Addon-Fortführung von MayronUI.
 ## Author: Mayron and contributors; MUI Reborn maintained by Monster
-## Version: 1.0.0-beta.1
+## Version: 1.0.0-beta.4
 ## X-Discord: https://discord.gg/eqpFHhJyyV
 ## X-GitHub-Repo: https://github.com/DGMonster/MUI-Reborn
 ## X-Original-Project: https://github.com/cradzwill/MayronUI-Official

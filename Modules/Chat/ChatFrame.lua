@@ -282,6 +282,11 @@ do
 			return;
 		end
 
+    -- These menus are parented to the MUI chat frame. Re-apply their strata
+    -- after parenting so chat text and artwork cannot cover them.
+    menu:SetFrameStrata(tk.Constants.FRAME_STRATAS.TOOLTIP);
+    menu:SetFrameLevel(500);
+
 	    local chatAnchor = icon:GetParent():GetName():match(".*_(.*)$");
     menu:ClearAllPoints();
 
@@ -448,12 +453,23 @@ do
 
 	    toggleEmotesButton:SetScript("OnClick", function(self)
 	      PlaySound(tk.Constants.CLICK);
-	      if (ChatMenu) then
-	        PositionChatIconMenu(self, ChatMenu);
+
+	      if (tk:IsRetail() and obj:IsWidget(_G.ChatConfigFrame)) then
+	        _G.ShowUIPanel(_G.ChatConfigFrame);
+	        return;
 	      end
 
 	      if (obj:IsFunction(_G.ChatFrame_ToggleMenu)) then
 	        _G.ChatFrame_ToggleMenu();
+	      elseif (obj:IsWidget(_G.ChatFrameMenuButton)) then
+	        local onClick = _G.ChatFrameMenuButton:GetScript("OnClick");
+	        if (obj:IsFunction(onClick)) then
+	          onClick(_G.ChatFrameMenuButton, "LeftButton");
+	        end
+	      end
+
+	      if (_G.ChatMenu) then
+	        PositionChatIconMenu(self, _G.ChatMenu);
 	      end
 	    end);
 
@@ -500,8 +516,27 @@ do
 
     local function CreateProfessionButton(profMenu, spellIndex)
       local btnName = "MUI_ProfessionsMenuButton"..spellIndex;
-      local btnTemplate = tk:IsRetail() and "ProfessionButtonTemplate" or "SpellButtonTemplate";
-      local btn = tk:CreateFrame("CheckButton", profMenu, btnName, btnTemplate);
+      local btn;
+      local iconTexture;
+      local spellName;
+      local spellSubName;
+
+      if (tk:IsRetail()) then
+        -- ProfessionButtonTemplate and SpellBookFrame no longer exist in
+        -- modern Retail, so create the small menu row ourselves.
+        btn = tk:CreateFrame("Button", profMenu, btnName);
+        iconTexture = btn:CreateTexture(nil, "ARTWORK");
+        spellName = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
+        spellSubName = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
+        btn.IconTexture = iconTexture;
+        btn.SpellName = spellName;
+        btn.SubSpellName = spellSubName;
+      else
+        btn = tk:CreateFrame("CheckButton", profMenu, btnName, "SpellButtonTemplate");
+        iconTexture = _G[btnName.."IconTexture"];
+        spellName = _G[btnName.."SpellName"];
+        spellSubName = _G[btnName.."SubSpellName"];
+      end
 
       local iconFrame = tk:CreateBackdropFrame("Frame", btn);
       iconFrame:SetSize(buttonHeight - 8, buttonHeight - 8);
@@ -510,7 +545,6 @@ do
       iconFrame:SetBackdrop(tk.Constants.BACKDROP);
       iconFrame:SetBackdropBorderColor(0, 0, 0, 1);
 
-      local iconTexture = _G[btnName.."IconTexture"];
       iconTexture:SetSize(buttonHeight - 6, buttonHeight - 6);
       iconTexture:ClearAllPoints();
       iconTexture:SetPoint("TOPLEFT", iconFrame, "TOPLEFT", 1, -1);
@@ -520,17 +554,17 @@ do
       btn:SetSize(menuWidth - 9, buttonHeight);
       btn:SetScript("OnEnter", _G.UIMenuButton_OnEnter);
       btn:SetScript("OnLeave", _G.UIMenuButton_OnLeave);
-      tk:KillElement(btn:GetCheckedTexture());
+      if (btn.GetCheckedTexture) then
+        tk:KillElement(btn:GetCheckedTexture());
+      end
       btn:DisableDrawLayer("BACKGROUND");
-      btn:DisableDrawLayer("ARTWORK");
       btn:DisableDrawLayer("HIGHLIGHT");
       btn:SetFrameLevel(20);
 
-      local spellName = _G[btnName.."SpellName"];
-      local spellSubName = _G[btnName.."SubSpellName"];
-      spellName:SetWidth(300);
+      spellName:SetWidth(menuWidth - buttonHeight - 18);
       spellName:ClearAllPoints();
-      spellName:SetPoint("TOPLEFT", iconTexture, "TOPRIGHT", 8, 0);
+      spellName:SetPoint("LEFT", iconTexture, "RIGHT", 8, 0);
+      spellName:SetJustifyH("LEFT");
       spellSubName:SetFontObject("GameFontHighlightSmall");
 
       local r, g, b = tk:GetThemeColor();
@@ -561,31 +595,35 @@ do
         btn:Hide();
       end
 
-      if (tk:IsRetail()) then
-        _G.SpellBookFrame.bookType = _G.BOOKTYPE_PROFESSION;
+      if (not tk:IsRetail() and _G.SpellBookFrame) then
+        _G.SpellBookFrame.selectedSkillLine = 1; -- General Tab (needed to ensure offset is 0)!
       end
-
-      _G.SpellBookFrame.selectedSkillLine = 1; -- General Tab (needed to ensure offset is 0)!
 
       local prev;
       for _, spellIndex in ipairs(professionIDs) do
-        local profName, _, skillRank, skillMaxRank, _, spellbookID = GetProfessionInfo(spellIndex);
+        local profName, professionIcon, skillRank, skillMaxRank, _, spellbookID, skillLineID =
+          GetProfessionInfo(spellIndex);
 
         local btn = menu.btns[spellIndex] or CreateProfessionButton(menu, spellIndex);
         menu.btns[spellIndex] = btn;
 
         btn:SetID(spellbookID + 1);
 
-        if (not tk:IsRetail() and obj:IsFunction(_G.SpellButton_UpdateButton)) then
+        if (tk:IsRetail()) then
+          btn.IconTexture:SetTexture(professionIcon);
+          btn.skillLineID = skillLineID;
+          btn:SetScript("OnClick", function(self)
+            if (_G.C_TradeSkillUI and obj:IsFunction(_G.C_TradeSkillUI.OpenTradeSkill)) then
+              _G.C_TradeSkillUI.OpenTradeSkill(self.skillLineID);
+            end
+            profMenu:Hide();
+          end);
+        elseif (obj:IsFunction(_G.SpellButton_UpdateButton)) then
           _G.SpellButton_UpdateButton(btn);
-        else
-          -- dragonflight:
-          local texture = _G.GetSpellBookItemTexture(btn:GetID(), _G.BOOKTYPE_PROFESSION);
-          btn.IconTexture:SetTexture(texture);
         end
 
         -- Update button text:
-        local spellName = _G[btn:GetName().."SpellName"];
+        local spellName = btn.SpellName or _G[btn:GetName().."SpellName"];
         local text = tk.Strings:Concat(profName, " (", skillRank, "/", skillMaxRank, ")");
         spellName:SetText(text);
 
@@ -616,6 +654,20 @@ do
       professionsIcon:SetHighlightAtlas("chatframe-button-highlight");
 
       tk:SetBasicTooltip(professionsIcon, L["Show Professions"], "ANCHOR_CURSOR_RIGHT", 16, 8);
+
+      if (tk:IsRetail()) then
+        professionsIcon:SetScript("OnClick", function()
+          PlaySound(tk.Constants.CLICK);
+
+          if (obj:IsFunction(_G.ToggleProfessionsBook)) then
+            _G.ToggleProfessionsBook();
+          elseif (obj:IsWidget(_G.ProfessionsBookFrame)) then
+            _G.ToggleFrame(_G.ProfessionsBookFrame);
+          end
+        end);
+
+        return professionsIcon;
+      end
 
       local template = tk:IsClassic() and "UIMenuTemplate" or "TooltipBackdropTemplate";
       local profMenu = tk:CreateFrame("Frame", nil, "MUI_ProfessionsMenu", template);
@@ -776,7 +828,19 @@ do
 		local dndText = string.format(optionText, FRIENDS_TEXTURE_DND, FRIENDS_LIST_BUSY);
 
 		local function SetOnlineStatus(btn)
-			FriendsFrame_SetOnlineStatus(btn);
+			if (obj:IsFunction(FriendsFrame_SetOnlineStatus)) then
+				FriendsFrame_SetOnlineStatus(btn);
+			else
+				local _, _, _, _, isAFK, isDND = _G.BNGetInfo();
+				if (btn.value == FRIENDS_TEXTURE_ONLINE) then
+					if (isAFK and obj:IsFunction(_G.BNSetAFK)) then _G.BNSetAFK(); end
+					if (isDND and obj:IsFunction(_G.BNSetDND)) then _G.BNSetDND(); end
+				elseif (btn.value == FRIENDS_TEXTURE_AFK and not isAFK and obj:IsFunction(_G.BNSetAFK)) then
+					_G.BNSetAFK();
+				elseif (btn.value == FRIENDS_TEXTURE_DND and not isDND and obj:IsFunction(_G.BNSetDND)) then
+					_G.BNSetDND();
+				end
+			end
 			playerStatusButton:SetNormalTexture(btn.value);
 		end
 

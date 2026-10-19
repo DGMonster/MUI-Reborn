@@ -293,13 +293,56 @@ do
       return {}
     end
 
-    _G.UIMenu_AddButton = _G.UIMenu_AddButton or function(info, level)
+    _G.UIMenu_AddButton = _G.UIMenu_AddButton or function(info, level, shortcut, func, nested, value)
+      -- MUI's chat sidebar still uses the older positional signature:
+      -- UIMenu_AddButton(menu, text, shortcut, func, nested, value).
+      if info and info.GetObjectType then
+        local menuFrame = info
+        local buttonText = level or ""
+        local menuButtons = menuFrame.MUICompatButtons
+
+        if not menuButtons then
+          menuButtons = {}
+          menuFrame.MUICompatButtons = menuButtons
+        end
+
+        local btn = CreateFrame("Button", nil, menuFrame, "UIPanelButtonTemplate")
+        btn:SetHeight(20)
+        btn:SetText(buttonText)
+        btn:SetNormalFontObject("GameFontHighlightSmall")
+        btn:SetHighlightFontObject("GameFontHighlightSmall")
+        btn.value = value
+
+        local previous = menuButtons[#menuButtons]
+        btn:ClearAllPoints()
+        if previous then
+          btn:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -4)
+          btn:SetPoint("TOPRIGHT", previous, "BOTTOMRIGHT", 0, -4)
+        else
+          btn:SetPoint("TOPLEFT", menuFrame, "TOPLEFT", 10, -10)
+          btn:SetPoint("TOPRIGHT", menuFrame, "TOPRIGHT", -10, -10)
+        end
+
+        btn:SetScript("OnClick", function(self)
+          if type(func) == "function" then
+            func(self)
+          end
+          menuFrame:Hide()
+        end)
+
+        table.insert(menuButtons, btn)
+        btn:Show()
+        return btn
+      end
+
       level = level or 1
       if not currentMenu then return end
 
+      local menuFrame = currentMenu
+
       buttonsByLevel[level] = buttonsByLevel[level] or {}
 
-      local btn = CreateFrame("Button", nil, currentMenu, "UIPanelButtonTemplate")
+      local btn = CreateFrame("Button", nil, menuFrame, "UIPanelButtonTemplate")
       btn:SetHeight(18)
       btn:SetText(info.text or "")
       btn:SetNormalFontObject("GameFontHighlightSmall")
@@ -309,7 +352,7 @@ do
         if type(info.func) == "function" then
           info.func(info.arg1, info.arg2, info.checked)
         end
-        currentMenu:Hide()
+        menuFrame:Hide()
       end)
 
       table.insert(buttonsByLevel[level], btn)
