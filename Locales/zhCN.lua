@@ -958,6 +958,8 @@ L["Points of Interest"] = "兴趣点";
 L["If checked, the points of interest arrows will be shown."] = "如果选中，将显示兴趣点箭头。";
 L["You have new messages!"] = "您有新消息！";
 L["Clear Chat Messages"] = "清除聊天消息";
+L["MUI_REBORN_NEW_VERSION_AVAILABLE"] =
+  "有新版本可用。当前安装：%s – 最新版本：%s。请通过 CurseForge 或 GitHub 更新。";
 
 L["MUI_Reborn_Setup_InfoTab"] = [[MUI Reborn 社区 Discord：
 %s

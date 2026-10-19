@@ -6,7 +6,7 @@
 ## OptionalDeps: Masque, Bagnon
 ## Notes: Public Retail and Forever beta of the complete standalone continuation of MayronUI 6.9.8.
 ## Author: Mayron and contributors; MUI Reborn maintained by Monster
-## Version: 1.0.0-beta.14
+## Version: 1.0.0-beta.15
 ## X-Discord: https://discord.gg/eqpFHhJyyV
 ## X-GitHub-Repo: https://github.com/DGMonster/MUI-Reborn
 ## X-Original-Project: https://github.com/cradzwill/MayronUI-Official

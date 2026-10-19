@@ -14,7 +14,7 @@ body:
     attributes:
       label: MUI Reborn version
       description: Which exact version of MUI Reborn are you using?
-      placeholder: "Example: 1.0.0-beta.14"
+      placeholder: "Example: 1.0.0-beta.15"
     validations:
       required: true
 

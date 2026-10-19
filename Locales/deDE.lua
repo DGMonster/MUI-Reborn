@@ -983,6 +983,8 @@ L["Points of Interest"] = "Sehenswürdigkeiten";
 L["If checked, the points of interest arrows will be shown."] = "Wenn diese Option aktiviert ist, werden die Pfeile für Sonderziele angezeigt.";
 L["You have new messages!"] = "Sie haben neue Nachrichten!";
 L["Clear Chat Messages"] = "Chat-Nachrichten löschen";
+L["MUI_REBORN_NEW_VERSION_AVAILABLE"] =
+  "Eine neue Version ist verfügbar. Installiert: %s – Neu: %s. Update über CurseForge oder GitHub.";
 
 L["MUI_Reborn_Setup_InfoTab"] = [[MUI Reborn Community-Discord:
 %s

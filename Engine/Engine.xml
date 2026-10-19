@@ -23,6 +23,7 @@
 
     <Script file="Modules.lua"/>
     <Script file="UpdateFunctions.lua"/>
+    <Script file="VersionCheck.lua"/>
 
     <Script file="Mixins\ActionBarControllerMixin.lua"/>
 </Ui>

@@ -985,6 +985,8 @@ L["Points of Interest"] = "가볼만한 곳";
 L["If checked, the points of interest arrows will be shown."] = "선택하면 관심 지점 화살표가 표시됩니다.";
 L["You have new messages!"] = "새 메시지가 있습니다!";
 L["Clear Chat Messages"] = "채팅 메시지 지우기";
+L["MUI_REBORN_NEW_VERSION_AVAILABLE"] =
+  "새 버전을 사용할 수 있습니다. 설치 버전: %s – 새 버전: %s. CurseForge 또는 GitHub에서 업데이트하세요.";
 
 L["MUI_Reborn_Setup_InfoTab"] = [[MUI Reborn 커뮤니티 Discord:
 %s

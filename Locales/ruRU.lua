@@ -1035,6 +1035,8 @@ L["Points of Interest"] = "Точки интереса";
 L["If checked, the points of interest arrows will be shown."] = "Если флажок установлен, точки интереса будут показаны стрелками.";
 L["You have new messages!"] = "У вас есть новые сообщения!";
 L["Clear Chat Messages"] = "Очистить сообщения чата";
+L["MUI_REBORN_NEW_VERSION_AVAILABLE"] =
+  "Доступна новая версия. Установлена: %s – Новая: %s. Обновите аддон через CurseForge или GitHub.";
 
 L["MUI_Reborn_Setup_InfoTab"] = [[Discord сообщества MUI Reborn:
 %s

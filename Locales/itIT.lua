@@ -984,6 +984,8 @@ L["Points of Interest"] = "Punti di interesse";
 L["If checked, the points of interest arrows will be shown."] = "Se selezionato, verranno mostrate le frecce dei punti di interesse.";
 L["You have new messages!"] = "Hai nuovi messaggi!";
 L["Clear Chat Messages"] = "Cancella i messaggi di chat";
+L["MUI_REBORN_NEW_VERSION_AVAILABLE"] =
+  "È disponibile una nuova versione. Installata: %s – Nuova: %s. Aggiorna tramite CurseForge o GitHub.";
 
 L["MUI_Reborn_Setup_InfoTab"] = [[Discord della comunità di MUI Reborn:
 %s

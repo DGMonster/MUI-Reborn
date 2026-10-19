@@ -1,9 +1,9 @@
 # MUI Reborn
 
-> A complete, customizable user interface for World of Warcraft Retail.
+> A complete, customizable user interface for World of Warcraft Retail and WoW Forever.
 
-[![Version](https://img.shields.io/badge/version-1.0.0--beta.14-00ccff)](https://github.com/DGMonster/MUI-Reborn)
-[![WoW Retail](https://img.shields.io/badge/WoW_Retail-12.1.-blue)](https://worldofwarcraft.blizzard.com/)
+[![Version](https://img.shields.io/badge/version-1.0.0--beta.15-00ccff)](https://github.com/DGMonster/MUI-Reborn)
+[![WoW Retail](https://img.shields.io/badge/WoW_Retail-12.1-blue)](https://worldofwarcraft.blizzard.com/)
 [![WoW Forever](https://img.shields.io/badge/WoW_Forever-1.60.1-purple)](https://worldofwarcraft.blizzard.com/)
 [![Development status](https://img.shields.io/badge/status-public_beta-brightgreen)](https://github.com/DGMonster/MUI-Reborn/issues)
 [![Discord](https://img.shields.io/badge/Discord-MUI_Reborn-5865F2?logo=discord&logoColor=white)](https://discord.gg/eqpFHhJyyV)
@@ -15,9 +15,9 @@ addon.
 
 ## Development status
 
-MUI Reborn is currently available as a **public alpha** for World of Warcraft
-Retail 12.1. The interface is usable, but bugs and visual inconsistencies may
-still occur while development continues.
+MUI Reborn is currently available as a **public beta** for World of Warcraft
+Retail 12.1 and WoW Forever 1.60.1. Forever support is still under active
+development, and some features may change before its official release.
 
 Please report reproducible problems through the
 [GitHub issue tracker](https://github.com/DGMonster/MUI-Reborn/issues). Include
@@ -55,8 +55,9 @@ Reborn:
 1. Close World of Warcraft.
 2. Install the current versions of **Bartender4** and
    **Shadowed Unit Frames Redux**.
-3. Copy the `MUI-Reborn` folder into:
-   `_retail_/Interface/AddOns/`
+3. Copy the `MUI-Reborn` folder into the matching client directory:
+   `_retail_/Interface/AddOns/` for Retail or the Forever client's
+   `Interface/AddOns/` directory.
 4. Start World of Warcraft and enable MUI Reborn and its required addons.
 5. Follow the installer or enter `/mui install` in chat.
 
