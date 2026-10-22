@@ -157,14 +157,14 @@ if not _G.HandleLuaError then
       end
     end
 
-    local ok = pcall(function()
-      showScriptError(msg)
+    local ok, shown = pcall(function()
+      return showScriptError(msg)
     end)
 
     handling = false
 
     -- Absolute last resort (should almost never happen)
-    if not ok then
+    if not ok or not shown then
       if _G.DEFAULT_CHAT_FRAME and _G.DEFAULT_CHAT_FRAME.AddMessage then
         _G.DEFAULT_CHAT_FRAME:AddMessage("|cffff3333[MUI Error]|r " .. msg)
       else

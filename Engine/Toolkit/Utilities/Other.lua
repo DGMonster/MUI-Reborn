@@ -241,7 +241,9 @@ function tk:GetPlayerSpecialization(talentGroup, unitID)
 end
 
 function tk:SetSpecialization(specIndex)
-  local func = _G.SetSpecialization or _G.SetActiveTalentGroup;
+  local func = _G.SetSpecialization or
+    (_G.C_SpecializationInfo and _G.C_SpecializationInfo.SetSpecialization) or
+    _G.SetActiveTalentGroup;
   if (obj:IsFunction(func)) then
     func(specIndex);
   end
@@ -385,12 +387,20 @@ function tk:Error(errorMessage, ...)
 end
 
 do
+    local function GetPopupEditBox(popup)
+        return popup and (popup.EditBox or popup.editBox);
+    end
+
+    local function GetPopupButton(popup, index)
+        return popup and (popup["Button" .. index] or popup["button" .. index]);
+    end
+
     local function EditBox_OnEscapePressed(self)
         local popup = self.popup or self;
-        local editBox = popup.editBox;
+        local editBox = GetPopupEditBox(popup);
         local onCancel = popup.data.OnCancel;
 
-        if (onCancel) then
+        if (onCancel and editBox) then
             onCancel(editBox, editBox:GetText());
         end
 
@@ -399,9 +409,11 @@ do
 
     local function EditBox_OnEnterPressed(self)
         local popup = self.popup or self;
-        local editBox = popup.editBox;
+        local editBox = GetPopupEditBox(popup);
         local validator = popup.data.OnValidate;
         local onAccept = popup.data.OnAccept;
+
+        if (not editBox) then return end
 
         if (validator and not validator(editBox, editBox:GetText())) then
           return;
@@ -423,56 +435,64 @@ do
       if (not userInput or not validator) then return end
 
       local isValid = validator(self, self:GetText());
-      self.popup.button1:SetEnabled(isValid);
+      local button1 = GetPopupButton(self.popup, 1);
+
+      if (button1) then
+        button1:SetEnabled(isValid);
+      end
     end
 
     local function PopUp_OnShow(self)
-      if (self.button1) then
-        self.button1:Enable();
+      local editBox = GetPopupEditBox(self);
+      local button1 = GetPopupButton(self, 1);
+      local button2 = GetPopupButton(self, 2);
+
+      if (button1) then
+        button1:Enable();
       end
 
-      if (self.button2) then
-        self.button2:Enable();
+      if (button2) then
+        button2:Enable();
       end
 
-      if (not self.editBox or not self.editBox:IsShown()) then
-        if (self.button1) then
-          self.button1:SetHeight(30);
+      if (not editBox or not editBox:IsShown()) then
+        if (button1) then
+          button1:SetHeight(30);
         end
 
-        if (self.button2) then
-          self.button2:SetHeight(30);
+        if (button2) then
+          button2:SetHeight(30);
         end
 
-        if (self.numButtons == 1) then
-          local width = self.button1:GetTextWidth();
+        if (self.numButtons == 1 and button1) then
+          local width = button1:GetTextWidth();
 
           if (width > 200) then
             width = width + 40;
-            self.button1:SetWidth(width);
-            local point, relFrame, relPoint, _, y = self.button1:GetPoint();
+            button1:SetWidth(width);
+            local point, relFrame, relPoint, _, y = button1:GetPoint();
 
             local offset = width / 2;
-            self.button1:SetPoint(point, relFrame, relPoint, -offset, y);
+            button1:SetPoint(point, relFrame, relPoint, -offset, y);
           end
         end
         return
       end
 
-      self.editBox.popup = self; -- refer back to popup in scripts below
+      editBox.popup = self; -- refer back to popup in scripts below
 
       if (self.data and self.data.editBoxText) then
-        self.editBox:SetText(self.data.editBoxText);
-        self.editBox:HighlightText();
-        self.editBox:SetWidth(300);
+        editBox:SetText(self.data.editBoxText);
+        editBox:HighlightText();
+        editBox:SetWidth(300);
       end
 
-      self.editBox:SetFocus();
-      self.editBox:SetScript("OnEscapePressed", EditBox_OnEscapePressed);
-      self.editBox:SetScript("OnEnterPressed", EditBox_OnEnterPressed);
-      self.editBox:SetScript("OnTextChanged", EditBox_OnTextChanged);
+      editBox:SetFocus();
+      editBox:SetScript("OnEscapePressed", EditBox_OnEscapePressed);
+      editBox:SetScript("OnEnterPressed", EditBox_OnEnterPressed);
+      editBox:SetScript("OnTextChanged", EditBox_OnTextChanged);
 
-      EditBox_OnTextChanged(self.editBox, true); -- call it OnShow to enable/disable confirm button
+      EditBox_OnTextChanged(editBox, true); -- call it OnShow to enable/disable confirm button
     end
 
     local function PopUp_OnAccept(self)

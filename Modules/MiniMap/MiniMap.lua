@@ -4,6 +4,7 @@ local _G = _G;
 local MayronUI = _G.MayronUI;
 local tk, db, em, gui, obj, L = MayronUI:GetCoreComponents();
 local missionBtn = _G.ExpansionLandingPageMinimapButton or _G.GarrisonLandingPageMinimapButton;
+local libDbIcons = _G.LibStub and _G.LibStub("LibDBIcon-1.0", true);
 
 -- Register and Import ---------
 
@@ -123,6 +124,8 @@ db:AddToDefaults("profile.minimap", {
   y = -4;
   size = 200;
   scale = 1;
+  iconScale = 1.5;
+  addOnIconScale = 1;
   hideIcons = true;
   testMode = false; -- for testing
   showPointsOfInterest = false;
@@ -169,7 +172,18 @@ db:AddToDefaults("profile.minimap", {
       y = tk:IsRetail() and 4 or (tk:IsClassic() and -5 or 2);
     };
 
-    zone = { hide = true; point = "TOP"; fontSize = 10; x = 0; y = -4 };
+    zone = {
+      hide = true;
+      hideBackground = false;
+      scale = 1;
+      point = "TOP";
+      fontSize = 10;
+      x = 0;
+      y = -4;
+      textPoint = "CENTER";
+      textX = 0;
+      textY = 0;
+    };
   };
 });
 
@@ -179,7 +193,7 @@ local Minimap_OnDragStop;
 do
   local updateSizeText;
 
-  local function OnResizeDragStep()
+  local function OnResizeDragStep(data)
     local width = Minimap:GetWidth();
     width = (math.floor(width + 100.5) - 100);
     Minimap:SetSize(width, width);
@@ -187,13 +201,18 @@ do
     if (not updateSizeText) then
       Minimap.size:SetText("");
     else
-      Minimap.size:SetText(width .. " x " .. width);
+      local visualScale = data.settings.scale or 1;
+      local iconScale = data.settings.iconScale or 1;
+      local configuredSize = math.floor(((width * iconScale) / visualScale) + 0.5);
+      Minimap.size:SetText(configuredSize .. " x " .. configuredSize);
     end
 
-    C_Timer.After(0.02, OnResizeDragStep);
+    C_Timer.After(0.02, function()
+      OnResizeDragStep(data);
+    end);
   end
 
-  function Minimap_OnDragStart()
+  function Minimap_OnDragStart(data)
     if (tk:IsModComboActive("C")) then
       if (Minimap:IsMovable()) then
         Minimap:StartMoving();
@@ -201,7 +220,9 @@ do
     elseif (tk:IsModComboActive("S")) then
       Minimap:StartSizing();
       updateSizeText = true;
-      C_Timer.After(0.1, OnResizeDragStep);
+      C_Timer.After(0.1, function()
+        OnResizeDragStep(data);
+      end);
     end
   end
 
@@ -224,7 +245,9 @@ do
     local settings = data.settings:GetTrackedTable();
     local relativeTo;
 
-    settings.size = width;
+    local visualScale = settings.scale or 1;
+    local iconScale = settings.iconScale or 1;
+    settings.size = math.floor(((width * iconScale) / visualScale) + 0.5);
     settings.point, relativeTo, settings.relativePoint, settings.x, settings.y = Minimap:GetPoint();
 
     local x = math.floor(settings.x + 0.5);
@@ -371,8 +394,39 @@ end);
 
 do
   local widgetMethods = {};
+  local zoneBackgroundTextures;
+  local zoneBackgroundAlphas = {};
   local positioningMethods = {"SetParent"; "ClearAllPoints"; "SetPoint"; "SetScale"};
   local visibilityMethods = {"Show"; "Hide"; "SetShown"};
+
+  local function SetZoneBackgroundHidden(zoneButton, hidden)
+    if (not zoneBackgroundTextures) then
+      zoneBackgroundTextures = {};
+
+      local function CollectTextures(frame)
+        if (frame.GetRegions) then
+          for _, region in ipairs({ frame:GetRegions() }) do
+            if (region.GetObjectType and region:GetObjectType() == "Texture") then
+              zoneBackgroundTextures[#zoneBackgroundTextures + 1] = region;
+              zoneBackgroundAlphas[region] = region:GetAlpha();
+            end
+          end
+        end
+
+        if (frame.GetChildren) then
+          for _, child in ipairs({ frame:GetChildren() }) do
+            CollectTextures(child);
+          end
+        end
+      end
+
+      CollectTextures(zoneButton);
+    end
+
+    for _, texture in ipairs(zoneBackgroundTextures) do
+      texture:SetAlpha(hidden and 0 or (zoneBackgroundAlphas[texture] or 1));
+    end
+  end
 
   local function HandleGarrisonUpdate(widget, methods)
     local canView = CanViewMissions();
@@ -411,9 +465,9 @@ do
     methods.ClearAllPoints(widget);
     methods.SetPoint(widget, settings.point, settings.x, settings.y);
 
-    if (settings.scale) then
-      methods.SetScale(widget, settings.scale);
-    end
+    local iconScale = data.settings.iconScale or 1;
+    local widgetScale = settings.scale or 1;
+    methods.SetScale(widget, widgetScale / iconScale);
 
     if (data.testModeActive) then
       return
@@ -487,13 +541,23 @@ do
     end
   end
 
-  local function SetUpWidgetText(fontstring, settings)
-    if (settings.point:find("LEFT")) then
+  local function SetUpWidgetText(fontstring, settings, anchorPoint)
+    local point = anchorPoint or settings.point;
+
+    if (point:find("LEFT")) then
       fontstring:SetJustifyH("LEFT");
-    elseif (settings.point:find("RIGHT")) then
+    elseif (point:find("RIGHT")) then
       fontstring:SetJustifyH("RIGHT");
     else
       fontstring:SetJustifyH("CENTER");
+    end
+
+    if (point:find("TOP")) then
+      fontstring:SetJustifyV("TOP");
+    elseif (point:find("BOTTOM")) then
+      fontstring:SetJustifyV("BOTTOM");
+    else
+      fontstring:SetJustifyV("MIDDLE");
     end
 
     fontstring:SetFontObject("MUI_FontNormal");
@@ -722,11 +786,15 @@ do
 
     if (zoneBtn) then
       data:Call("SetUpWidget", "zone", zoneBtn);
-    end
+      SetZoneBackgroundHidden(zoneBtn, widgets.zone.hideBackground);
 
-    SetUpWidgetText(_G.MinimapZoneText, widgets.zone);
-    _G.MinimapZoneText:ClearAllPoints();
-    _G.MinimapZoneText:SetAllPoints(true);
+      local textPoint = widgets.zone.textPoint or "CENTER";
+      SetUpWidgetText(_G.MinimapZoneText, widgets.zone, textPoint);
+      _G.MinimapZoneText:ClearAllPoints();
+      _G.MinimapZoneText:SetSize(zoneBtn:GetWidth(), zoneBtn:GetHeight());
+      _G.MinimapZoneText:SetPoint(
+        textPoint, zoneBtn, textPoint, widgets.zone.textX or 0, widgets.zone.textY or 0);
+    end
   end
 end
 
@@ -861,7 +929,7 @@ function C_MiniMapModule:GetRightClickMenuList()
     };
   });
 
-  local libDbIcons = _G.LibStub("LibDBIcon-1.0");
+  libDbIcons = libDbIcons or _G.LibStub("LibDBIcon-1.0", true);
 
   if (obj:IsTable(libDbIcons) and db.profile.minimap.hideIcons) then
     local knownAddOnsText = {
@@ -980,6 +1048,86 @@ function C_MiniMapModule:GetRightClickMenuList()
   return menuList;
 end
 
+local function ApplyMinimapDimensions(data, size, visualScale, iconScale)
+  size = size or data.settings.size or 200;
+  visualScale = visualScale or data.settings.scale or 1;
+  iconScale = iconScale or data.settings.iconScale or 1;
+
+  local visualSize = size * visualScale;
+  local internalSize = visualSize / iconScale;
+
+  Minimap:SetScale(iconScale);
+  Minimap:SetSize(internalSize, internalSize);
+  Minimap_ZoomIn();
+  Minimap_ZoomOut();
+end
+
+local addOnButtonBaseScales = setmetatable({}, { __mode = "k" });
+
+local function IsMUIOrBlizzardMinimapWidget(button)
+  local tracking = _G.MiniMapTracking or _G.MiniMapTrackingFrame or
+    (_G.MinimapCluster and _G.MinimapCluster.Tracking);
+  local zone = _G.MinimapZoneTextButton or
+    (_G.MinimapCluster and _G.MinimapCluster.ZoneTextButton);
+
+  return button == _G.TimeManagerClockButton or
+    button == _G.QueueStatusMinimapButton or
+    button == _G.MiniMapLFGFrame or
+    button == (_G.MiniMapMailFrame or (_G.MinimapCluster and _G.MinimapCluster.MailFrame)) or
+    button == missionBtn or button == tracking or button == zone;
+end
+
+local function NormalizeAddOnMinimapButton(data, button)
+  if (not button or IsMUIOrBlizzardMinimapWidget(button)) then
+    return
+  end
+
+  if (not addOnButtonBaseScales[button]) then
+    addOnButtonBaseScales[button] = button:GetScale() or 1;
+  end
+
+  local addOnIconScale = data.settings.addOnIconScale or 1;
+
+  if (button.SetIgnoreParentScale) then
+    button:SetIgnoreParentScale(true);
+    button:SetScale(addOnButtonBaseScales[button] * addOnIconScale);
+  else
+    local iconScale = data.settings.iconScale or 1;
+    button:SetScale((addOnButtonBaseScales[button] * addOnIconScale) / iconScale);
+  end
+end
+
+local function ScaleAddOnMinimapButton(data, iconName)
+  if (not libDbIcons) then
+    return
+  end
+
+  local button = libDbIcons:GetMinimapButton(iconName);
+  if (not button) then
+    return
+  end
+
+  NormalizeAddOnMinimapButton(data, button);
+end
+
+local function UpdateAddOnMinimapButtonScales(data)
+  if (not libDbIcons) then
+    return
+  end
+
+  for _, iconName in ipairs(libDbIcons:GetButtonList()) do
+    ScaleAddOnMinimapButton(data, iconName);
+  end
+
+  -- Some addons (for example Wowhead and HarvestGoal) create their own
+  -- minimap buttons without LibDBIcon. Normalize those direct children too.
+  for _, child in ipairs({ Minimap:GetChildren() }) do
+    if (child.GetObjectType and child:GetObjectType() == "Button") then
+      NormalizeAddOnMinimapButton(data, child);
+    end
+  end
+end
+
 function C_MiniMapModule:OnInitialize(data)
   if (db.profile.minimap.testMode) then
     db.profile.minimap.testMode = false;
@@ -988,9 +1136,7 @@ function C_MiniMapModule:OnInitialize(data)
   self:RegisterUpdateFunctions(
     db.profile.minimap, {
       size = function(value)
-        Minimap:SetSize(value, value);
-        Minimap_ZoomIn();
-        Minimap_ZoomOut();
+        ApplyMinimapDimensions(data, value);
       end;
 
       showPointsOfInterest = function(value)
@@ -1006,7 +1152,18 @@ function C_MiniMapModule:OnInitialize(data)
       end;
 
       scale = function(value)
-        Minimap:SetScale(value);
+        ApplyMinimapDimensions(data, nil, value);
+        data:Call("SetUpWidgets");
+      end;
+
+      iconScale = function(value)
+        ApplyMinimapDimensions(data, nil, nil, value);
+        data:Call("SetUpWidgets");
+        UpdateAddOnMinimapButtonScales(data);
+      end;
+
+      addOnIconScale = function()
+        UpdateAddOnMinimapButtonScales(data);
       end;
 
       widgets = function()
@@ -1127,11 +1284,11 @@ function C_MiniMapModule:OnEnable(data)
   Minimap:RegisterForDrag("LeftButton");
 
   if (obj:IsFunction(Minimap.SetMinResize)) then
-    Minimap:SetMinResize(120, 120);
+    Minimap:SetMinResize(100, 100);
     Minimap:SetMaxResize(400, 400);
   else
     -- dragonflight:
-    Minimap:SetResizeBounds(120, 120, 400, 400);
+    Minimap:SetResizeBounds(100, 100, 400, 400);
   end
 
   Minimap:SetClampedToScreen(true);
@@ -1158,7 +1315,9 @@ function C_MiniMapModule:OnEnable(data)
       end
     end);
 
-  Minimap:SetScript("OnDragStart", Minimap_OnDragStart);
+  Minimap:SetScript("OnDragStart", function()
+    Minimap_OnDragStart(data);
+  end);
   Minimap:SetScript("OnDragStop", function()
     Minimap_OnDragStop(data)
   end);
@@ -1232,6 +1391,22 @@ function C_MiniMapModule:OnEnable(data)
   -- Drop down List:
   data.menuList = self:GetRightClickMenuList();
   data:Call("UpdateTrackingMenuOptionVisibility");
+
+  if (libDbIcons and not data.settings.hideIcons and not data.addOnIconScaleHooked) then
+    libDbIcons.RegisterCallback(addOnName, "LibDBIcon_IconCreated",
+      function(_, _, iconName)
+        ScaleAddOnMinimapButton(data, iconName);
+      end);
+    data.addOnIconScaleHooked = true;
+  end
+
+  UpdateAddOnMinimapButtonScales(data);
+  C_Timer.After(1, function()
+    UpdateAddOnMinimapButtonScales(data);
+  end);
+  C_Timer.After(3, function()
+    UpdateAddOnMinimapButtonScales(data);
+  end);
 
   local menuFrame = tk:CreateFrame("Frame", nil, "MinimapRightClickMenu", "UIDropDownMenuTemplate");
   Minimap.oldMouseUp = Minimap:GetScript("OnMouseUp");

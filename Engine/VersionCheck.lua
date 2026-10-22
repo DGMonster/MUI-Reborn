@@ -1,12 +1,15 @@
 -- MUI Reborn peer-to-peer version check.
 -- WoW addons cannot contact CurseForge or GitHub directly, so clients share
--- their installed version through Blizzard's hidden addon-message channel.
+-- their last published version through Blizzard's hidden addon-message channel.
+-- Internal builds keep X-Public-Version at the last actually published version.
 
 local addonName = ...;
-local PREFIX = "MUIRebornVer";
+local PREFIX = "MUIRebornRel";
+local LEGACY_PREFIX = "MUIRebornVer";
 
 local GetAddOnMetadata = _G.GetAddOnMetadata;
 local currentVersion = GetAddOnMetadata and GetAddOnMetadata(addonName, "Version") or "0.0.0";
+local publicVersion = GetAddOnMetadata and GetAddOnMetadata(addonName, "X-Public-Version");
 local L = _G.LibStub("AceLocale-3.0"):GetLocale("MayronUI");
 local chatInfo = _G.C_ChatInfo;
 local registerPrefix = chatInfo and chatInfo.RegisterAddonMessagePrefix or _G.RegisterAddonMessagePrefix;
@@ -55,7 +58,13 @@ local function IsNewerVersion(candidate, installed)
 end
 
 local function SendVersion(channel)
-  pcall(sendAddonMessage, PREFIX, currentVersion, channel);
+  if (not ParseVersion(publicVersion) or IsNewerVersion(publicVersion, currentVersion)) then
+    return;
+  end
+
+  pcall(sendAddonMessage, PREFIX, publicVersion, channel);
+  -- Published versions also reach beta clients using the original protocol.
+  pcall(sendAddonMessage, LEGACY_PREFIX, publicVersion, channel);
 end
 
 local function BroadcastVersion()
@@ -125,6 +134,7 @@ local function ShowUpdateMessage(version)
 end
 
 pcall(registerPrefix, PREFIX);
+pcall(registerPrefix, LEGACY_PREFIX);
 
 local eventFrame = _G.CreateFrame("Frame");
 eventFrame:RegisterEvent("CHAT_MSG_ADDON");
@@ -135,7 +145,7 @@ eventFrame:SetScript("OnEvent", function(_, event, prefix, message, channel)
   if (event == "CHAT_MSG_ADDON") then
     if (prefix == PREFIX and IsNewerVersion(message, currentVersion)) then
       ShowUpdateMessage(message);
-    elseif (prefix == PREFIX and IsNewerVersion(currentVersion, message)) then
+    elseif ((prefix == PREFIX or prefix == LEGACY_PREFIX) and IsNewerVersion(publicVersion, message)) then
       -- Answer older clients so they can discover a newer version even when
       -- this client was already online before they joined the guild or group.
       local now = _G.GetTime and _G.GetTime() or 0;

@@ -395,6 +395,10 @@ L["Adjust the size of the minimap."] = "미니 맵 크기를 조정하세요.";
 L["Adjust the scale of the minimap."] =
   "미니 맵의 축척을 조정하십시오.";
 L["Scale"] = "규모";
+L["Map Icon Scale"] = "지도 아이콘 크기";
+L["Adjust the size of icons shown inside the minimap."] = "미니맵 안에 표시되는 아이콘 크기를 조절합니다.";
+L["AddOn Icon Scale"] = "애드온 아이콘 크기";
+L["Adjust the size of external AddOn minimap buttons."] = "외부 애드온 미니맵 버튼의 크기를 조절합니다.";
 L["Size"] = "크기";
 L["Okay"] = "괜찮아";
 L["Profile %s has been copied into current profile %s."] =

@@ -107,13 +107,13 @@ local function AddScaleOption(children, name)
   }
 end
 
-local function AddPositioningOptions(children, name, settings)
+local function AddPositioningOptions(children, name, settings, header)
   widgets[name] = obj:PopTable();
 
   children[#children + 1] = {
     type = "fontstring";
     subtype = "header";
-    content = L["Icon Position"];
+    content = header or L["Icon Position"];
   };
 
   children[#children + 1] = {
@@ -133,7 +133,7 @@ local function AddPositioningOptions(children, name, settings)
     dbPath = "x";
     min = -50;
     max = 50;
-    step = 1;
+    step = 0.1;
     enabled = settings.show;
     OnLoad = function(_, container)
       widgets[name].x = container.component;
@@ -145,7 +145,7 @@ local function AddPositioningOptions(children, name, settings)
     type        = "slider";
     min = -50;
     max = 50;
-    step = 1;
+    step = 0.1;
     dbPath      = "y";
     enabled = settings.show;
     OnLoad = function(_, container)
@@ -192,7 +192,7 @@ function C_MiniMapModule:GetConfigTable(data)
         name = L["Size"],
         type = "slider",
         valueType = "number",
-        min = 120;
+        min = 100;
         max = 400;
         tooltip = L["Adjust the size of the minimap."],
         dbPath = "size",
@@ -206,6 +206,26 @@ function C_MiniMapModule:GetConfigTable(data)
         max = 3;
         tooltip = L["Adjust the scale of the minimap."],
         dbPath = "scale",
+      };
+      {
+        name = L["Map Icon Scale"],
+        type = "slider",
+        valueType = "number",
+        min = 1;
+        step = 0.1;
+        max = 2.5;
+        tooltip = L["Adjust the size of icons shown inside the minimap."],
+        dbPath = "iconScale",
+      };
+      {
+        name = L["AddOn Icon Scale"],
+        type = "slider",
+        valueType = "number",
+        min = 0.5;
+        step = 0.1;
+        max = 2;
+        tooltip = L["Adjust the size of external AddOn minimap buttons."],
+        dbPath = "addOnIconScale",
       };
       { name = L["Enable Test Mode"];
         type = "button";
@@ -335,10 +355,51 @@ function C_MiniMapModule:GetConfigTable(data)
         type = "submenu";
         dbPath = "widgets.zone";
         children = function()
-          local children = {};
+          local children = {
+            {
+              type = "fontstring";
+              subtype = "header";
+              content = L["Appearance"];
+            };
+          };
           AddHideOption(children, "zone", L["Zone Name"]);
+          children[#children + 1] = {
+            name = tk.Strings:JoinWithSpace(L["Hide"], L["Background"]);
+            type = "check";
+            dbPath = "hideBackground";
+          };
           AddFontSizeOption(children, "zone", data.settings.widgets.zone);
-          AddPositioningOptions(children, "zone", data.settings.widgets.zone);
+          AddScaleOption(children, "zone");
+          children[#children + 1] = {
+            type = "fontstring";
+            subtype = "header";
+            content = L["Zone Name"] .. ": " .. L["Position"];
+          };
+          children[#children + 1] = {
+            name = L["Point"];
+            type = "dropdown";
+            options = tk.Constants.POINT_OPTIONS;
+            dbPath = "textPoint";
+          };
+          children[#children + 1] = {
+            name = L["X-Offset"];
+            type = "slider";
+            valueType = "number";
+            min = -50;
+            max = 50;
+            step = 0.1;
+            dbPath = "textX";
+          };
+          children[#children + 1] = {
+            name = L["Y-Offset"];
+            type = "slider";
+            valueType = "number";
+            min = -50;
+            max = 50;
+            step = 0.1;
+            dbPath = "textY";
+          };
+          AddPositioningOptions(children, "zone", data.settings.widgets.zone, L["Position"]);
           return children;
         end
       };

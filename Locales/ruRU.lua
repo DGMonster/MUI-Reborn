@@ -416,6 +416,10 @@ L["Adjust the size of the minimap."] =
 L["Adjust the scale of the minimap."] =
   "Настроить масштаб миникарты.";
 L["Scale"] = "Шкала";
+L["Map Icon Scale"] = "Масштаб значков карты";
+L["Adjust the size of icons shown inside the minimap."] = "Настраивает размер значков внутри мини-карты.";
+L["AddOn Icon Scale"] = "Масштаб значков аддонов";
+L["Adjust the size of external AddOn minimap buttons."] = "Настраивает размер кнопок сторонних аддонов у мини-карты.";
 L["Size"] = "Размер";
 L["Okay"] = "Хорошо";
 L["Profile %s has been copied into current profile %s."] =
