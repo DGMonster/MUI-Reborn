@@ -2,10 +2,10 @@
 
 > A complete, customizable user interface for World of Warcraft Retail and WoW Forever.
 
-[![Version](https://img.shields.io/badge/version-1.0.0--beta.15-00ccff)](https://github.com/DGMonster/MUI-Reborn)
+[![Version](https://img.shields.io/badge/version-1.0.0--rc.1-00ccff)](https://github.com/DGMonster/MUI-Reborn)
 [![WoW Retail](https://img.shields.io/badge/WoW_Retail-12.1-blue)](https://worldofwarcraft.blizzard.com/)
 [![WoW Forever](https://img.shields.io/badge/WoW_Forever-1.60.1-purple)](https://worldofwarcraft.blizzard.com/)
-[![Development status](https://img.shields.io/badge/status-public_beta-brightgreen)](https://github.com/DGMonster/MUI-Reborn/issues)
+[![Development status](https://img.shields.io/badge/status-release_candidate-brightgreen)](https://github.com/DGMonster/MUI-Reborn/issues)
 [![Discord](https://img.shields.io/badge/Discord-MUI_Reborn-5865F2?logo=discord&logoColor=white)](https://discord.gg/eqpFHhJyyV)
 
 MUI Reborn replaces and enhances large parts of the default World of Warcraft
@@ -15,9 +15,36 @@ addon.
 
 ## Development status
 
-MUI Reborn is currently available as a **public beta** for World of Warcraft
-Retail 12.1 and WoW Forever 1.60.1. Forever support is still under active
-development, and some features may change before its official release.
+**1.0.0-rc.1** is the first release candidate for World of Warcraft Retail 12.1
+and WoW Forever 1.60.1, including the changes from internal Beta 16–27.
+A release candidate is a version being tested ahead of the final 1.0.0 release.
+Forever support remains under active development, and full regression testing
+across both clients is not yet complete.
+
+### Changes since public Beta 15
+
+- Fixed compatibility with modern popup input fields and buttons.
+- Added the CurseForge project ID to the TOC.
+- Added independent scaling, an anchor dropdown and separate X/Y offsets for
+  the minimap zone-name widget, plus an option to hide its background.
+- Added 0.1-step X/Y position adjustments, including the clock, and reorganized
+  the zone-name settings.
+- Lowered the minimum minimap size to 100.
+- Added separate **Map Icon Scale** and **AddOn Icon Scale** settings for
+  Blizzard markers and external buttons such as Wowhead and HarvestGoal.
+- Improved addon-button scaling when using MinimapButtonBag.
+- Fixed specialization switching on Retail.
+- Fixed the error-message fallback when the error window is unavailable.
+- Separated internal build versions from public update announcements while
+  preserving update notifications for existing beta users.
+
+### Update notifications
+
+MUI Reborn shares public-version information through guild, party, raid and
+instance-group channels. Existing beta users can receive an RC1 update notice
+when sharing one of these channels with an RC1 user. Simply passing another
+player in the world does not trigger a version exchange. Updates are downloaded
+and installed manually.
 
 Please report reproducible problems through the
 [GitHub issue tracker](https://github.com/DGMonster/MUI-Reborn/issues). Include
@@ -60,6 +87,10 @@ Reborn:
    `Interface/AddOns/` directory.
 4. Start World of Warcraft and enable MUI Reborn and its required addons.
 5. Follow the installer or enter `/mui install` in chat.
+
+If you are updating an existing installation, replace the addon files while
+WoW is closed. Keep your existing SavedVariables to retain your settings;
+rerunning the installer is not required just to update the addon.
 
 The correct folder structure is:
 
