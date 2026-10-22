@@ -4,6 +4,7 @@ local MayronUI, table = _G.MayronUI, _G.table;
 local tk, _, em, _, _, L = MayronUI:GetCoreComponents();
 local obj = _G.MayronObjects:GetFramework();
 local SHOW_TALENT_LEVEL = _G.SHOW_TALENT_LEVEL or 10;
+local isMistsClassic = _G.math.floor(_G.select(4, _G.GetBuildInfo()) / 10000) == 5;
 
 ---@class ChatFrame
 local _, C_ChatModule = MayronUI:ImportModule("ChatModule");
@@ -56,7 +57,12 @@ if (not tk:IsRetail()) then
     L["Quest Log"]; L["Reputation"]; L["PVP Score"]; L["Skills"];
   };
 
-  buttonKeys.Skills = L["Skills"];
+  if (isMistsClassic) then
+    C_ChatModule.Static.ButtonNames[#C_ChatModule.Static.ButtonNames] = L["LFD"];
+    buttonKeys.LFD = L["LFD"];
+  else
+    buttonKeys.Skills = L["Skills"];
+  end
 
   if (tk:IsWrathClassic()) then
     table.insert(C_ChatModule.Static.ButtonNames, 8, L["Achievements"]);
@@ -261,6 +267,14 @@ if (tk:IsWrathClassic()) then
   end;
 end
 
+if (isMistsClassic) then
+  clickHandlers[buttonKeys.LFD] = function()
+    if (obj:IsFunction(_G.ToggleLFDParentFrame)) then
+      _G.ToggleLFDParentFrame();
+    end
+  end;
+end
+
 if (tk:IsRetail()) then
   -- LFD
   clickHandlers[buttonKeys.LFD] = ToggleLFDParentFrame;
@@ -369,9 +383,14 @@ local function ChatFrame_OnModifierStateChanged(_, _, data)
   if (data.chatModuleSettings.swapInCombat or not InCombatLockdown()) then
     for _, buttonStateData in ipairs(data.settings.buttons) do
       if (not buttonStateData.key or tk:IsModComboActive(buttonStateData.key)) then
-        data.buttons[1]:SetText(buttonStateData[1]);
-        data.buttons[2]:SetText(buttonStateData[2]);
-        data.buttons[3]:SetText(buttonStateData[3]);
+        for index = 1, 3 do
+          local text = buttonStateData[index];
+          -- Preserve saved bindings while replacing the obsolete MoP skills tab.
+          if (isMistsClassic and text == L["Skills"]) then
+            text = L["LFD"];
+          end
+          data.buttons[index]:SetText(text);
+        end
 
         SetForeverSecureAction(data.buttons[1]);
         SetForeverSecureAction(data.buttons[2]);

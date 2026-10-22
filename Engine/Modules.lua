@@ -873,9 +873,9 @@ function C_CoreModule:OnInitialize()
     end
   end
 
-  -- Replacing SetScale on Blizzard action bars taints Retail Edit Mode. The
-  -- old workaround is only safe on the Classic clients it was written for.
-  if (not tk:IsRetail()) then
+  -- Replacing Blizzard bar methods can taint Edit Mode on Classic as well.
+  -- Keep this legacy workaround only on clients without Blizzard Edit Mode.
+  if (not tk:IsRetail() and not _G.EditModeManagerFrame) then
     for i = 1, 2 do
       -- This is required to fix the legacy pet battle bar bug.
       local side = i == 1 and "Left" or "Right";

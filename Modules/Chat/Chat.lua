@@ -7,6 +7,7 @@ local ChatFrame1EditBox, NUM_CHAT_WINDOWS = _G.ChatFrame1EditBox, _G.NUM_CHAT_WI
 local InCombatLockdown, StaticPopupDialogs, hooksecurefunc, pairs, PlaySound =
  _G.InCombatLockdown, _G.StaticPopupDialogs, _G.hooksecurefunc, _G.pairs, _G.PlaySound;
 local strformat, ipairs = _G.string.format, _G.ipairs;
+local isMistsClassic = _G.math.floor(_G.select(4, _G.GetBuildInfo()) / 10000) == 5;
 --------------------------
 -- Blizzard Globals
 --------------------------
@@ -123,7 +124,7 @@ local defaults = {
       {
         key = "C"; -- CONTROL
         L["Reputation"];
-        L[(tk:IsRetail() and "LFD") or (tk:IsWrathClassic() and "LFG") or "Skills"];
+        L[((tk:IsRetail() or isMistsClassic) and "LFD") or (tk:IsWrathClassic() and "LFG") or "Skills"];
         L["Quest Log"];
       };
       {

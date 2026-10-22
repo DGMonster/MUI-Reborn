@@ -15,6 +15,7 @@ local GetInventoryItemTexture = _G.GetInventoryItemTexture;
 local UnitAura, CreateFrame, GetWeaponEnchantInfo = _G.UnitAura, _G.CreateFrame, _G.GetWeaponEnchantInfo;
 local select, math, string = _G.select, _G.math, _G.string;
 local pcall = _G.pcall;
+local isMistsClassic = math.floor(select(4, _G.GetBuildInfo()) / 10000) == 5;
 local GetInventoryItemLink, GetItemInfo = _G.GetInventoryItemLink, _G.GetItemInfo;
 
 local BUFF_FLASH_TIME_ON = 0.75;
@@ -871,6 +872,55 @@ local function OnHeaderAttributeChanged(self, name, btn)
   btn:SetScript("OnAttributeChanged", OnAuraButtonAttributeChanged);
 end
 
+-- Classic Era, TBC and MoP reject the secure header's direct anchor to Minimap.
+-- Mirror its screen rectangle without adding Minimap to the secure anchor family.
+local classicMinimapAnchor;
+
+local function GetClassicMinimapAnchor()
+  if (classicMinimapAnchor) then
+    return classicMinimapAnchor;
+  end
+
+  local anchor = CreateFrame("Frame", nil, _G.UIParent);
+  anchor:SetSize(1, 1);
+  anchor:SetPoint("BOTTOMLEFT", _G.UIParent, "BOTTOMLEFT", 0, 0);
+  anchor:EnableMouse(false);
+  local lastX, lastY, lastWidth, lastHeight;
+
+  local function UpdatePosition()
+    if (_G.InCombatLockdown()) then return end
+    local minimap = _G.Minimap;
+    if (not minimap) then return end
+    local left, bottom, width, height = minimap:GetRect();
+    if (not left or not bottom or not width or not height) then return end
+    local scale = minimap:GetEffectiveScale() / _G.UIParent:GetEffectiveScale();
+    local x = left * scale - (_G.UIParent:GetLeft() or 0);
+    local y = bottom * scale - (_G.UIParent:GetBottom() or 0);
+    width, height = width * scale, height * scale;
+
+    if (x ~= lastX or y ~= lastY or width ~= lastWidth or height ~= lastHeight) then
+      anchor:ClearAllPoints();
+      anchor:SetPoint("BOTTOMLEFT", _G.UIParent, "BOTTOMLEFT", x, y);
+      anchor:SetSize(width, height);
+      lastX, lastY, lastWidth, lastHeight = x, y, width, height;
+    end
+  end
+
+  -- Also follows late minimap setup, dragging and scaling; defer during combat.
+  local elapsedTime = 0;
+  anchor:SetScript("OnUpdate", function(_, elapsed)
+    elapsedTime = elapsedTime + elapsed;
+    if (elapsedTime < 0.1) then return end
+    elapsedTime = 0;
+    UpdatePosition();
+  end);
+  anchor:RegisterEvent("PLAYER_REGEN_ENABLED");
+  anchor:SetScript("OnEvent", UpdatePosition);
+  UpdatePosition();
+  classicMinimapAnchor = anchor;
+  return anchor;
+end
+
 local function SetUpAuraHeader(db, header)
   local auraType = (header.filter == "HELPFUL") and "buffs" or "debuffs";
   local mode = header.mode;
@@ -924,6 +974,9 @@ local function SetUpAuraHeader(db, header)
   local yOffset = db.profile:QueryType("number", auraType, mode, "yOffset");
 
   local relativeFrame = _G[relFrameName] or _G.UIParent;
+  if ((tk:IsClassic() or tk:IsBCClassic() or isMistsClassic) and not tk:IsRetail() and relativeFrame == _G.Minimap) then
+    relativeFrame = GetClassicMinimapAnchor();
+  end
   header:ClearAllPoints();
   header:SetPoint(headerPoint, relativeFrame, relPoint, xOffset, yOffset);
 end

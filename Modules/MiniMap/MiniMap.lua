@@ -125,7 +125,7 @@ db:AddToDefaults("profile.minimap", {
   size = 200;
   scale = 1;
   iconScale = 1.5;
-  addOnIconScale = 1;
+  addOnIconScale = 0.8;
   hideIcons = true;
   testMode = false; -- for testing
   showPointsOfInterest = false;
@@ -822,8 +822,26 @@ function C_MiniMapModule.Private:UpdateTrackingMenuOptionVisibility(data)
         text = L["Tracking Menu"];
         notCheckable = true;
         func = function()
-          ToggleDropDownMenu(1, nil, _G.MiniMapTrackingDropDown, "MiniMapTracking", 0, -5);
-          PlaySound(tk.Constants.CLICK);
+          local tracking = _G.MiniMapTrackingButton or _G.MiniMapTracking or
+            (_G.MinimapCluster and _G.MinimapCluster.Tracking);
+          if (tracking and not obj:IsFunction(tracking.menuGenerator) and tracking.Button) then
+            tracking = tracking.Button;
+          end
+          if ((tk:IsClassic() or tk:IsBCClassic()) and not tk:IsRetail() and tracking and
+              obj:IsFunction(tracking.menuGenerator) and _G.MenuUtil and
+              obj:IsFunction(_G.MenuUtil.CreateContextMenu)) then
+            -- Open after the enclosing minimap context menu has closed.
+            C_Timer.After(0, function()
+              _G.MenuUtil.CreateContextMenu(Minimap, function(_, rootDescription)
+                tracking.menuGenerator(tracking, rootDescription);
+              end);
+            end);
+          elseif (_G.MiniMapTrackingDropDown and obj:IsFunction(ToggleDropDownMenu)) then
+            ToggleDropDownMenu(1, nil, _G.MiniMapTrackingDropDown, "MiniMapTracking", 0, -5);
+            PlaySound(tk.Constants.CLICK);
+          else
+            tk:Print("MUI Reborn: Tracking menu is unavailable on this client.");
+          end
         end;
       });
   end
@@ -1086,7 +1104,7 @@ local function NormalizeAddOnMinimapButton(data, button)
     addOnButtonBaseScales[button] = button:GetScale() or 1;
   end
 
-  local addOnIconScale = data.settings.addOnIconScale or 1;
+  local addOnIconScale = data.settings.addOnIconScale or 0.8;
 
   if (button.SetIgnoreParentScale) then
     button:SetIgnoreParentScale(true);

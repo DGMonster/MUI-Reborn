@@ -3,10 +3,10 @@
 ## IconTexture: Interface/AddOns/MUI-Reborn/Assets/Logo
 ## SavedVariables: MayronUIdb, MUI_TimerBarsDb, MUI_AurasDB, MUI_InventoryDB
 ## Dependencies: ShadowedUnitFrames, Bartender4
-## OptionalDeps: Masque, Bagnon
+## OptionalDeps: Masque, Bagnon, MBB
 ## Notes: Retail and Forever release candidate of the complete standalone continuation of MayronUI 6.9.8.
 ## Author: Mayron and contributors; MUI Reborn maintained by Monster
-## Version: 1.0.0-rc.1
+## Version: 1.0.1-rc
 ## X-Public-Version: 1.0.0-rc.1
 ## X-Curse-Project-ID: 1750080
 ## X-Discord: https://discord.gg/eqpFHhJyyV

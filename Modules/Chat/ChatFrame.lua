@@ -20,6 +20,7 @@ local FRIENDS_LIST_AVAILABLE, FRIENDS_LIST_AWAY, FRIENDS_LIST_BUSY =
 
 local IsAddOnLoaded, InCombatLockdown, ipairs = _G.IsAddOnLoaded, _G.InCombatLockdown, _G.ipairs;
 local PlaySound = _G.PlaySound;
+local isMistsClassic = _G.math.floor(_G.select(4, _G.GetBuildInfo()) / 10000) == 5;
 
 -- C_ChatFrame -----------------------
 
@@ -459,6 +460,17 @@ do
 	        return;
 	      end
 
+          local chatButton = _G.ChatFrameMenuButton;
+          if (((tk:IsClassic() or isMistsClassic) or tk:IsBCClassic()) and not tk:IsRetail() and chatButton and
+              obj:IsFunction(chatButton.menuGenerator) and _G.MenuUtil and
+              obj:IsFunction(_G.MenuUtil.CreateContextMenu)) then
+            -- A DropdownButton opens on mouse-down, not its legacy OnClick.
+            _G.MenuUtil.CreateContextMenu(self, function(_, rootDescription)
+              chatButton.menuGenerator(chatButton, rootDescription);
+            end);
+            return;
+          end
+
 	      if (obj:IsFunction(_G.ChatFrame_ToggleMenu)) then
 	        _G.ChatFrame_ToggleMenu();
 	      elseif (obj:IsWidget(_G.ChatFrameMenuButton)) then
@@ -511,8 +523,38 @@ do
       return professions;
     end
 
-    local menuWidth = 240;
+    local menuWidth = ((tk:IsClassic() or isMistsClassic) and not tk:IsRetail()) and 220 or 240;
     local buttonHeight = 32;
+
+    local function ApplyClassicProfessionLayout(btn)
+      if (InCombatLockdown() or not btn.muiProfessionText) then return end
+      local iconTexture = btn.IconTexture or _G[btn:GetName().."IconTexture"];
+      local spellName = btn.SpellName or _G[btn:GetName().."SpellName"];
+      iconTexture:SetParent(btn);
+      iconTexture:ClearAllPoints();
+      iconTexture:SetSize(buttonHeight - 10, buttonHeight - 10);
+      iconTexture:SetPoint("LEFT", btn, "LEFT", 7, 0);
+      iconTexture:SetTexture(btn.muiProfessionIcon);
+      iconTexture:Show();
+      spellName:SetParent(btn);
+      spellName:ClearAllPoints();
+      spellName:SetPoint("LEFT", iconTexture, "RIGHT", 8, 0);
+      spellName:SetWordWrap(false);
+      spellName:SetTextColor(0.95, 0.95, 0.95);
+      spellName:SetText(btn.muiProfessionText);
+      spellName:Show();
+      local rank = btn.SubSpellName;
+      rank:ClearAllPoints();
+      rank:SetPoint("RIGHT", btn, "RIGHT", -10, 0);
+      rank:SetWidth(50);
+      rank:SetJustifyH("RIGHT");
+      rank:SetTextColor(0.65, 0.65, 0.65);
+      rank:SetText(btn.muiProfessionRank);
+      rank:Show();
+      spellName:SetPoint("RIGHT", rank, "LEFT", -10, 0);
+      btn:EnableDrawLayer("HIGHLIGHT");
+      btn:SetSize(menuWidth - 9, buttonHeight);
+    end
 
     local function CreateProfessionButton(profMenu, spellIndex)
       local btnName = "MUI_ProfessionsMenuButton"..spellIndex;
@@ -521,10 +563,14 @@ do
       local spellName;
       local spellSubName;
 
-      if (tk:IsRetail()) then
-        -- ProfessionButtonTemplate and SpellBookFrame no longer exist in
-        -- modern Retail, so create the small menu row ourselves.
-        btn = tk:CreateFrame("Button", profMenu, btnName);
+      if (tk:IsRetail() or (tk:IsClassic() or isMistsClassic)) then
+        -- Standalone menu rows must not inherit spellbook paging or flyouts.
+        local template = ((tk:IsClassic() or isMistsClassic) and not tk:IsRetail()) and "SecureActionButtonTemplate" or nil;
+        btn = tk:CreateFrame("Button", profMenu, btnName, template);
+        if (template) then
+          btn:RegisterForClicks("LeftButtonUp");
+          btn:SetAttribute("useOnKeyDown", false);
+        end
         iconTexture = btn:CreateTexture(nil, "ARTWORK");
         spellName = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
         spellSubName = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
@@ -559,7 +605,7 @@ do
       end
       btn:DisableDrawLayer("BACKGROUND");
       btn:DisableDrawLayer("HIGHLIGHT");
-      btn:SetFrameLevel(20);
+      btn:SetFrameLevel(profMenu:GetFrameLevel() + 1);
 
       spellName:SetWidth(menuWidth - buttonHeight - 18);
       spellName:ClearAllPoints();
@@ -595,7 +641,7 @@ do
         btn:Hide();
       end
 
-      if (not tk:IsRetail() and _G.SpellBookFrame) then
+      if (not tk:IsRetail() and not (tk:IsClassic() or isMistsClassic) and _G.SpellBookFrame) then
         _G.SpellBookFrame.selectedSkillLine = 1; -- General Tab (needed to ensure offset is 0)!
       end
 
@@ -618,6 +664,13 @@ do
             end
             profMenu:Hide();
           end);
+        elseif ((tk:IsClassic() or isMistsClassic)) then
+          -- LibAddonCompat returns an absolute spellbook offset, independent
+          -- of the selected skill line and page in the normal spellbook.
+          local professionSpell = _G.GetSpellBookItemName(spellbookID + 1, _G.BOOKTYPE_SPELL or "spell");
+          btn:SetAttribute("type", professionSpell and "spell" or nil);
+          btn:SetAttribute("spell", professionSpell);
+          btn:SetEnabled(professionSpell ~= nil);
         elseif (obj:IsFunction(_G.SpellButton_UpdateButton)) then
           _G.SpellButton_UpdateButton(btn);
         end
@@ -635,7 +688,15 @@ do
           btn:SetPoint("TOPLEFT", prev, "BOTTOMLEFT");
         end
 
+        if ((tk:IsClassic() or isMistsClassic) and not tk:IsRetail()) then
+          btn.muiProfessionText = profName;
+          btn.muiProfessionRank = tk.Strings:Concat(skillRank, "/", skillMaxRank);
+          btn.muiProfessionIcon = professionIcon;
+        end
         btn:Show();
+        if ((tk:IsClassic() or isMistsClassic) and not tk:IsRetail()) then
+          ApplyClassicProfessionLayout(btn);
+        end
 
         prev = btn;
       end
@@ -669,8 +730,18 @@ do
         return professionsIcon;
       end
 
-      local template = tk:IsClassic() and "UIMenuTemplate" or "TooltipBackdropTemplate";
-      local profMenu = tk:CreateFrame("Frame", nil, "MUI_ProfessionsMenu", template);
+      local profMenu;
+      if ((tk:IsClassic() or isMistsClassic) and not tk:IsRetail()) then
+        profMenu = tk:CreateFrame("Frame", nil, "MUI_ProfessionsMenu", "BackdropTemplate");
+        profMenu:SetBackdrop(tk.Constants.BACKDROP_WITH_BACKGROUND);
+        profMenu:SetAlpha(1);
+        profMenu:SetBackdropColor(0.025, 0.025, 0.025, 1);
+        local r, g, b = tk:GetThemeColor();
+        profMenu:SetBackdropBorderColor(r * 0.5, g * 0.5, b * 0.5, 1);
+        profMenu:Hide();
+      else
+        profMenu = tk:CreateFrame("Frame", nil, "MUI_ProfessionsMenu", "TooltipBackdropTemplate");
+      end
       profMenu.btns = obj:PopTable();
       profMenu.specializationIndex = 0;
       profMenu.spellOffset = 0;

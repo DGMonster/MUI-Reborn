@@ -1,6 +1,9 @@
 local _, setup = ...;
 
 setup.import["Bagnon"] = function()
+	-- Bagnon 12.1.7 uses numeric bag-break modes; preserve older presets.
+	local version = _G.GetAddOnMetadata("Bagnon", "Version");
+	local bagBreak = (version == "12.1.7") and 0 or false;
 	_G.Bagnon_Sets = {
 		["reagentColor"] = {
 		},
@@ -77,7 +80,7 @@ setup.import["Bagnon"] = function()
 				["search"] = true,
 				["itemScale"] = 1.01,
 				["reverseSlots"] = false,
-				["bagBreak"] = false,
+				["bagBreak"] = bagBreak,
 				["scale"] = 1,
 				["spacing"] = 4,
 			},
@@ -163,7 +166,7 @@ setup.import["Bagnon"] = function()
 				},
 				["hiddenRules"] = {
 				},
-				["bagBreak"] = false,
+				["bagBreak"] = bagBreak,
 				["y"] = -275.690612792969,
 				["x"] = -827.17578125,
 				["columns"] = 10,

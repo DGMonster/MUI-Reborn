@@ -1,8 +1,8 @@
 # MUI Reborn
 
-> A complete, customizable user interface for World of Warcraft Retail and WoW Forever.
+> A complete, customizable user interface for WoW Retail, WoW Forever, Classic Era, TBC Classic and MoP Classic.
 
-[![Version](https://img.shields.io/badge/version-1.0.0--rc.1-00ccff)](https://github.com/DGMonster/MUI-Reborn)
+[![Version](https://img.shields.io/badge/version-1.0.1--rc-00ccff)](https://github.com/DGMonster/MUI-Reborn)
 [![WoW Retail](https://img.shields.io/badge/WoW_Retail-12.1-blue)](https://worldofwarcraft.blizzard.com/)
 [![WoW Forever](https://img.shields.io/badge/WoW_Forever-1.60.1-purple)](https://worldofwarcraft.blizzard.com/)
 [![Development status](https://img.shields.io/badge/status-release_candidate-brightgreen)](https://github.com/DGMonster/MUI-Reborn/issues)
@@ -15,11 +15,18 @@ addon.
 
 ## Development status
 
-**1.0.0-rc.1** is the first release candidate for World of Warcraft Retail 12.1
-and WoW Forever 1.60.1, including the changes from internal Beta 16–27.
-A release candidate is a version being tested ahead of the final 1.0.0 release.
-Forever support remains under active development, and full regression testing
-across both clients is not yet complete.
+**1.0.1-rc** is the complete release candidate for Retail, WoW Forever,
+Classic Era, TBC Classic and MoP Classic. It includes optional MBB menu theming,
+client-specific library loading and the accumulated Classic corrections.
+
+User testing covered the reported Era, TBC and MoP issues; full regression
+coverage is incomplete. The Era tracking menu and inactive-tracking fallback
+icon remain open. The MoP dungeon-finder button needs testing with an eligible
+character. See RELEASE_NOTES_DE.md for details. Package checks are static;
+no WoW runtime tests were performed by the developer agent.
+
+The installed version remains 1.0.1-rc and the public announcement marker
+remains 1.0.0-rc.1 pending preparation of publication.
 
 ### Changes since public Beta 15
 
@@ -49,7 +56,7 @@ and installed manually.
 Please report reproducible problems through the
 [GitHub issue tracker](https://github.com/DGMonster/MUI-Reborn/issues). Include
 the complete Lua error, the steps that caused it and the installed versions of
-MUI Reborn, Bartender4 and Shadowed Unit Frames Redux.
+MUI Reborn, Bartender4 and the installed Shadowed Unit Frames edition.
 
 ## Features
 
@@ -70,20 +77,21 @@ Reborn:
 | Addon | Status | Purpose |
 | --- | --- | --- |
 | [Bartender4](https://www.curseforge.com/wow/addons/bartender4) | Required | Action bars and Micro Menu |
-| [Shadowed Unit Frames Redux](https://www.curseforge.com/wow/addons/shadowed-unit-frames-redux) | Required | Player, target, party and raid frames |
+| Shadowed Unit Frames (client-compatible edition) | Required | Player, target, party and raid frames |
 | [Masque](https://www.curseforge.com/wow/addons/masque) | Optional | Button skin support |
 | [Bagnon](https://www.curseforge.com/wow/addons/bagnon) | Optional | Bag integration |
 
-> Install **Shadowed Unit Frames Redux**, not an outdated original release. It
-> provides the compatible `ShadowedUnitFrames` addon identity required by MUI.
+> Use the edition of **Shadowed Unit Frames** matching your client. The older
+> clients were tested by the user with the original SUF, not Redux. MUI requires
+> the addon identity `ShadowedUnitFrames`; Redux is not a universal requirement.
 
 ## Installation
 
 1. Close World of Warcraft.
 2. Install the current versions of **Bartender4** and
-   **Shadowed Unit Frames Redux**.
+   **Shadowed Unit Frames** suitable for your client.
 3. Copy the `MUI-Reborn` folder into the matching client directory:
-   `_retail_/Interface/AddOns/` for Retail or the Forever client's
+   use the selected Retail, Forever, Era, TBC or MoP client's
    `Interface/AddOns/` directory.
 4. Start World of Warcraft and enable MUI Reborn and its required addons.
 5. Follow the installer or enter `/mui install` in chat.
