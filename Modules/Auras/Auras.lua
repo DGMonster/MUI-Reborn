@@ -997,7 +997,11 @@ local function CreateOrUpdateAuraHeader(filter, db, header)
       CreateFrame, "Frame", globalName, _G.UIParent, "SecureAuraHeaderTemplate");
 
     if (not created) then
-      tk:Print("|cffffcc00MUI Reborn:|r Custom aura frames are unavailable on Retail 12.1. Blizzard aura frames will remain enabled.");
+      local clientName = tk:IsForever() and "WoW Forever" or
+        (tk:IsRetail() and "WoW Retail" or "this WoW client");
+      tk:Print(string.format(
+        "Custom aura frames are unavailable on %s. Blizzard aura frames will remain enabled.",
+        clientName));
       return nil, frameOrError;
     end
 

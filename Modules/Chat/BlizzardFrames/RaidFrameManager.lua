@@ -69,11 +69,11 @@ local function KillShow(obj)
 end
 
 function C_ChatModule:SetUpRaidFrameManager(data)
-	-- The Retail compact raid manager and its children are protected. Reparenting,
+	-- The Retail and Forever compact raid manager and its children are protected. Reparenting,
 	-- hiding, or reskinning them taints the frame; Blizzard later calls
 	-- Frame:RegisterEvent() on it and blocks the action. Leave the manager fully
-	-- under Blizzard's control on Retail 12.1. SUF raid frames remain available.
-	if tk:IsRetail() then
+	-- under Blizzard's control on both clients. SUF raid frames remain available.
+	if tk:IsRetail() or tk:IsForever() then
 		data.raidFrameManager = false
 		return
 	end

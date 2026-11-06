@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.2 – 2026-11-06
+
+- Explicitly skip legacy compact raid-manager changes on WoW Forever, matching the tested patch for the Edit Mode health-color taint error.
+- Correct the aura fallback notice to identify WoW Forever or WoW Retail instead of always naming Retail 12.1.
+- Remove duplicate MUI Reborn prefixes from aura and cast-bar fallback notices.
+- Update the Forever cast-bar notice wording. Blizzard fallback displays remain enabled.
+
+Validation: user confirmed the reported Forever Edit Mode error no longer occurred with the raid-manager test patch. Syntax and package checks performed; full client regression testing remains incomplete.
+
 ## 1.0.1-rc – Complete RC package, 2026-10-22
 
 - Add Era, TBC and MoP manifests with client-specific library loading.
