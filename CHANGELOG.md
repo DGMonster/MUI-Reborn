@@ -1,6 +1,9 @@
 # Changelog
 
 ## 1.0.3 – 2026-11-06
+- Remove the obsolete Forever cast-bar warning and clarify German/English aura notices to distinguish buff/debuff icons from timer bars.
+
+- Position the native Forever group/raid manager below the top-left MUI chat with a 10-unit gap, applying position changes outside combat. Native controls remain intact; in-game positioning/taint verification is pending.
 
 - Restore Forever player/target timer bars using Blizzard-owned aura display and timing, now started automatically from the existing profile.
 - Refresh target auras on target changes and hide target groups for missing/dead targets where unit state is accessible.

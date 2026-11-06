@@ -1017,7 +1017,7 @@ Vielen Dank außerdem an die Autoren der externen Addons, die zusammen mit MUI R
 
 
 -- Client fallback notices:
-L["Custom aura frames are unavailable on %s. Blizzard aura frames will remain enabled."] = "Eigene Aurenrahmen sind unter %s nicht verfügbar. Die Blizzard-Aurenrahmen bleiben aktiviert.";
+L["Custom aura frames are unavailable on %s. Blizzard aura frames will remain enabled."] = "Unter %s werden die Blizzard-Symbole für Buffs und Debuffs verwendet. Die MUI-Timerleisten sind davon unabhängig.";
 L["Custom cast bars are unavailable on WoW Forever. Blizzard cast bars will remain enabled."] = "Eigene Zauberleisten sind unter WoW Forever nicht verfügbar. Die Blizzard-Zauberleisten bleiben aktiviert.";
 L["this WoW client"] = "diesem WoW-Client";
 

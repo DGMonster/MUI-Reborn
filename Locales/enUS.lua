@@ -967,7 +967,7 @@ Thank you also to the authors of the external AddOns used with MUI Reborn.]];
 
 
 -- Client fallback notices:
-L["Custom aura frames are unavailable on %s. Blizzard aura frames will remain enabled."] = "Custom aura frames are unavailable on %s. Blizzard aura frames will remain enabled.";
+L["Custom aura frames are unavailable on %s. Blizzard aura frames will remain enabled."] = "Blizzard buff and debuff icons are used on %s. MUI timer bars are separate from these icons.";
 L["Custom cast bars are unavailable on WoW Forever. Blizzard cast bars will remain enabled."] = "Custom cast bars are unavailable on WoW Forever. Blizzard cast bars will remain enabled.";
 L["this WoW client"] = "this WoW client";
 

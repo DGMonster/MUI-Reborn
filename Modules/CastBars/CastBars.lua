@@ -1260,7 +1260,6 @@ function C_CastBarsModule:OnInitialized(data)
     self:SetEnabled(true);
   elseif (data.settings.enabled and tk:IsForever()) then
     SetUpForeverPlayerCastBar(data.settings);
-    tk:Print(L["Custom cast bars are unavailable on WoW Forever. Blizzard cast bars will remain enabled."]);
   end
 end
 

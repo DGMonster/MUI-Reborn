@@ -1,6 +1,8 @@
 # MUI Reborn 1.0.3 – 06.11.2026
 
 ## Änderungen
+- Veralteten Forever-Zauberleistenhinweis entfernt; Aurenhinweis auf Deutsch/Englisch unterscheidet Blizzard-Symbole von MUI-Timerleisten.
+- Blizzard-Gruppen-/Raidmanager in Forever mit 10 UI-Einheiten Abstand unter dem oberen linken MUI-Chat positioniert. Verschiebung nur außerhalb des Kampfes; native Bedienelemente bleiben erhalten.
 - Eigene Spieler- und Ziel-Timerleisten in WoW Forever wieder nutzbar, mit Blizzards nativer Aurenanzeige. Automatischer Start anhand des vorhandenen Profils; kein zusätzlicher AuraTimers-Download erforderlich.
 - Zielwechsel aktualisieren die Timerleisten; kein Ziel oder totes Ziel blendet die Zielgruppe aus, soweit der Client den Einheitenzustand freigibt.
 - Forever-Spielerzauberleiste im MUI-Stil, an das SUF-Porträt angelegt. Blizzard steuert weiterhin Zauberdauer und Ereignisse.
@@ -21,4 +23,4 @@ Aktivierte Spieler-/Zielfelder starten automatisch. /muitimers zeigt sie an, /mu
 ## Prüfstand und offene Punkte
 Vom Nutzer bestätigt: Timerleisten mit Countdown und Ablauf im Kampf, korrekte Zielwechsel, verbesserte Panel-/Zauberleistendarstellung. Nach Inventar-Reaktivierung funktioniert normales Banköffnen; der ursprüngliche Kauf des ersten Bankfachs konnte nach der letzten Änderung nicht erneut getestet werden, weil das Fach bereits gekauft war. Dieser Fix gilt ausdrücklich nicht als bestätigt.
 
-Automatischer TimerBars-Start ist neu in diesem Release und benötigt noch Nutzerprüfung nach /reload. Era-Trackingmenü und MoP-Dungeonbrowser bleiben offene Prüfungen. Kein vollständiger Test aller fünf Clients. Statische Paket-/Ladeverweisprüfungen sind keine WoW-Laufzeittests. Kein Lua-Compiler oder Luacheck in der Arbeitsumgebung verfügbar.
+Automatischer TimerBars-Start ist neu in diesem Release und benötigt noch Nutzerprüfung nach /reload. Auch die neue Raidmanager-Positionierung benötigt noch Prüfung von Aus-/Einklappen, Markierungen, Bearbeitungsmodus und möglichen Taint-Meldungen im Client. Era-Trackingmenü und MoP-Dungeonbrowser bleiben offene Prüfungen. Kein vollständiger Test aller fünf Clients. Statische Paket-/Ladeverweisprüfungen sind keine WoW-Laufzeittests. Kein Lua-Compiler oder Luacheck in der Arbeitsumgebung verfügbar.

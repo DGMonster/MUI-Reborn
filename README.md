@@ -20,6 +20,8 @@ and MoP Classic. It includes the accumulated compatibility corrections and
 restores player/target timer bars on Forever using Blizzard's native aura display.
 Forever timer bars start automatically when enabled in the existing profile.
 The player cast bar uses Blizzard's timing with MUI styling and SUF positioning.
+The native Forever group/raid manager is positioned below the top-left MUI chat;
+this new positioning still needs in-game verification.
 
 User testing confirmed Forever timer-bar countdowns in combat and target changes,
 and the improved panel/cast-bar appearance. Full regression testing across all

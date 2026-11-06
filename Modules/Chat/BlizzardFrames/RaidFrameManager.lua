@@ -68,7 +68,52 @@ local function KillShow(obj)
   end
 end
 
+-- Only position the outer Forever manager; leave native controls intact.
+local foreverPositioningInstalled = false
+local function SetUpForeverManagerPosition()
+  local manager = _G.CompactRaidFrameManager
+  local chat = _G.MUI_ChatFrame_TOPLEFT
+  if foreverPositioningInstalled or not manager or not chat then return end
+  foreverPositioningInstalled = true
+
+  local pending, positioning = false, false
+  local function QueuePosition()
+    if pending or positioning then return end
+    pending = true
+    _G.C_Timer.After(0, function()
+      pending = false
+      if _G.InCombatLockdown() or not chat:IsShown() then return end
+      local bottom, left = chat:GetBottom(), manager:GetLeft()
+      if not bottom or not left then return end
+      local parentScale = _G.UIParent:GetEffectiveScale()
+      local x = left * manager:GetEffectiveScale() / parentScale
+      local y = bottom * chat:GetEffectiveScale() / parentScale - _G.UIParent:GetHeight() - 10
+      positioning = true
+      manager:ClearAllPoints()
+      manager:SetPoint("TOPLEFT", _G.UIParent, "TOPLEFT", x, y)
+      positioning = false
+    end)
+  end
+
+  -- Preserve Blizzard's horizontal movement when expanding/collapsing.
+  _G.hooksecurefunc(manager, "SetPoint", QueuePosition)
+  manager:HookScript("OnShow", QueuePosition)
+  local events = _G.CreateFrame("Frame")
+  events:RegisterEvent("PLAYER_REGEN_ENABLED")
+  events:RegisterEvent("PLAYER_ENTERING_WORLD")
+  events:RegisterEvent("GROUP_ROSTER_UPDATE")
+  events:SetScript("OnEvent", QueuePosition)
+  chat:HookScript("OnSizeChanged", QueuePosition)
+  _G.hooksecurefunc(chat, "SetPoint", QueuePosition)
+  QueuePosition()
+end
+
 function C_ChatModule:SetUpRaidFrameManager(data)
+  if tk:IsForever() then
+    SetUpForeverManagerPosition()
+    data.raidFrameManager = false
+    return
+  end
 	-- The Retail and Forever compact raid manager and its children are protected. Reparenting,
 	-- hiding, or reskinning them taints the frame; Blizzard later calls
 	-- Frame:RegisterEvent() on it and blocks the action. Leave the manager fully
