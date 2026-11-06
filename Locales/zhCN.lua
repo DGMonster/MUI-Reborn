@@ -989,3 +989,9 @@ L["MUI_Reborn_Setup_CreditsTab"] = [[MUI Reborn 延续了 MayronUI 的工作。�
 %s
 
 同时感谢与 MUI Reborn 配合使用的外部插件作者。]];
+
+
+-- Client fallback notices:
+L["Custom aura frames are unavailable on %s. Blizzard aura frames will remain enabled."] = "%s不支持自定义光环框体。暴雪光环框体将保持启用。";
+L["Custom cast bars are unavailable on WoW Forever. Blizzard cast bars will remain enabled."] = "WoW Forever 不支持自定义施法条。暴雪施法条将保持启用。";
+L["this WoW client"] = "此 WoW 客户端";

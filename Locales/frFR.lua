@@ -1020,3 +1020,9 @@ L["MUI_Reborn_Setup_CreditsTab"] = [[MUI Reborn poursuit le travail de MayronUI.
 %s
 
 Merci également aux auteurs des AddOns externes utilisés avec MUI Reborn.]];
+
+
+-- Client fallback notices:
+L["Custom aura frames are unavailable on %s. Blizzard aura frames will remain enabled."] = "Les cadres d’auras personnalisés ne sont pas disponibles sur %s. Les cadres d’auras de Blizzard resteront activés.";
+L["Custom cast bars are unavailable on WoW Forever. Blizzard cast bars will remain enabled."] = "Les barres d’incantation personnalisées ne sont pas disponibles sur WoW Forever. Les barres d’incantation de Blizzard resteront activées.";
+L["this WoW client"] = "ce client WoW";

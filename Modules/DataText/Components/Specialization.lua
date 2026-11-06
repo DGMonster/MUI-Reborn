@@ -208,6 +208,11 @@ function Specialization:SetEnabled(data, enabled)
         if (not data.settings.sets) then return end
 
         local specializationName = tk:GetPlayerSpecialization();
+        -- No specialization yet (for example before level 10).
+        if (not obj:IsString(specializationName) or
+            tk.Strings:IsNilOrWhiteSpace(specializationName)) then
+          return;
+        end
 
         if (data.settings.sets[specializationName]) then
           local equipmentSetId = data.settings.sets[specializationName];

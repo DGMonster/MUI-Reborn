@@ -54,6 +54,7 @@
   <Script file="MiniMap\MiniMap.config.lua" />
 
   <Script file="TimerBars\TimerBars.lua" />
+  <Script file="TimerBars\Forever.lua" />
   <Script file="TimerBars\TimerBars.config.lua" />
 
   <Script file="ToolTips\ToolTips.lua" />

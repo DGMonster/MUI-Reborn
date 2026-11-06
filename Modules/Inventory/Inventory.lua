@@ -2211,7 +2211,21 @@ function C_InventoryModule:OnInitialize()
     if (tk:IsRetail()) then
       inventoryFrame:RegisterEvent("UNIT_INVENTORY_CHANGED");
       inventoryFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
-      tk:KillElement(_G["ContainerFrameCombinedBags"]);
+      if (tk:IsForever()) then
+        -- Keep Blizzard's methods and parent intact for the bank's secure flow.
+        local combinedBags = _G.ContainerFrameCombinedBags;
+        if (combinedBags) then
+          combinedBags:HookScript("OnShow", function(frame)
+            _G.C_Timer.After(0, function()
+              if (not _G.InCombatLockdown()) then
+                frame:Hide();
+              end
+            end);
+          end);
+        end
+      else
+        tk:KillElement(_G["ContainerFrameCombinedBags"]);
+      end
     end
 
     local bagBar = tk:CreateFrame("Frame", inventoryFrame, "MUI_InventoryBagsFrame")--[[@as MayronUI.Inventory.BagBar]];

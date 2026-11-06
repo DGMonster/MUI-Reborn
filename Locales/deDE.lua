@@ -1014,3 +1014,16 @@ L["MUI_Reborn_Setup_CreditsTab"] = [[MUI Reborn führt die Arbeit von MayronUI f
 %s
 
 Vielen Dank außerdem an die Autoren der externen Addons, die zusammen mit MUI Reborn verwendet werden.]];
+
+
+-- Client fallback notices:
+L["Custom aura frames are unavailable on %s. Blizzard aura frames will remain enabled."] = "Eigene Aurenrahmen sind unter %s nicht verfügbar. Die Blizzard-Aurenrahmen bleiben aktiviert.";
+L["Custom cast bars are unavailable on WoW Forever. Blizzard cast bars will remain enabled."] = "Eigene Zauberleisten sind unter WoW Forever nicht verfügbar. Die Blizzard-Zauberleisten bleiben aktiviert.";
+L["this WoW client"] = "diesem WoW-Client";
+
+-- Forever timer bars
+L["Timer bars must be started outside combat."] = "Timerleisten müssen außerhalb des Kampfes gestartet werden.";
+L["Timer bars cannot be configured while aura data is restricted."] = "Timerleisten können bei eingeschränkten Aurendaten nicht eingerichtet werden.";
+L["Timer bars are unavailable: required Blizzard display interfaces are missing."] = "Timerleisten nicht verfügbar: Erforderliche Blizzard-Anzeigeschnittstellen fehlen.";
+L["Timer bars: fields with active filter lists are not supported on WoW Forever."] = "Timerleisten: Felder mit aktiven Filterlisten werden in WoW Forever noch nicht unterstützt.";
+L["Timer bars could not be created: %s"] = "Timerleisten konnten nicht erstellt werden: %s";

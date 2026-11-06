@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.3 – 2026-11-06
+
+- Restore Forever player/target timer bars using Blizzard-owned aura display and timing, now started automatically from the existing profile.
+- Refresh target auras on target changes and hide target groups for missing/dead targets where unit state is accessible.
+- Style and position the native Forever player cast bar using the existing MUI appearance and SUF portrait anchor.
+- Correct unit-panel layering so SUF frames remain visible above the panels.
+- Guard missing specialization keys after level-up and omit Forever realm placeholders from the AFK display.
+- Localize compatibility notices; retain the tested Forever raid-manager correction.
+- Replace destructive combined-bag suppression on Forever with deferred hiding. Bank-purchase correction still needs verification with an unpurchased first slot.
+- Update all installed/public version markers to 1.0.3.
+
+Forever limits: reload after timer-bar settings/profile changes; player/target only; filter-list fields skipped; separate buff/debuff limits and sorting; incomplete legacy visual options. Custom aura frames remain disabled there.
+
+Validation: user confirmed combat countdown/expiration, target refresh and improved panel/cast-bar appearance. Automatic startup is newly integrated and needs in-game verification. Static package/load checks only by the developer agent; no agent-run WoW tests or full client regression.
+
 ## 1.0.2 – 2026-11-06
 
 - Explicitly skip legacy compact raid-manager changes on WoW Forever, matching the tested patch for the Edit Mode health-color taint error.

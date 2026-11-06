@@ -815,8 +815,10 @@ local function SetAFKDisplayShown(data, show)
       specType = tk.Strings.Empty;
     end
 
-    local name = tk.Strings:Concat(UnitPVPName("player"), " - ",
-    GetRealmName(), "\nLevel ", UnitLevel("player"), ", ",
+    local realmText = tk:IsForever() and tk.Strings.Empty or
+      tk.Strings:Concat(" - ", GetRealmName());
+    local name = tk.Strings:Concat(UnitPVPName("player"), realmText,
+    "\nLevel ", UnitLevel("player"), ", ",
     tk.Strings:SetTextColorByClassFileName(tk.Strings:Concat(specType, (select(1, UnitClass("player"))))));
 
     Private.display.name:SetText(name);

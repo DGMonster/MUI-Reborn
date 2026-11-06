@@ -850,6 +850,13 @@ function C_CastBar:StartCasting(data, channelling, fadeIn, auraInfo)
   data.auraId = auraId;
 end
 
+-- Shared by legacy bars and the native Forever player-bar adapter.
+local function GetSUFPortraitAnchor(unitID, settings)
+  if (not IsAddOnLoaded("ShadowedUnitFrames") or not settings.anchorToSUF) then return end
+  local unitframe = _G[string.format("SUFUnit%s", unitID:lower())];
+  return unitframe and unitframe.portrait;
+end
+
 function C_CastBar:PositionCastBar(data)
   self:ClearAllPoints();
 
@@ -857,10 +864,8 @@ function C_CastBar:PositionCastBar(data)
     data.square:ClearAllPoints();
   end
 
-  local anchorToSUF = IsAddOnLoaded("ShadowedUnitFrames") and data.settings.anchorToSUF;
-  local unitframe = _G[ string.format("SUFUnit%s", data.unitID:lower()) ];
-  local sufAnchor = unitframe and unitframe.portrait;
-  local manualPosition = not (anchorToSUF and sufAnchor);
+  local sufAnchor = GetSUFPortraitAnchor(data.unitID, data.settings);
+  local manualPosition = not sufAnchor;
 
   if (manualPosition) then
     local point = data.settings.position[1];
@@ -1147,11 +1152,115 @@ function C_CastBarsModule:OnInitialize(data)
   }, options);
 end
 
+-- Keep Blizzard's timing and Edit Mode ownership; skin only the player bar.
+local function SetUpForeverPlayerCastBar(settings)
+  local bar = _G.PlayerCastingBarFrame;
+  if (not bar or not obj:IsFunction(bar.SetStatusBarTexture)) then return end
+
+  local function GetTexture()
+    return tk.Constants.LSM:Fetch("statusbar", settings.appearance.texture, true)
+      or tk.Constants.SOLID_TEXTURE;
+  end
+
+  local function ApplyFill()
+    if (not settings.enabled or not settings.Player.enabled) then return end
+    local fill = bar:GetStatusBarTexture();
+    if (fill) then
+      fill:SetTexture(GetTexture());
+      fill:SetBlendMode(settings.appearance.blendMode);
+      local color = settings.appearance.colors.normal;
+      fill:SetVertexColor(color.r, color.g, color.b, color.a);
+    end
+  end
+
+  local function ApplyAppearance()
+    if (not settings.enabled or not settings.Player.enabled) then return end
+    if (_G.InCombatLockdown()) then return end
+
+    local inset = settings.appearance.inset;
+    local borderSize = settings.appearance.borderSize;
+
+    if (not bar.muiSkin) then
+      local skin = {};
+      skin.background = bar:CreateTexture(nil, "BACKGROUND", nil, -8);
+      skin.background:SetAllPoints(bar);
+      -- Colors are applied from the existing MUI appearance settings below.
+      skin.edges = {};
+      for index = 1, 4 do
+        skin.edges[index] = bar:CreateTexture(nil, "OVERLAY", nil, 7);
+      end
+      skin.edges[1]:SetPoint("TOPLEFT", bar, "TOPLEFT", -1, 1);
+      skin.edges[1]:SetPoint("TOPRIGHT", bar, "TOPRIGHT", 1, 1);
+      skin.edges[1]:SetHeight(1);
+      skin.edges[2]:SetPoint("BOTTOMLEFT", bar, "BOTTOMLEFT", -1, -1);
+      skin.edges[2]:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 1, -1);
+      skin.edges[2]:SetHeight(1);
+      skin.edges[3]:SetPoint("TOPLEFT", bar, "TOPLEFT", -1, 1);
+      skin.edges[3]:SetPoint("BOTTOMLEFT", bar, "BOTTOMLEFT", -1, -1);
+      skin.edges[3]:SetWidth(1);
+      skin.edges[4]:SetPoint("TOPRIGHT", bar, "TOPRIGHT", 1, 1);
+      skin.edges[4]:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 1, -1);
+      skin.edges[4]:SetWidth(1);
+      bar.muiSkin = skin;
+    end
+
+    local background = settings.appearance.colors.background;
+    bar.muiSkin.background:SetColorTexture(background.r, background.g, background.b, background.a);
+    local border = settings.appearance.colors.border;
+    for index, edge in ipairs(bar.muiSkin.edges) do
+      edge:SetColorTexture(border.r, border.g, border.b, border.a);
+      edge:SetShown(borderSize > 0);
+      if (index <= 2) then edge:SetHeight(borderSize); else edge:SetWidth(borderSize); end
+    end
+    local edges = bar.muiSkin.edges;
+    edges[1]:SetPoint("TOPLEFT", bar, "TOPLEFT", -inset, inset);
+    edges[1]:SetPoint("TOPRIGHT", bar, "TOPRIGHT", inset, inset);
+    edges[2]:SetPoint("BOTTOMLEFT", bar, "BOTTOMLEFT", -inset, -inset);
+    edges[2]:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", inset, -inset);
+    edges[3]:SetPoint("TOPLEFT", bar, "TOPLEFT", -inset, inset);
+    edges[3]:SetPoint("BOTTOMLEFT", bar, "BOTTOMLEFT", -inset, -inset);
+    edges[4]:SetPoint("TOPRIGHT", bar, "TOPRIGHT", inset, inset);
+    edges[4]:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", inset, -inset);
+    for _, key in ipairs({ "Border", "TextBorder", "Background" }) do
+      local region = bar[key];
+      if (region and obj:IsFunction(region.SetAlpha)) then region:SetAlpha(0); end
+    end
+
+    local sufAnchor = GetSUFPortraitAnchor("player", settings.Player);
+    if (sufAnchor) then
+      -- Match the legacy outer portrait bounds plus its configured fill inset.
+      bar:ClearAllPoints();
+      bar:SetPoint("TOPLEFT", sufAnchor, "TOPLEFT", inset - 1, 1 - inset);
+      bar:SetPoint("BOTTOMRIGHT", sufAnchor, "BOTTOMRIGHT", 1 - inset, inset - 1);
+    else
+      bar:SetSize(math.max(1, settings.Player.width - 2 * inset),
+        math.max(1, settings.Player.height - 2 * inset));
+    end
+    bar:SetStatusBarTexture(GetTexture());
+    ApplyFill();
+    if (bar.Text and obj:IsFunction(bar.Text.GetFont)) then
+      bar.Text:ClearAllPoints();
+      bar.Text:SetPoint("LEFT", bar, "LEFT", 4, 0);
+      bar.Text:SetPoint("RIGHT", bar, "RIGHT", -40, 0);
+      bar.Text:SetJustifyH("LEFT");
+      bar.Text:SetTextColor(1, 1, 1);
+      tk:SetFontSize(bar.Text, settings.appearance.fontSize);
+    end
+  end
+
+  ApplyAppearance();
+  bar:HookScript("OnShow", ApplyAppearance);
+  -- Native cast types can replace the fill after OnShow. Touch only its texture.
+  _G.hooksecurefunc(bar, "SetStatusBarTexture", ApplyFill);
+  _G.hooksecurefunc(bar, "SetStatusBarColor", ApplyFill);
+end
+
 function C_CastBarsModule:OnInitialized(data)
   if (data.settings.enabled and not tk:IsForever()) then
     self:SetEnabled(true);
   elseif (data.settings.enabled and tk:IsForever()) then
-    tk:Print("Custom cast bars are unavailable on WoW Forever. Blizzard cast bars will remain enabled.");
+    SetUpForeverPlayerCastBar(data.settings);
+    tk:Print(L["Custom cast bars are unavailable on WoW Forever. Blizzard cast bars will remain enabled."]);
   end
 end
 

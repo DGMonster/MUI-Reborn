@@ -1016,3 +1016,9 @@ L["MUI_Reborn_Setup_CreditsTab"] = [[MUI Reborn은 MayronUI의 작업을 이어�
 %s
 
 MUI Reborn과 함께 사용되는 외부 애드온의 제작자들에게도 감사드립니다.]];
+
+
+-- Client fallback notices:
+L["Custom aura frames are unavailable on %s. Blizzard aura frames will remain enabled."] = "%s에서는 사용자 지정 오라 프레임을 사용할 수 없습니다. 블리자드 오라 프레임은 활성화된 상태로 유지됩니다.";
+L["Custom cast bars are unavailable on WoW Forever. Blizzard cast bars will remain enabled."] = "WoW Forever에서는 사용자 지정 시전 바를 사용할 수 없습니다. 블리자드 시전 바는 활성화된 상태로 유지됩니다.";
+L["this WoW client"] = "이 WoW 클라이언트";

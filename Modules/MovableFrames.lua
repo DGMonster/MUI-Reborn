@@ -164,6 +164,8 @@ if (tk:IsBCClassic() or tk:IsWrathClassic()) then
 end
 
 local function CanMove(frame)
+  -- Keep Forever bank scripts and saved positioning under Blizzard control.
+  if (tk:IsForever() and frame == _G.BankFrame) then return false end
   return obj:IsFunction(frame.RegisterForDrag) and not (frame:IsProtected() and InCombatLockdown());
 end
 

@@ -2,10 +2,10 @@
 
 > A complete, customizable user interface for WoW Retail, WoW Forever, Classic Era, TBC Classic and MoP Classic.
 
-[![Version](https://img.shields.io/badge/version-1.0.1--rc-00ccff)](https://github.com/DGMonster/MUI-Reborn)
+[![Version](https://img.shields.io/badge/version-1.0.3-00ccff)](https://github.com/DGMonster/MUI-Reborn)
 [![WoW Retail](https://img.shields.io/badge/WoW_Retail-12.1-blue)](https://worldofwarcraft.blizzard.com/)
 [![WoW Forever](https://img.shields.io/badge/WoW_Forever-1.60.1-purple)](https://worldofwarcraft.blizzard.com/)
-[![Development status](https://img.shields.io/badge/status-release_candidate-brightgreen)](https://github.com/DGMonster/MUI-Reborn/issues)
+[![Development status](https://img.shields.io/badge/status-release-brightgreen)](https://github.com/DGMonster/MUI-Reborn/issues)
 [![Discord](https://img.shields.io/badge/Discord-MUI_Reborn-5865F2?logo=discord&logoColor=white)](https://discord.gg/eqpFHhJyyV)
 
 MUI Reborn replaces and enhances large parts of the default World of Warcraft
@@ -15,18 +15,23 @@ addon.
 
 ## Development status
 
-**1.0.1-rc** is the complete release candidate for Retail, WoW Forever,
-Classic Era, TBC Classic and MoP Classic. It includes optional MBB menu theming,
-client-specific library loading and the accumulated Classic corrections.
+**1.0.3** is a release for Retail, WoW Forever, Classic Era, TBC Classic
+and MoP Classic. It includes the accumulated compatibility corrections and
+restores player/target timer bars on Forever using Blizzard's native aura display.
+Forever timer bars start automatically when enabled in the existing profile.
+The player cast bar uses Blizzard's timing with MUI styling and SUF positioning.
 
-User testing covered the reported Era, TBC and MoP issues; full regression
-coverage is incomplete. The Era tracking menu and inactive-tracking fallback
-icon remain open. The MoP dungeon-finder button needs testing with an eligible
-character. See RELEASE_NOTES_DE.md for details. Package checks are static;
-no WoW runtime tests were performed by the developer agent.
+User testing confirmed Forever timer-bar countdowns in combat and target changes,
+and the improved panel/cast-bar appearance. Full regression testing across all
+clients is incomplete. The Forever bank-purchase correction remains unconfirmed;
+normal bank opening works with the inventory enabled.
 
-The installed version remains 1.0.1-rc and the public announcement marker
-remains 1.0.0-rc.1 pending preparation of publication.
+On Forever, timer-bar settings/profile changes require `/reload`. Only player and
+target fields are supported; fields using whitelist/blacklist filters are skipped.
+Buff/debuff groups have separate bar limits and sorting. Some legacy visual
+options are not implemented. Custom aura frames remain disabled on Forever.
+The Era tracking menu and MoP dungeon-finder activation remain open checks.
+No WoW runtime tests were performed by the developer agent.
 
 ### Changes since public Beta 15
 
@@ -48,8 +53,8 @@ remains 1.0.0-rc.1 pending preparation of publication.
 ### Update notifications
 
 MUI Reborn shares public-version information through guild, party, raid and
-instance-group channels. Existing beta users can receive an RC1 update notice
-when sharing one of these channels with an RC1 user. Simply passing another
+instance-group channels. Existing beta users can receive an update notice
+when sharing one of these channels with a user of a newer public release. Simply passing another
 player in the world does not trigger a version exchange. Updates are downloaded
 and installed manually.
 
@@ -81,9 +86,10 @@ Reborn:
 | [Masque](https://www.curseforge.com/wow/addons/masque) | Optional | Button skin support |
 | [Bagnon](https://www.curseforge.com/wow/addons/bagnon) | Optional | Bag integration |
 
-> Use the edition of **Shadowed Unit Frames** matching your client. The older
-> clients were tested by the user with the original SUF, not Redux. MUI requires
-> the addon identity `ShadowedUnitFrames`; Redux is not a universal requirement.
+> **Retail and Forever:** use [Shadowed Unit Frames Redux](https://www.curseforge.com/wow/addons/shadowed-unit-frames-redux).
+> **Classic Era, TBC and MoP:** use the client-compatible original
+> [Shadowed Unit Frames](https://www.curseforge.com/wow/addons/shadowed-unit-frames).
+> Both editions must provide the addon identity `ShadowedUnitFrames`.
 
 ## Installation
 
@@ -126,6 +132,7 @@ World of Warcraft/
 | `/mui profiles` | Open the profile manager |
 | `/mui report` | Open the issue reporter |
 | `/mui version` | Show the installed version |
+| `/muitimers` / `/muitimers off` | Show / temporarily hide Forever timer bars until reload |
 
 ## Credits and project origin
 

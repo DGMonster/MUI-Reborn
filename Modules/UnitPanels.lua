@@ -291,6 +291,10 @@ function C_UnitPanels:OnEnable(data)
   data.left:SetFrameStrata("BACKGROUND");
   data.center:SetFrameStrata("BACKGROUND");
   data.right:SetFrameStrata("BACKGROUND");
+  -- Panel artwork must remain below SUF unit frames (BACKGROUND, level 2).
+  data.left:SetFrameLevel(0);
+  data.right:SetFrameLevel(0);
+  data.center:SetFrameLevel(1);
 end
 
 function C_UnitPanels:OnEnabled(data)
@@ -429,7 +433,7 @@ function C_UnitPanels.Private:AttachShadowedUnitFrames(data)
 
   -- Let SUF own its secure unit buttons. MUI only supplies the saved anchor
   -- and asks SUF to rebuild the target-target layout itself.
-  data.right:SetFrameStrata("LOW");
+  data.right:SetFrameStrata("BACKGROUND");
 
   _G.ShadowUF.Layout:Reload("targettarget");
 end

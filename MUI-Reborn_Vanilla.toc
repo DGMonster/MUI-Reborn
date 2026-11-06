@@ -6,8 +6,8 @@
 ## OptionalDeps: Masque, Bagnon, MBB
 ## Notes: Classic Era version of MUI Reborn.
 ## Author: Mayron and contributors; MUI Reborn maintained by Monster
-## Version: 1.0.2
-## X-Public-Version: 1.0.2
+## Version: 1.0.3
+## X-Public-Version: 1.0.3
 ## X-Curse-Project-ID: 1750080
 ## X-Discord: https://discord.gg/eqpFHhJyyV
 ## X-GitHub-Repo: https://github.com/DGMonster/MUI-Reborn

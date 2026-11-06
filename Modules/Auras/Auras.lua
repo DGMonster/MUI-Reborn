@@ -998,9 +998,9 @@ local function CreateOrUpdateAuraHeader(filter, db, header)
 
     if (not created) then
       local clientName = tk:IsForever() and "WoW Forever" or
-        (tk:IsRetail() and "WoW Retail" or "this WoW client");
+        (tk:IsRetail() and "WoW Retail" or L["this WoW client"]);
       tk:Print(string.format(
-        "Custom aura frames are unavailable on %s. Blizzard aura frames will remain enabled.",
+        L["Custom aura frames are unavailable on %s. Blizzard aura frames will remain enabled."],
         clientName));
       return nil, frameOrError;
     end
