@@ -19,6 +19,8 @@ addon.
 and MoP Classic. It includes the accumulated compatibility corrections and
 restores player/target timer bars on Forever using Blizzard's native aura display.
 Forever timer bars start automatically when enabled in the existing profile.
+With MBB active, MUI leaves addon-button collection to MBB, preventing missing
+minimap icons caused by competing button management (confirmed by user testing).
 The player cast bar uses Blizzard's timing with MUI styling and SUF positioning.
 The native Forever group/raid manager is positioned below the top-left MUI chat;
 this new positioning still needs in-game verification.

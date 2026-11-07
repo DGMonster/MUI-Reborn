@@ -1,6 +1,8 @@
 # Changelog
 
-## 1.0.3 – 2026-11-06
+## 1.0.3 – 2026-11-07
+
+- Fix missing minimap addon icons with MBB enabled: leave button collection to MBB instead of moving LibDBIcon buttons into MUI's context menu. User confirmed the missing icons are visible again.
 - Remove the obsolete Forever cast-bar warning and clarify German/English aura notices to distinguish buff/debuff icons from timer bars.
 
 - Position the native Forever group/raid manager below the top-left MUI chat with a 10-unit gap, applying position changes outside combat. Native controls remain intact; in-game positioning/taint verification is pending.

@@ -1,6 +1,7 @@
-# MUI Reborn 1.0.3 – 06.11.2026
+# MUI Reborn 1.0.3 – 07.11.2026
 
 ## Änderungen
+- MBB-Kompatibilität korrigiert: MUI verschiebt Addon-Symbole bei aktivem MBB nicht mehr ins eigene Rechtsklickmenü. Die zuvor fehlenden Symbole sind laut Nutzertest wieder sichtbar; ohne MBB bleibt die bisherige Option erhalten.
 - Veralteten Forever-Zauberleistenhinweis entfernt; Aurenhinweis auf Deutsch/Englisch unterscheidet Blizzard-Symbole von MUI-Timerleisten.
 - Blizzard-Gruppen-/Raidmanager in Forever mit 10 UI-Einheiten Abstand unter dem oberen linken MUI-Chat positioniert. Verschiebung nur außerhalb des Kampfes; native Bedienelemente bleiben erhalten.
 - Eigene Spieler- und Ziel-Timerleisten in WoW Forever wieder nutzbar, mit Blizzards nativer Aurenanzeige. Automatischer Start anhand des vorhandenen Profils; kein zusätzlicher AuraTimers-Download erforderlich.

@@ -949,7 +949,8 @@ function C_MiniMapModule:GetRightClickMenuList()
 
   libDbIcons = libDbIcons or _G.LibStub("LibDBIcon-1.0", true);
 
-  if (obj:IsTable(libDbIcons) and db.profile.minimap.hideIcons) then
+  -- MBB owns collected buttons; do not hide or replace their Show/Hide methods.
+  if (obj:IsTable(libDbIcons) and db.profile.minimap.hideIcons and not IsAddOnLoaded("MBB")) then
     local knownAddOnsText = {
       ["Leatrix_Plus"] = tk.Strings:SetTextColorByHex("Leatrix Plus", "70db70");
       ["Questie"] = tk.Strings:SetTextColorByHex("Questie", "ffc50f");
@@ -1410,7 +1411,8 @@ function C_MiniMapModule:OnEnable(data)
   data.menuList = self:GetRightClickMenuList();
   data:Call("UpdateTrackingMenuOptionVisibility");
 
-  if (libDbIcons and not data.settings.hideIcons and not data.addOnIconScaleHooked) then
+  if (libDbIcons and (not data.settings.hideIcons or IsAddOnLoaded("MBB")) and
+      not data.addOnIconScaleHooked) then
     libDbIcons.RegisterCallback(addOnName, "LibDBIcon_IconCreated",
       function(_, _, iconName)
         ScaleAddOnMinimapButton(data, iconName);
