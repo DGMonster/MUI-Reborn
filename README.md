@@ -2,7 +2,7 @@
 
 > A complete, customizable user interface for WoW Retail, WoW Forever, Classic Era, TBC Classic and MoP Classic.
 
-[![Version](https://img.shields.io/badge/version-1.0.4-00ccff)](https://github.com/DGMonster/MUI-Reborn)
+[![Version](https://img.shields.io/badge/version-1.0.5-00ccff)](https://github.com/DGMonster/MUI-Reborn)
 [![WoW Retail](https://img.shields.io/badge/WoW_Retail-12.1-blue)](https://worldofwarcraft.blizzard.com/)
 [![WoW Forever](https://img.shields.io/badge/WoW_Forever-1.60.1-purple)](https://worldofwarcraft.blizzard.com/)
 [![Development status](https://img.shields.io/badge/status-release-brightgreen)](https://github.com/DGMonster/MUI-Reborn/issues)
@@ -15,8 +15,13 @@ addon.
 
 ## Development status
 
-**1.0.4** focuses on WoW Forever improvements while retaining the existing Retail,
+**1.0.5** focuses on WoW Forever improvements while retaining the existing Retail,
 Classic Era, TBC Classic and MoP Classic manifests.
+
+With character profiles enabled, MUI, Bartender4 and unit-frame settings use separate
+profiles for each character. Existing settings are copied and shared profiles retained.
+Installing another character no longer overwrites those shared settings. Back up your
+WTF folder before updating; previously overwritten settings cannot be recovered automatically.
 
 Forever improvements include MUI styling for the native group/raid manager,
 movable character/spellbook/guild windows, targeted master-font support,
@@ -32,7 +37,8 @@ the installer is not required.
 User testing has covered individual Forever fixes, including the Primary label
 and guild-window movement. Reagent-bag handling, Secondary switching and guild
 position persistence after reload remain pending in-game checks. A reported SUF
-party-position reset is still under investigation. Full regression testing across
+party-position reset is addressed through separate character profiles; the complete
+character-switch/installer sequence still needs in-game verification. Full regression testing across
 clients is incomplete. Automated checks do not replace in-game testing.
 
 On Forever, timer-bar settings/profile changes require `/reload`. Only player and

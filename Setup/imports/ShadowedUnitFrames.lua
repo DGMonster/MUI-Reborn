@@ -11292,9 +11292,7 @@ setup.import["ShadowedUnitFrames"] = function()
     },
   };
   
-  for k, v in pairs(settings) do
-    _G.ShadowedUFDB[k] = v;
-	end
+  _G.MayronUI:InstallCharacterAddonPreset("ShadowUF", settings);
 
   return 1;
 end

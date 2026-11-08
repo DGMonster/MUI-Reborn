@@ -710,6 +710,7 @@ function MayronUI:SwitchLayouts(layoutName, layoutData)
           if (dbObject.utilities) then
             dbObject.profile:SetActiveProfile(profileName);
           else
+            profileName = MayronUI:GetCharacterAddonProfile(addonName, profileName);
             dbObject:SetProfile(profileName);
           end
         end
@@ -899,7 +900,18 @@ end
 
 -- Initialize Modules after player enters world (not when DB starts!).
 -- Some dependencies, like Bartender, only load after this event.
-local onLogin = em:CreateEventListener(function()
+local loginDeferred;
+local function InitializeCharacterUI()
+  if (InCombatLockdown()) then
+    loginDeferred = loginDeferred or _G.CreateFrame("Frame");
+    loginDeferred:RegisterEvent("PLAYER_REGEN_ENABLED");
+    loginDeferred:SetScript("OnEvent", function(self)
+      self:UnregisterEvent("PLAYER_REGEN_ENABLED");
+      InitializeCharacterUI();
+    end);
+    return;
+  end
+  MayronUI:EnsureCharacterProfiles();
   for i = 1, _G.NUM_CHAT_WINDOWS do
     _G["ChatFrame" .. i .. "EditBox"]:SetAltArrowKeyMode(false);
   end
@@ -918,7 +930,8 @@ local onLogin = em:CreateEventListener(function()
 
   local coreModule = MayronUI:ImportModule("CoreModule");
   coreModule:Initialize();
-end);
+end
+local onLogin = em:CreateEventListener(InitializeCharacterUI);
 
 onLogin:RegisterEvent("PLAYER_ENTERING_WORLD")
 onLogin:SetExecuteOnce(true); -- destroy after first use

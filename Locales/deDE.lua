@@ -417,8 +417,8 @@ L["Copy all settings from one profile to the active profile."] =
 L["Are you sure you want to override all profile settings in '%s' for those in profile '%s'?"] =
   "Möchten Sie wirklich alle Profileinstellungen in '%s' für diejenigen im Profil '%s' überschreiben?";
 L["Profile Per Character"] = "Profil pro Charakter";
-L["If enabled, new characters will be assigned a unique character profile instead of the Default profile."] =
-  "Wenn diese Option aktiviert ist, erhält jeder neue Charakter anstelle des Standardprofils ein eigenes Charakterprofil.";
+L["Use separate MUI, Bartender4 and unit-frame profiles for each character. Existing settings are copied; shared profiles are retained."] =
+  "Eigene MUI-, Bartender4- und Einheitenrahmen-Profile pro Charakter verwenden. Vorhandene Einstellungen werden kopiert; gemeinsame Profile bleiben erhalten.";
 L["Anchor the Objective Tracker to the action bar container on the right side of the screen."] =
   "Die Questverfolgung am Aktionsleisten-Container auf der rechten Bildschirmseite verankern.";
 L["If true, the objective tracker will collapse when entering an instance."] =

@@ -543,21 +543,14 @@ setup.import["Bartender4"] = function()
     },
 	};
 
-  -- This fixes the bartender MUI settings to work with the injected settings.
-  if (obj:IsTable(_G.MayronUIdb) and obj:IsTable(_G.MayronUIdb.profiles)) then
-    for _, profile in pairs(_G.MayronUIdb.profiles) do
-      if (obj:IsTable(profile)) then
-        if (obj:IsTable(profile.actionbars)) then
-          profile.actionbars.bottom = nil;
-          profile.actionbars.side = nil;
-        end
-      end
-    end
+  local MayronUI = _G.MayronUI;
+  local _, database = MayronUI:GetCoreComponents();
+  local profile = _G.MayronUIdb.profiles[database:GetCurrentProfile()];
+  if (profile and profile.actionbars) then
+    profile.actionbars.bottom = nil;
+    profile.actionbars.side = nil;
   end
-
-	for k, v in pairs(settings) do
-    _G.Bartender4DB[k] = v;
-	end
+  MayronUI:InstallCharacterAddonPreset("Bartender4", settings);
 
   return 1;
 end

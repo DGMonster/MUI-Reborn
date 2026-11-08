@@ -1,3 +1,25 @@
+# MUI Reborn 1.0.5 – 08.11.2026
+
+## Änderungen
+
+- Fehlerhafte Profilbehandlung im Installer korrigiert, durch die die Installation auf einem weiteren Charakter Bartender4- und Einheitenrahmen-Einstellungen anderer Charaktere zurücksetzen konnte.
+- Bei aktivierter Option für Charakterprofile erhalten MUI, Bartender4 und SUF eigene Profile pro Charakter. Vorhandene Einstellungen werden kopiert, gemeinsame Profile bleiben erhalten.
+- Addon-Voreinstellungen werden nur auf die Profile des aktuellen Charakters angewendet. Andere Charaktere und sonstige Addon-Einstellungen bleiben erhalten.
+- Fehlenden Übersetzungsschlüssel im Profilmanager korrigiert.
+- Standardrahmen der Reagenzientaschenplätze unter WoW Forever dezent in Klassenfarbe dargestellt. Gegenstandsqualität und bestehende Rahmenprioritäten bleiben erhalten.
+
+## Update
+
+WoW schließen, den WTF-Ordner sichern und den vollständigen Ordner `MUI-Reborn` austauschen. Der Installer muss nicht erneut ausgeführt werden. Bereits früher überschriebene Einstellungen können nicht automatisch wiederhergestellt werden.
+
+## Prüfstand
+
+Isolierte Tests mit der vorhandenen AceDB-Bibliothek prüfen Charakterwechsel, Installation auf einem anderen Charakter und getrennte Profile. Der Nutzer bestätigt, dass der Übersetzungsfehler nicht mehr erscheint. Der vollständige Ablauf Lyralei → Rabia mit Installation → Lyralei ist noch im Spiel zu bestätigen. Keine eigenen WoW-Laufzeittests und kein vollständiger Test aller Clients.
+
+Die Verbesserungen aus 1.0.4 sind enthalten; die bisherigen weiteren Prüfgrenzen gelten weiterhin.
+
+---
+
 # MUI Reborn 1.0.4 – 08.11.2026
 
 ## Änderungen für WoW Forever

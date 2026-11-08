@@ -372,8 +372,8 @@ L["Copy all settings from one profile to the active profile."] = "Copy all setti
 L["Are you sure you want to override all profile settings in '%s' for those in profile '%s'?"] =
   "Are you sure you want to override all profile settings in '%s' for those in profile '%s'?";
 L["Profile Per Character"] = "Profile Per Character";
-L["If enabled, new characters will be assigned a unique character profile instead of the Default profile."] =
-  "If enabled, new characters will be assigned a unique character profile instead of the Default profile.";
+L["Use separate MUI, Bartender4 and unit-frame profiles for each character. Existing settings are copied; shared profiles are retained."] =
+  "Use separate MUI, Bartender4 and unit-frame profiles for each character. Existing settings are copied; shared profiles are retained.";
 L["Anchor the Objective Tracker to the action bar container on the right side of the screen."] =
   "Anchor the Objective Tracker to the action bar container on the right side of the screen.";
 L["If true, the objective tracker will collapse when entering an instance."] =

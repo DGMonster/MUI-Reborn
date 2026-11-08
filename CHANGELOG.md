@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.5 – 2026-11-08
+
+- Fix installer profile handling that could reset another character's Bartender4 and unit-frame settings.
+- With character profiles enabled, create separate MUI, Bartender4 and unit-frame profiles per character, copying existing settings and retaining shared profiles.
+- Apply addon presets only to the current character's profiles; preserve other characters and unrelated addon settings.
+- Correct the missing profile-manager tooltip translation.
+- Tint default reagent-bag slot borders with the player's class color on WoW Forever; retain item-quality and other border priorities.
+
+Update: close WoW, back up WTF, and replace the complete MUI-Reborn folder. No installer rerun is required. Previously overwritten settings cannot be restored automatically.
+
+Validation: isolated tests with the existing AceDB library cover character switching, another character's installation and profile isolation. The user confirmed the translation error no longer appears. The complete sequence still needs in-game verification; no full client regression test has been completed.
+
 ## 1.0.4 – 2026-11-08
 
 ### WoW Forever

@@ -226,7 +226,7 @@ local configTable = {
     { type = "divider" },
     { dbPath      = "global.core.setup.profilePerCharacter";
       name        = L["Profile Per Character"];
-      tooltip     = L["If enabled, new characters will be assigned a unique character profile instead of the Default profile."];
+      tooltip     = L["Use separate MUI, Bartender4 and unit-frame profiles for each character. Existing settings are copied; shared profiles are retained."];
       type        = "check";
     }
   }

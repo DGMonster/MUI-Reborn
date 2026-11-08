@@ -594,6 +594,16 @@ local function SetDetailedViewEnabled(inventoryFrame, enabled)
 end
 
 ---@param slot MayronUI.Inventory.Slot
+local function SetDefaultBagSlotBorderColor(slot)
+  local bag = slot:GetParent();
+  if (tk:IsForever() and bag and bag.bagIndex == BagIndexes.ReagentBag) then
+    local r, g, b = tk:GetClassColor();
+    slot:SetGridColor(r * 0.7, g * 0.7, b * 0.7);
+  else
+    slot:SetGridColor(0.2, 0.2, 0.2);
+  end
+end
+
 local function SetBagItemSlotBorderColor(slot, isHighlightedBag)
   if (not slot:IsItemEmpty()) then
     local invType = slot:GetInventoryType();
@@ -633,7 +643,7 @@ local function SetBagItemSlotBorderColor(slot, isHighlightedBag)
   if (isHighlightedBag == true) then
     slot:SetGridColor(1, 1, 1);
   else
-    slot:SetGridColor(0.2, 0.2, 0.2);
+    SetDefaultBagSlotBorderColor(slot);
   end
 end
 
@@ -647,7 +657,7 @@ local function ClearBagSlot(slot)
   slot.gloss:Hide();
   slot.itemName:SetText("");
   slot.itemDetails:SetText("");
-  slot:SetGridColor(0.2, 0.2, 0.2);
+  SetDefaultBagSlotBorderColor(slot);
 end
 
 ---@param bag MayronUI.Inventory.BagFrame

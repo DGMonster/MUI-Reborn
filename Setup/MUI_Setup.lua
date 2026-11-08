@@ -211,7 +211,7 @@ function Private:LoadProfileMenu(tabFrame)
 
   tabFrame.profilePerCharacter = gui:CreateCheckButton(
     tabFrame, L["Profile Per Character"],
-    L["If enabled, new characters will be assigned a unique character profile instead of the Default profile."]);
+    L["Use separate MUI, Bartender4 and unit-frame profiles for each character. Existing settings are copied; shared profiles are retained."]);
 
   tabFrame.profilePerCharacter:SetPoint(
     "TOPLEFT", tabFrame.deleteProfileButton, "BOTTOMLEFT", 0, -20);
@@ -888,17 +888,7 @@ function SetUpModule:Install(data)
     end
   end
 
-  if (_G["Bartender4"]) then
-    local bartenderDB = tk.Tables:GetDBObject("Bartender4");
-
-    if (bartenderDB) then
-      local bartenderCurrentProfile = bartenderDB:GetCurrentProfile();
-
-      if (obj:IsTable(bartenderDB) and bartenderCurrentProfile ~= "MayronUI") then
-        bartenderDB:SetProfile("MayronUI");
-      end
-    end
-  end
+  MayronUI:EnsureCharacterProfiles();
 
   MayronUI:SwitchLayouts(db.profile.layout);
 
