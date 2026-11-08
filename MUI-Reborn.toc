@@ -6,7 +6,7 @@
 ## OptionalDeps: Masque, Bagnon, MBB
 ## Notes: Retail and Forever continuation of the complete standalone continuation of MayronUI 6.9.8.
 ## Author: Mayron and contributors; MUI Reborn maintained by Monster
-## Version: 1.0.5
+## Version: 1.0.6-rc.1
 ## X-Public-Version: 1.0.5
 ## X-Curse-Project-ID: 1750080
 ## X-Discord: https://discord.gg/eqpFHhJyyV
@@ -47,3 +47,5 @@ Setup/imports/Bartender4.lua
 Setup/imports/Bartender4_Dragonflight.lua
 Setup/imports/Masque.lua
 Setup/imports/ShadowedUnitFrames.lua
+Setup/imports/Questie.lua
+Setup/imports/Details.lua

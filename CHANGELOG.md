@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.0.6-rc.1 – 2026-11-08
+
+### Fixes
+
+- Correct the aura-display dropdown to show the underlying configuration frames instead of calling a missing method on their wrappers.
+- Prevent legacy timer fields from registering aura events or querying restricted aura data on clients using the separate modern backend.
+- Fix layout deletion's dropdown reference and correctly treat disabled addon mappings as disabled when reopening the layout tool.
+- Shorten character-profile labels on Forever without renaming saved profiles; retain full labels where shortening would cause a collision.
+- Rebind suppression of Blizzard's combined bags after late loading and retry after combat. Briefly mask the native window outside combat until deferred hiding completes, avoiding the reported flash while retaining its native methods and bank flow.
+
+### Optional styling for WoW Forever
+
+- Add Questie tracker styling with MUI textures, theme-color accents and a translucent background. Questie remains a separate addon and retains its interactions and position.
+- Add a native Details skin named MUI Reborn, highlighted in the player's class color. Use coordinated title/bar spacing, MUI fonts and a translucent textured background. Other Details skins remain selectable.
+- Add Questie and Details to the installer's addon presets when loaded on Forever. The Questie preset enables the tracker and disables automatic hiding/minimizing. The Details preset applies the MUI skin through Details' own skin API.
+- Set the Details skin's default opacity to the user-approved appearance: approximately 16% base background and 30% wallpaper/overlay alpha. Settings remain adjustable in Details.
+- Style the native loot window, including its actual ClosePanelButton, and apply the decoration on opening rather than waiting for a periodic update.
+- Hide Bartender's micro menu through its existing visibility driver on Forever; allow showing it again with `/muimicro on`.
+
+### Update and validation
+
+- Includes all fixes from 1.0.5. Close WoW, back up WTF and replace the complete MUI-Reborn folder. No full installer rerun is required.
+- `/muiquestie on|off` controls Questie styling. `/muidetails on|off` applies the MUI skin/restores its saved previous appearance where available. `/muilootstyle off` restores the native loot appearance for the session.
+- User testing confirmed the layout-checkbox correction, the optional styles, disappearance of the reported bag flash, immediate loot styling and the final loot-window appearance. These confirmations do not constitute complete regression testing.
+- Bank first-slot purchase, combat transitions, full character/profile switching, different Details configurations and other clients still require regression checks. Changing a skin manually without using the MUI command does not create a previous-appearance backup.
+- Lua syntax, isolated logic checks and package/load validation were performed during development. No agent-run WoW tests. This is a release candidate, not a completed cross-client certification.
+
 ## 1.0.5 – 2026-11-08
 
 - Fix installer profile handling that could reset another character's Bartender4 and unit-frame settings.

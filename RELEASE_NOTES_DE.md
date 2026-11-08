@@ -1,3 +1,41 @@
+# MUI Reborn 1.0.6-rc.1 – 08.11.2026
+
+## Fehlerkorrekturen
+
+- Fehler beim Umschalten der Aura-Darstellung behoben: Zugriff auf die tatsächlichen Konfigurationsfenster.
+- Alte Timerfelder registrieren auf den betroffenen modernen Clients keine Aura-Ereignisse mehr und fragen dort keine geschützten Auradaten ab. Der getrennte moderne Anzeigepfad bleibt bestehen.
+- Falschen Dropdown-Zugriff beim Löschen eines Layouts korrigiert. Abgewählte Addon-Zuordnungen werden beim erneuten Öffnen nicht mehr als Profilname behandelt.
+- Kürzere Charakterprofil-Anzeige in Forever ohne Umbenennen gespeicherter Profile; bei Namenskollision bleibt die vollständige Anzeige erhalten.
+- Kombiniertes Blizzard-Taschenfenster wird auch nach spätem Laden und nach Kampfsperren erfasst. Eine kurze Transparenzmaske außerhalb des Kampfes verhindert das gemeldete Aufblitzen bis zum verzögerten Ausblenden. Native Methoden und Bankablauf bleiben erhalten.
+
+## Neue optionale Gestaltung für WoW Forever
+
+- Questie-Tracker mit MUI-Strukturhintergrund, Themenfarbe und Transparenz. Questie bleibt separat; Position und Interaktionen bleiben erhalten.
+- Nativer Details-Skin „MUI Reborn“ mit Klassenfarbe, MUI-Schrift, einheitlichen Balkenabständen und transparentem Strukturhintergrund. Der Skinname erscheint in der Klassenfarbe; andere Details-Skins bleiben frei wählbar.
+- Questie und Details in den Addon-Voreinstellungen des Installers, sofern die Addons geladen sind. Die Questie-Vorgabe aktiviert den Tracker ohne automatische Ausblendung/Minimierung. Die Details-Vorgabe nutzt dessen eigenes Skin-System.
+- Bestätigte persönliche Details-Optik als Vorgabe übernommen: etwa 16 % Grundfläche und 30 % Struktur-/Overlay-Deckkraft. Weiterhin individuell in Details anpassbar.
+- Beutefenster im MUI-Stil einschließlich passendem Schließen-Knopf. Gestaltung unmittelbar beim Öffnen.
+- Mikromenü über Bartenders vorhandenen Sichtbarkeitstreiber ausgeblendet; `/muimicro on` zeigt es wieder an.
+
+## Update und Bedienung
+
+Alle Korrekturen aus 1.0.5 sind enthalten. WoW schließen, WTF sichern und den vollständigen Ordner `MUI-Reborn` austauschen. Kein erneuter vollständiger Installer-Durchlauf nötig.
+
+- `/muiquestie on|off`: Questie-Gestaltung dauerhaft ein-/ausschalten.
+- `/muidetails on|off`: MUI-Skin anwenden beziehungsweise vorher gesicherte Darstellung wiederherstellen. Bei direkter manueller Skinwahl ohne MUI-Befehl gibt es keinen vorherigen Sicherungsstand.
+- `/muimicro on|off`: Mikromenü anzeigen/ausblenden, nur außerhalb des Kampfes.
+- `/muilootstyle off`: ursprüngliche Beutefenster-Optik für diese Sitzung.
+
+Questie und Details werden nicht mitgeliefert und bleiben optional. Die neuen Gestaltungen sind zunächst ausschließlich für Forever vorgesehen.
+
+## Prüfstand
+
+Nutzer bestätigt die Layout-Abwahlkorrektur, die neuen Gestaltungen, das behobene Taschen-Aufblitzen, die direkte Beutefenster-Gestaltung und deren abschließende Optik. Der Bearbeitungsmodus verursachte beim gemeldeten Test keinen Fehler.
+
+Syntax, isolierte Logik und Paketinhalte wurden geprüft. Keine eigenen WoW-Laufzeittests und kein vollständiger Test aller Clients. Bank-Erstkauf, Kampfwechsel, vollständiger Charakter-/Profilwechsel sowie andere Details-Konfigurationen bleiben offene Regressionstests. Der Veröffentlichungsmarker bleibt bei 1.0.5, solange dieser RC nicht veröffentlicht ist.
+
+---
+
 # MUI Reborn 1.0.5 – 08.11.2026
 
 ## Änderungen

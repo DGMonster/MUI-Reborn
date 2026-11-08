@@ -2,10 +2,10 @@
 
 > A complete, customizable user interface for WoW Retail, WoW Forever, Classic Era, TBC Classic and MoP Classic.
 
-[![Version](https://img.shields.io/badge/version-1.0.5-00ccff)](https://github.com/DGMonster/MUI-Reborn)
+[![Version](https://img.shields.io/badge/version-1.0.6--rc.1-orange)](https://github.com/DGMonster/MUI-Reborn)
 [![WoW Retail](https://img.shields.io/badge/WoW_Retail-12.1-blue)](https://worldofwarcraft.blizzard.com/)
 [![WoW Forever](https://img.shields.io/badge/WoW_Forever-1.60.1-purple)](https://worldofwarcraft.blizzard.com/)
-[![Development status](https://img.shields.io/badge/status-release-brightgreen)](https://github.com/DGMonster/MUI-Reborn/issues)
+[![Development status](https://img.shields.io/badge/status-release_candidate-orange)](https://github.com/DGMonster/MUI-Reborn/issues)
 [![Discord](https://img.shields.io/badge/Discord-MUI_Reborn-5865F2?logo=discord&logoColor=white)](https://discord.gg/eqpFHhJyyV)
 
 MUI Reborn replaces and enhances large parts of the default World of Warcraft
@@ -15,38 +15,32 @@ addon.
 
 ## Development status
 
-**1.0.5** focuses on WoW Forever improvements while retaining the existing Retail,
-Classic Era, TBC Classic and MoP Classic manifests.
+**1.0.6-rc.1** is a release candidate containing all 1.0.5 fixes plus optional
+Forever integrations and further compatibility corrections.
 
-With character profiles enabled, MUI, Bartender4 and unit-frame settings use separate
-profiles for each character. Existing settings are copied and shared profiles retained.
-Installing another character no longer overwrites those shared settings. Back up your
-WTF folder before updating; previously overwritten settings cannot be recovered automatically.
+On Forever, Questie can adopt MUI's tracker appearance and Details provides a
+native, class-colored MUI Reborn skin. Both remain separate optional addons.
+Their presets appear in the installer when loaded; you can continue to choose
+other Details skins. The native loot window also uses MUI decoration, and
+Bartender's micro menu is hidden through its existing visibility driver.
 
-Forever improvements include MUI styling for the native group/raid manager,
-movable character/spellbook/guild windows, targeted master-font support,
-a corrected spellbook shortcut, native Lua-error-window styling and a shortcut
-to the MUI report form. Inventory handling includes the reagent bag, and the
-specialization data text now shows the active Primary/Secondary talent group.
-Talent-group switching remains in Blizzard's talent window.
+The update fixes layout-management errors and legacy aura queries on restricted
+clients, shortens displayed Forever profile labels, and improves suppression of
+the duplicate Blizzard bag window without replacing its methods or parent.
 
-The existing player/target timer bars and player cast-bar styling remain available.
-Blizzard buff/debuff icons are retained. Existing profiles are kept; rerunning
-the installer is not required.
+With character profiles enabled, MUI, Bartender4 and unit-frame settings use
+separate profiles. Existing settings are copied and shared profiles retained.
+Back up WTF before updating; previously overwritten settings cannot be recovered
+automatically. A full installer rerun is not required just to update.
 
-User testing has covered individual Forever fixes, including the Primary label
-and guild-window movement. Reagent-bag handling, Secondary switching and guild
-position persistence after reload remain pending in-game checks. A reported SUF
-party-position reset is addressed through separate character profiles; the complete
-character-switch/installer sequence still needs in-game verification. Full regression testing across
-clients is incomplete. Automated checks do not replace in-game testing.
+User feedback confirms individual fixes and visual changes. Bank first-slot
+purchase, combat transitions, complete character/profile switching and other
+clients still need regression checks. Automated tests are not WoW runtime tests.
 
-On Forever, timer-bar settings/profile changes require `/reload`. Only player and
-target fields are supported; fields using whitelist/blacklist filters are skipped.
-Buff/debuff groups have separate bar limits and sorting. Some legacy visual
-options are not implemented. `/muitimers off` hides them for the current session;
-for a persistent change, disable the module or field in configuration and reload.
-The Era tracking menu and MoP dungeon-finder activation remain open checks.
+Forever timer bars remain optional, use player/target fields and require reload
+after settings/profile changes. Filter lists and some legacy visual options are
+not supported. Blizzard buff/debuff icons remain in use. The Era tracking menu
+and MoP dungeon-finder activation remain open checks.
 
 ### Changes since public Beta 15
 
@@ -100,6 +94,8 @@ Reborn:
 | Shadowed Unit Frames (client-compatible edition) | Required | Player, target, party and raid frames |
 | [Masque](https://www.curseforge.com/wow/addons/masque) | Optional | Button skin support |
 | [Bagnon](https://www.curseforge.com/wow/addons/bagnon) | Optional | Bag integration |
+| Questie | Optional, Forever | Quest tracker with optional MUI appearance |
+| Details! | Optional, Forever styling | Damage meter with the native MUI Reborn skin |
 
 > **Retail and Forever:** use [Shadowed Unit Frames Redux](https://www.curseforge.com/wow/addons/shadowed-unit-frames-redux).
 > **Classic Era, TBC and MoP:** use the client-compatible original
@@ -147,6 +143,10 @@ World of Warcraft/
 | `/mui profiles` | Open the profile manager |
 | `/mui report` | Open the issue reporter |
 | `/mui version` | Show the installed version |
+| `/muiquestie on` / `/muiquestie off` | Enable / disable Forever Questie styling |
+| `/muidetails on` / `/muidetails off` | Apply MUI Details skin / restore saved prior appearance |
+| `/muimicro on` / `/muimicro off` | Show / hide the Forever micro menu outside combat |
+| `/muilootstyle off` | Restore native loot appearance for this session |
 | `/muitimers` / `/muitimers off` | Show / temporarily hide Forever timer bars until reload |
 
 ## Credits and project origin

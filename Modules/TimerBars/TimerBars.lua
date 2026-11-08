@@ -718,6 +718,9 @@ do
   end
 
   function C_TimerField:RegisterAllEvents(data)
+  -- Restricted clients use the separate Blizzard-owned aura backend.
+  if (not supportsCombatLogTimerBars) then return end
+
     local unitID = data.settings.unitID;
     data.frame:RegisterUnitEvent("UNIT_AURA", unitID);
 
@@ -974,6 +977,9 @@ end
 
 ---Rechecks whether auras are still in use by the unit
 function C_TimerField:RecheckAuras(data)
+  -- Restricted clients use the separate Blizzard-owned aura backend.
+  if (not supportsCombatLogTimerBars) then return end
+
   local maxAuras, filterName, auraType;
 
   self:RemoveAllAuras();

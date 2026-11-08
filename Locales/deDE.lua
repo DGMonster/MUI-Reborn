@@ -1065,3 +1065,24 @@ L["Primary Talent Group"] = "Primär";
 L["Secondary Talent Group"] = "Sekundär";
 L["Manage talent groups in Blizzard's talent window."] = "Talentgruppen werden im Blizzard-Talentfenster verwaltet.";
 L["Secondary talent group is not unlocked."] = "Die sekundäre Talentgruppe ist noch nicht freigeschaltet.";
+
+-- Optional Forever Questie presentation.
+L["Questie appearance: /muiquestie on or /muiquestie off."] = "Questie-Gestaltung: /muiquestie on oder /muiquestie off.";
+L["Questie styling can only be changed outside combat after login."] = "Die Questie-Gestaltung kann nur nach der Anmeldung und außerhalb des Kampfes geändert werden.";
+L["MUI Questie styling enabled (requires Questie)."] = "MUI-Questie-Gestaltung aktiviert (benötigt Questie).";
+L["MUI Questie styling disabled."] = "MUI-Questie-Gestaltung deaktiviert.";
+
+-- Optional Forever Details decoration.
+L["Details styling can only be changed outside combat after login."] = "Die Details-Gestaltung kann nur nach der Anmeldung und außerhalb des Kampfes geändert werden.";
+L["Details appearance: /muidetails on or /muidetails off."] = "Details-Gestaltung: /muidetails on oder /muidetails off.";
+L["MUI Details styling enabled (requires Details)."] = "MUI-Details-Gestaltung aktiviert (benötigt Details).";
+L["MUI Details styling disabled."] = "MUI-Details-Gestaltung deaktiviert.";
+
+L["MUI Details skin is unavailable. Load Details first."] = "Der MUI-Details-Skin ist nicht verfügbar. Bitte zuerst Details laden.";
+L["Choose another skin in Details to change this window's appearance."] = "Wähle für dieses Fenster einen anderen Skin in den Details-Einstellungen.";
+L["MUI styling with class colors, a translucent background and consistent bar spacing."] = "MUI-Gestaltung mit Klassenfarben, transparentem Hintergrund und einheitlichen Balkenabständen.";
+L["Micro menu: /muimicro on to show, /muimicro off to hide."] = "Mikromenü: /muimicro on zum Anzeigen, /muimicro off zum Ausblenden.";
+L["Change micro-menu visibility outside combat after login."] = "Die Mikromenü-Sichtbarkeit außerhalb des Kampfes nach der Anmeldung ändern.";
+L["The Bartender4 micro-menu module must be enabled."] = "Das Mikromenü-Modul von Bartender4 muss aktiviert sein.";
+
+L["Loot appearance: /muilootstyle on or /muilootstyle off."] = "Beutefenster: /muilootstyle on oder /muilootstyle off.";

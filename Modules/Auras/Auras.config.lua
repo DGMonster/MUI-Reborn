@@ -464,8 +464,8 @@ function C_AurasModule:GetConfigTable()
         options = { [L["Icons"]] = "icons", [L["Status Bars"]] = "statusbars" };
         dbPath = "profile." .. auraType .. ".mode";
         OnValueChanged = function(value)
-          iconOptionsFrame:SetShown(value == "icons");
-          barOptionsFrame:SetShown(value == "statusbars");
+          iconOptionsFrame:GetFrame():SetShown(value == "icons");
+          barOptionsFrame:GetFrame():SetShown(value == "statusbars");
           configMenu:RefreshMenu();
         end,
       };

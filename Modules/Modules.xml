@@ -19,6 +19,10 @@
   <Script file="ErrorHandler.lua" />
   <Script file="ForeverErrorReport.lua" />
   <Script file="ForeverErrorStyle.lua" />
+  <Script file="ForeverQuestieStyle.lua" />
+  <Script file="ForeverDetailsStyle.lua" />
+  <Script file="ForeverMicroMenu.lua" />
+  <Script file="ForeverLootStyle.lua" />
   <Script file="ObjectiveTracker.lua" />
   <Script file="AFKDisplay.lua" />
   <Script file="MovableFrames.lua" />

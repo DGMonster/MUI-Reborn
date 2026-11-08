@@ -53,6 +53,8 @@ db:AddToDefaults("global", {
         { "Bartender4"; true; "Bartender4", 1 };
         { "Masque"; true; "Masque", 1 };
         { "Shadowed Unit Frames"; true; "ShadowedUnitFrames", 1 };
+        tk:IsForever() and { "Questie"; true; "Questie", 1 } or nil;
+        tk:IsForever() and { "Details"; true; "Details", 1 } or nil;
       };
     };
   };

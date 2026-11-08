@@ -2223,16 +2223,50 @@ function C_InventoryModule:OnInitialize()
       inventoryFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
       if (tk:IsForever()) then
         -- Keep Blizzard's methods and parent intact for the bank's secure flow.
-        local combinedBags = _G.ContainerFrameCombinedBags;
-        if (combinedBags) then
-          combinedBags:HookScript("OnShow", function(frame)
-            _G.C_Timer.After(0, function()
-              if (not _G.InCombatLockdown()) then
-                frame:Hide();
-              end
-            end);
+        local hookedFrames = {};
+        local maskedFrames = {};
+        local hidePending = false;
+        local function HideCombinedBags()
+          local current = _G.ContainerFrameCombinedBags;
+          if (current and current:IsShown() and not _G.InCombatLockdown()) then
+            -- Only mask rendering here; the native OnShow/bank flow still finishes.
+            if (maskedFrames[current] == nil) then maskedFrames[current] = current:GetAlpha(); end
+            current:SetAlpha(0);
+          end
+          if (hidePending) then return end
+          hidePending = true;
+          _G.C_Timer.After(0, function()
+            hidePending = false;
+            local frame = _G.ContainerFrameCombinedBags;
+            if (frame and frame:IsShown() and not _G.InCombatLockdown()) then
+              frame:Hide();
+            end
+            -- Restore alpha even if combat started or Blizzard already closed the bag.
+            -- Never leave an invisible, still-clickable container behind.
+            for masked, alpha in pairs(maskedFrames) do
+              masked:SetAlpha(alpha);
+              maskedFrames[masked] = nil;
+            end
           end);
         end
+        local function BindCombinedBags()
+          local frame = _G.ContainerFrameCombinedBags;
+          if (not frame) then return end
+          if (not hookedFrames[frame]) then
+            frame:HookScript("OnShow", HideCombinedBags);
+            hookedFrames[frame] = true;
+          end
+          HideCombinedBags();
+        end
+        -- Combined bags can be created after the MUI inventory; retry after loading
+        -- and after combat instead of leaving an unhooked/previously blocked window.
+        local bagWatcher = _G.CreateFrame("Frame");
+        bagWatcher:RegisterEvent("ADDON_LOADED");
+        bagWatcher:RegisterEvent("PLAYER_ENTERING_WORLD");
+        bagWatcher:RegisterEvent("PLAYER_REGEN_ENABLED");
+        bagWatcher:RegisterEvent("BAG_UPDATE_DELAYED");
+        bagWatcher:SetScript("OnEvent", BindCombinedBags);
+        BindCombinedBags();
       else
         tk:KillElement(_G["ContainerFrameCombinedBags"]);
       end

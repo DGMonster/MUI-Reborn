@@ -8,8 +8,21 @@ local tk, db, _, _, obj, L = MayronUI:GetCoreComponents(); -- luacheck: ignore
 local C_ConfigMenuModule = MayronUI:GetModuleClass("ConfigMenu");
 local components = {};
 
+local function GetProfileLabel(profileName)
+  if (not tk:IsForever()) then return profileName end
+  local suffix = "-" .. _G.GetRealmName():gsub("%s+", "");
+  if (profileName:sub(-#suffix) ~= suffix) then return profileName end
+  local label = profileName:sub(1, -#suffix - 1);
+  if (label == "") then return profileName end
+  -- A custom profile may already have this short name; keep those distinct.
+  for _, other in ipairs(db:GetProfiles()) do
+    if (other ~= profileName and other == label) then return profileName end
+  end
+  return label;
+end
+
 local function UpdateCurrentProfileText(currentProfile)
-  currentProfile = tk.Strings:SetTextColorByKey(currentProfile, "GOLD");
+  currentProfile = tk.Strings:SetTextColorByKey(GetProfileLabel(currentProfile), "GOLD");
   local text = tk.Strings:Join("", L["Current profile"], ": ", currentProfile);
   components.currentProfileFontString:SetText(text);
 end
@@ -36,9 +49,9 @@ local function GetProfileOptions()
   local profiles = db:GetProfiles();
   local options = obj:PopTable();
 
-  -- key and value should both be the profile name:
+  -- Labels are cosmetic; values remain the complete saved profile keys:
   for _, profileName in ipairs(profiles) do
-    options[profileName] = profileName;
+    options[GetProfileLabel(profileName)] = profileName;
   end
 
   return options;
@@ -57,7 +70,7 @@ local configTable = {
       GetContent = function()
         return tk.Strings:Join("",
           L["Current profile"], ": ",
-          tk.Strings:SetTextColorByKey(db:GetCurrentProfile(), "GOLD"));
+          tk.Strings:SetTextColorByKey(GetProfileLabel(db:GetCurrentProfile()), "GOLD"));
       end,
 
       OnLoad = function(_, container)
@@ -97,11 +110,11 @@ local configTable = {
       OnClick = function()
         _G.MayronUI:TriggerCommand("profile", "new", nil, function()
           local currentProfile = db:GetCurrentProfile();
-          components.chooseProfileDropDown:SetLabel(currentProfile);
+          components.chooseProfileDropDown:SetLabel(GetProfileLabel(currentProfile));
 
           UpdateCurrentProfileText(currentProfile);
 
-          components.chooseProfileDropDown:AddOption(currentProfile, function()
+          components.chooseProfileDropDown:AddOption(GetProfileLabel(currentProfile), function()
             db:SetProfile(currentProfile);
             components.deleteProfileButton:SetEnabled(currentProfile ~= "Default");
           end);
@@ -182,8 +195,8 @@ local configTable = {
         local profileName = db:GetCurrentProfile();
         MayronUI:TriggerCommand("profile", "delete", profileName, function()
           local currentProfile = db:GetCurrentProfile();
-          components.chooseProfileDropDown:RemoveOptionByLabel(profileName);
-          components.chooseProfileDropDown:SetLabel(currentProfile);
+          components.chooseProfileDropDown:RemoveOptionByLabel(GetProfileLabel(profileName));
+          components.chooseProfileDropDown:SetLabel(GetProfileLabel(currentProfile));
           components.deleteProfileButton:SetEnabled(currentProfile ~= "Default");
         end);
       end

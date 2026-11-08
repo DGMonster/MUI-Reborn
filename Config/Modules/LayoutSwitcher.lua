@@ -131,7 +131,7 @@ function C_LayoutSwitcher:UpdateAddOnWindow(data)
     if (i % 2 ~= 0) then
       -- checkbutton
       addOnName = child.btn.text:GetText();
-      checked = layoutData[addOnName] ~= nil;
+      checked = obj:IsString(layoutData[addOnName]);
       child.btn:SetChecked(checked);
     else
       -- dropdownmenu
@@ -298,7 +298,7 @@ function C_LayoutSwitcher:DeleteLayout(data)
     text = string.format(
       L["Are you sure you want to delete Layout '%s'?"], data.viewingLayout);
     OnAccept = function()
-      local dropdown = data.layoutTool.dropdown;
+      local dropdown = data.layoutsDropDown;
       dropdown:RemoveOptionByLabel(data.viewingLayout);
       db.global.layouts[data.viewingLayout] = false;
 

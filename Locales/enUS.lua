@@ -1015,3 +1015,24 @@ L["Primary Talent Group"] = "Primary";
 L["Secondary Talent Group"] = "Secondary";
 L["Manage talent groups in Blizzard's talent window."] = "Manage talent groups in Blizzard's talent window.";
 L["Secondary talent group is not unlocked."] = "Secondary talent group is not unlocked.";
+
+-- Optional Forever Questie presentation.
+L["Questie appearance: /muiquestie on or /muiquestie off."] = "Questie appearance: /muiquestie on or /muiquestie off.";
+L["Questie styling can only be changed outside combat after login."] = "Questie styling can only be changed outside combat after login.";
+L["MUI Questie styling enabled (requires Questie)."] = "MUI Questie styling enabled (requires Questie).";
+L["MUI Questie styling disabled."] = "MUI Questie styling disabled.";
+
+-- Optional Forever Details decoration.
+L["Details styling can only be changed outside combat after login."] = "Details styling can only be changed outside combat after login.";
+L["Details appearance: /muidetails on or /muidetails off."] = "Details appearance: /muidetails on or /muidetails off.";
+L["MUI Details styling enabled (requires Details)."] = "MUI Details styling enabled (requires Details).";
+L["MUI Details styling disabled."] = "MUI Details styling disabled.";
+
+L["MUI Details skin is unavailable. Load Details first."] = "MUI Details skin is unavailable. Load Details first.";
+L["Choose another skin in Details to change this window's appearance."] = "Choose another skin in Details to change this window's appearance.";
+L["MUI styling with class colors, a translucent background and consistent bar spacing."] = "MUI styling with class colors, a translucent background and consistent bar spacing.";
+L["Micro menu: /muimicro on to show, /muimicro off to hide."] = "Micro menu: /muimicro on to show, /muimicro off to hide.";
+L["Change micro-menu visibility outside combat after login."] = "Change micro-menu visibility outside combat after login.";
+L["The Bartender4 micro-menu module must be enabled."] = "The Bartender4 micro-menu module must be enabled.";
+
+L["Loot appearance: /muilootstyle on or /muilootstyle off."] = "Loot appearance: /muilootstyle on or /muilootstyle off.";
