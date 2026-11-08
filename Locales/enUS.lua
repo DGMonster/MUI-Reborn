@@ -977,3 +977,41 @@ L["Timer bars cannot be configured while aura data is restricted."] = "Timer bar
 L["Timer bars are unavailable: required Blizzard display interfaces are missing."] = "Timer bars are unavailable: required Blizzard display interfaces are missing.";
 L["Timer bars: fields with active filter lists are not supported on WoW Forever."] = "Timer bars: fields with active filter lists are not supported on WoW Forever.";
 L["Timer bars could not be created: %s"] = "Timer bars could not be created: %s";
+
+-- Forever restoration: raid manager test
+L["Raid manager test: /muiraidstyle on or /muiraidstyle off."] = "Raid manager test: /muiraidstyle on or /muiraidstyle off.";
+L["Change the raid manager appearance outside combat."] = "Change the raid manager appearance outside combat.";
+
+L["Raid manager test status: enabled=%s; state=%s; hidden textures=%d; background=%s"] = "Raid manager test status: enabled=%s; state=%s; hidden textures=%d; background=%s";
+L["Raid manager frame: %s; strata=%s; level=%s"] = "Raid manager frame: %s; strata=%s; level=%s";
+L["Raid manager texture: %s; layer=%s"] = "Raid manager texture: %s; layer=%s";
+
+L["Raid manager styled toggle buttons: %d"] = "Raid manager styled toggle buttons: %d";
+
+-- Forever window movement test
+L["Move window"] = "Move window";
+L["Window movement test: /muimove on or /muimove off."] = "Window movement test: /muimove on or /muimove off.";
+L["Window movement can only be changed outside combat after login."] = "Window movement can only be changed outside combat after login.";
+L["Window movement enabled: drag the dotted title-bar grip on supported windows."] = "Window movement enabled: drag the dotted title-bar grip on supported windows.";
+L["Window movement disabled; session anchors restored."] = "Window movement disabled; session anchors restored.";
+
+-- Permanent Forever window movement
+L["Make Blizzard windows movable"] = "Make Blizzard windows movable";
+L["Move the character, spellbook and guild/community windows using the dotted title-bar grip. Only outside combat."] = "Move the character, spellbook and guild/community windows using the dotted title-bar grip. Only outside combat.";
+L["Hold the left mouse button to move this window. Only available outside combat."] = "Hold the left mouse button to move this window. Only available outside combat.";
+
+L["Apply the MUI master font to MUI elements and the character/spellbook headings. Global Blizzard fonts remain unchanged."] = "Apply the MUI master font to MUI elements and the character/spellbook headings. Global Blizzard fonts remain unchanged.";
+
+-- Independent Forever error report shortcut
+L["Open MUI error report"] = "Open MUI error report";
+L["Open the MUI report form. Copy the Lua error from Blizzard's window into the report if needed."] = "Open the MUI report form. Copy the Lua error from Blizzard's window into the report if needed.";
+
+-- Forever error window appearance
+L["Error window appearance: /muierrorstyle on or /muierrorstyle off."] = "Error window appearance: /muierrorstyle on or /muierrorstyle off.";
+L["Change the error window appearance outside combat."] = "Change the error window appearance outside combat.";
+
+L["Talent Group"] = "Talent Group";
+L["Primary Talent Group"] = "Primary";
+L["Secondary Talent Group"] = "Secondary";
+L["Manage talent groups in Blizzard's talent window."] = "Manage talent groups in Blizzard's talent window.";
+L["Secondary talent group is not unlocked."] = "Secondary talent group is not unlocked.";

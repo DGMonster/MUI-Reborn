@@ -58,7 +58,7 @@ local defaults = {
 };
 
 if (tk:IsRetail() or tk:IsWrathClassic()) then
-  defaults.labels.specialization = L["Specialization"];
+  defaults.labels.specialization = tk:IsForever() and L["Talent Group"] or L["Specialization"];
   tinsert(defaults.displayOrders, "specialization");
 else
   tinsert(defaults.displayOrders, "inventory");

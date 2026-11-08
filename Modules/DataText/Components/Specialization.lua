@@ -25,7 +25,29 @@ db:AddToDefaults("profile.datatext.specialization", {
 
 -- Local Functions ----------------
 
+local function GetForeverTalentGroupName()
+  local api = _G.C_SpecializationInfo;
+  if (not api or not obj:IsFunction(api.GetActiveSpecGroup)) then return end
+  local group = api.GetActiveSpecGroup();
+  if (_G.issecretvalue and _G.issecretvalue(group)) then return end
+  if (group == 1) then return L["Primary Talent Group"]; end
+  if (group == 2) then return L["Secondary Talent Group"]; end
+end
+
 local function Button_OnEnter(self)
+  if (tk:IsForever()) then
+    GameTooltip:SetOwner(self, "ANCHOR_TOP", 0, 2);
+    GameTooltip:SetText(L["Talent Group"] .. ": " .. (GetForeverTalentGroupName() or L["Talent Group"]));
+    GameTooltip:AddLine(L["Manage talent groups in Blizzard's talent window."], 1, 1, 1, true);
+    if (obj:IsFunction(_G.GetNumSpecGroups)) then
+      local count = _G.GetNumSpecGroups();
+      if (not (_G.issecretvalue and _G.issecretvalue(count)) and count == 1) then
+        GameTooltip:AddLine(L["Secondary talent group is not unlocked."], 0.7, 0.7, 0.7, true);
+      end
+    end
+    GameTooltip:Show();
+    return;
+  end
   local name = tk:GetPlayerSpecialization();
 
   if (tk.Strings:IsNilOrWhiteSpace(name)) then
@@ -180,10 +202,10 @@ function Specialization:__Construct(data, settings, dataTextModule, slideControl
 
   self.MenuLabels = obj:PopTable();
   self.TotalLabelsShown = 0;
-  self.HasLeftMenu = true;
+  self.HasLeftMenu = not tk:IsForever();
   self.Button = dataTextModule:CreateDataTextButton();
 
-  if (tk:IsRetail()) then
+  if (tk:IsRetail() and not tk:IsForever()) then
     self.HasRightMenu = true;
     self.Button:RegisterForClicks("LeftButtonUp", "RightButtonUp");
   end
@@ -205,7 +227,8 @@ function Specialization:SetEnabled(data, enabled)
       local listener = em:CreateEventListenerWithID(listenerID, function()
         self:Update();
 
-        if (not data.settings.sets) then return end
+        -- Forever talent groups have no Retail spec identity or loot-spec mapping.
+        if (tk:IsForever() or not data.settings.sets) then return end
 
         local specializationName = tk:GetPlayerSpecialization();
         -- No specialization yet (for example before level 10).
@@ -233,7 +256,7 @@ function Specialization:SetEnabled(data, enabled)
         end
       end);
 
-      if (tk:IsWrathClassic()) then
+      if (tk:IsWrathClassic() or tk:IsForever()) then
         listener:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
       else
         listener:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player");
@@ -281,6 +304,11 @@ function Specialization:Update(data, refreshSettings)
 
   if (not self.Button) then
     return
+  end
+
+  if (tk:IsForever()) then
+    self.Button:SetText(GetForeverTalentGroupName() or L["Talent Group"]);
+    return;
   end
 
   if (UnitLevel("player") < 10) then
@@ -434,6 +462,7 @@ end
 
 
 function Specialization:Click(_, button)
+  if (tk:IsForever()) then return true end
   if (UnitLevel("player") < 10) then
     tk:Print(L["Must be level 10 or higher to use Talents."]);
     return true;

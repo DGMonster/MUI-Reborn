@@ -139,7 +139,8 @@ function C_ConfigMenu:GetConfigTable()
           name = L["Override Master Font"];
           height = 42;
           verticalAlignment = "BOTTOM";
-          tooltip = L["Uncheck to prevent MUI from changing the game font."];
+          tooltip = L[tk:IsForever() and "Apply the MUI master font to MUI elements and the character/spellbook headings. Global Blizzard fonts remain unchanged." or
+            "Uncheck to prevent MUI from changing the game font."];
           requiresReload = true;
           width = 180;
           dbPath = "global.core.fonts.useMasterFont";
@@ -256,29 +257,38 @@ function C_ConfigMenu:GetConfigTable()
         };
         { type = "title"; name = L["Blizzard Frames"] };
         {
-          name = L["Movable Frames"];
+          name = L[tk:IsForever() and "Make Blizzard windows movable" or "Movable Frames"];
           type = "check";
-          tooltip = L["Allows you to move Blizzard Frames outside of combat only."];
-          dbPath = "global.movable.enabled";
+          tooltip = L[tk:IsForever() and "Move the character, spellbook and guild/community windows using the dotted title-bar grip. Only outside combat." or
+            "Allows you to move Blizzard Frames outside of combat only."];
+          dbPath = tk:IsForever() and "global.foreverMovable.enabled" or "global.movable.enabled";
 
           SetValue = function(self, newValue)
-            db:SetPathValue(self.dbPath, newValue);
-            MayronUI:ImportModule("MovableFramesModule"):SetEnabled(newValue);
+            if (tk:IsForever()) then
+              MayronUI:GetComponent("ForeverMovableFrames"):SetEnabled(newValue);
+            else
+              db:SetPathValue(self.dbPath, newValue);
+              MayronUI:ImportModule("MovableFramesModule"):SetEnabled(newValue);
+            end
           end;
         };
         {
           name = L["Clamped to Screen"];
           type = "check";
           tooltip = L["If checked, Blizzard frames cannot be dragged outside of the screen."];
-          dbPath = "global.movable.clampToScreen";
-          requiresReload = true;
+          dbPath = tk:IsForever() and "global.foreverMovable.clampToScreen" or "global.movable.clampToScreen";
+          requiresReload = not tk:IsForever();
         };
         {
           name = L["Reset Positions"];
           type = "button";
           tooltip = L["Reset Blizzard frames back to their original position."];
           OnClick = function()
-            MayronUI:ImportModule("MovableFramesModule"):ResetPositions();
+            if (tk:IsForever()) then
+              if (not MayronUI:GetComponent("ForeverMovableFrames"):ResetPositions()) then return end
+            else
+              MayronUI:ImportModule("MovableFramesModule"):ResetPositions();
+            end
             MayronUI:Print(L["Blizzard frame positions have been reset."]);
           end;
         };

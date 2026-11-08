@@ -17,9 +17,13 @@
   <Script file="ActionBars\EditModeMicroMenu.lua" />
 
   <Script file="ErrorHandler.lua" />
+  <Script file="ForeverErrorReport.lua" />
+  <Script file="ForeverErrorStyle.lua" />
   <Script file="ObjectiveTracker.lua" />
   <Script file="AFKDisplay.lua" />
   <Script file="MovableFrames.lua" />
+  <Script file="ForeverMovableFrames.lua" />
+  <Script file="ForeverWindowFonts.lua" />
   <Script file="Tutorial.lua" />
 
   <Script file="Auras\Auras.lua" />
@@ -33,6 +37,7 @@
   <Script file="Chat\ChatFrame.lua" />
   <Script file="Chat\BlizzardFrames\ChatFrame.lua" />
   <Script file="Chat\BlizzardFrames\RaidFrameManager.lua" />
+  <Script file="Chat\BlizzardFrames\ForeverRaidManager.lua" />
   <Script file="Chat\Chat.config.lua" />
 
   <Script file="DataText\DataText.lua" />

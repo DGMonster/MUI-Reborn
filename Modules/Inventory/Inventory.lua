@@ -334,7 +334,7 @@ do
           local isKeyring = bag.bagIndex == BagIndexes.Keyring;
           local isReagentBag = bag.bagIndex == BagIndexes.ReagentBag;
 
-          local shown = not (isKeyring or isReagentBag);
+          local shown = not (isKeyring or (isReagentBag and not tk:IsForever()));
           bag:SetShown(shown);
 
           if (shown) then
@@ -1326,7 +1326,7 @@ local function SetCharacterInventory(info, inventoryFrame)
       local isKeyring = bag.bagIndex == BagIndexes.Keyring;
       local isReagentBag = bag.bagIndex == BagIndexes.ReagentBag;
 
-      local shown = not (isKeyring or isReagentBag);
+      local shown = not (isKeyring or (isReagentBag and not tk:IsForever()));
       bag:SetShown(shown);
 
       if (not (isBackpack or isKeyring)) then
@@ -1391,7 +1391,7 @@ local function SetCharacterInventory(info, inventoryFrame)
       local isKeyring = bag.bagIndex == BagIndexes.Keyring;
       local isReagentBag = bag.bagIndex == BagIndexes.ReagentBag;
 
-      local shown = not (isKeyring or isReagentBag);
+      local shown = not (isKeyring or (isReagentBag and not tk:IsForever()));
       bag:SetShown(shown);
 
       if (not (isBackpack or isKeyring)) then
@@ -2279,7 +2279,7 @@ function C_InventoryModule:OnInitialize()
       bagFrame:SetPoint("TOPRIGHT");
       bagFrame:SetHeight(1);
 
-      if (bagIndex == BagIndexes.Keyring or bagIndex == BagIndexes.ReagentBag) then
+      if (bagIndex == BagIndexes.Keyring or (bagIndex == BagIndexes.ReagentBag and not tk:IsForever())) then
         bagFrame:Hide();
       end
 

@@ -2,7 +2,7 @@
 
 > A complete, customizable user interface for WoW Retail, WoW Forever, Classic Era, TBC Classic and MoP Classic.
 
-[![Version](https://img.shields.io/badge/version-1.0.3-00ccff)](https://github.com/DGMonster/MUI-Reborn)
+[![Version](https://img.shields.io/badge/version-1.0.4-00ccff)](https://github.com/DGMonster/MUI-Reborn)
 [![WoW Retail](https://img.shields.io/badge/WoW_Retail-12.1-blue)](https://worldofwarcraft.blizzard.com/)
 [![WoW Forever](https://img.shields.io/badge/WoW_Forever-1.60.1-purple)](https://worldofwarcraft.blizzard.com/)
 [![Development status](https://img.shields.io/badge/status-release-brightgreen)](https://github.com/DGMonster/MUI-Reborn/issues)
@@ -15,27 +15,32 @@ addon.
 
 ## Development status
 
-**1.0.3** is a release for Retail, WoW Forever, Classic Era, TBC Classic
-and MoP Classic. It includes the accumulated compatibility corrections and
-restores player/target timer bars on Forever using Blizzard's native aura display.
-Forever timer bars start automatically when enabled in the existing profile.
-With MBB active, MUI leaves addon-button collection to MBB, preventing missing
-minimap icons caused by competing button management (confirmed by user testing).
-The player cast bar uses Blizzard's timing with MUI styling and SUF positioning.
-The native Forever group/raid manager is positioned below the top-left MUI chat;
-this new positioning still needs in-game verification.
+**1.0.4** focuses on WoW Forever improvements while retaining the existing Retail,
+Classic Era, TBC Classic and MoP Classic manifests.
 
-User testing confirmed Forever timer-bar countdowns in combat and target changes,
-and the improved panel/cast-bar appearance. Full regression testing across all
-clients is incomplete. The Forever bank-purchase correction remains unconfirmed;
-normal bank opening works with the inventory enabled.
+Forever improvements include MUI styling for the native group/raid manager,
+movable character/spellbook/guild windows, targeted master-font support,
+a corrected spellbook shortcut, native Lua-error-window styling and a shortcut
+to the MUI report form. Inventory handling includes the reagent bag, and the
+specialization data text now shows the active Primary/Secondary talent group.
+Talent-group switching remains in Blizzard's talent window.
+
+The existing player/target timer bars and player cast-bar styling remain available.
+Blizzard buff/debuff icons are retained. Existing profiles are kept; rerunning
+the installer is not required.
+
+User testing has covered individual Forever fixes, including the Primary label
+and guild-window movement. Reagent-bag handling, Secondary switching and guild
+position persistence after reload remain pending in-game checks. A reported SUF
+party-position reset is still under investigation. Full regression testing across
+clients is incomplete. Automated checks do not replace in-game testing.
 
 On Forever, timer-bar settings/profile changes require `/reload`. Only player and
 target fields are supported; fields using whitelist/blacklist filters are skipped.
 Buff/debuff groups have separate bar limits and sorting. Some legacy visual
-options are not implemented. Custom aura frames remain disabled on Forever.
+options are not implemented. `/muitimers off` hides them for the current session;
+for a persistent change, disable the module or field in configuration and reload.
 The Era tracking menu and MoP dungeon-finder activation remain open checks.
-No WoW runtime tests were performed by the developer agent.
 
 ### Changes since public Beta 15
 

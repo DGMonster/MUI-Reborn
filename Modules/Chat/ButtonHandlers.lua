@@ -114,6 +114,10 @@ local function SetForeverSecureAction(button)
   if (buttonText == buttonKeys.Character) then
     button:SetAttribute("type", "macro");
     button:SetAttribute("macrotext", "/click CharacterMicroButton");
+  elseif (buttonText == buttonKeys.SpellBook) then
+    -- Forever has its own native spellbook button; keep the hardware-click path.
+    button:SetAttribute("type", "macro");
+    button:SetAttribute("macrotext", "/click SpellbookMicroButton");
   elseif (buttonText == buttonKeys.Reputation) then
     button:SetAttribute("type", "macro");
     button:SetAttribute("macrotext", "/click CharacterMicroButton\n/click CharacterFrameModeTab2");
@@ -350,8 +354,8 @@ local function ChatButton_PostClick(self)
     local buttonText = self:GetText();
 
     -- SecureActionButtonTemplate already ran the matching Blizzard action.
-    if ((buttonText == buttonKeys.Character or buttonText == buttonKeys.LFD) and
-        self:GetAttribute("macrotext")) then
+    if ((buttonText == buttonKeys.Character or buttonText == buttonKeys.SpellBook or
+        buttonText == buttonKeys.LFD) and self:GetAttribute("macrotext")) then
       return;
     end
 

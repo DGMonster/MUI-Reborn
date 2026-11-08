@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.0.4 – 2026-11-08
+
+### WoW Forever
+
+- Restore MUI styling for the Blizzard group/raid manager, including its expanded and collapsed toggle buttons.
+- Add title-bar grips for moving the character, spellbook and guild/community windows outside combat. Positions are saved; starting combat cancels an active move. Controls are available through the existing Blizzard-window option and `/muimove`.
+- Open the spellbook from the MUI chat shortcut through Blizzard's native micro button, correcting the reported Edit Mode error after using that shortcut.
+- Apply the existing master-font option to selected character/spellbook headings without replacing global Blizzard font objects.
+- Add MUI styling to the native Lua-error window and a button that opens the existing MUI issue-report form. Blizzard retains error text and its native actions; `/muierrorstyle off` restores the original appearance for the session.
+- Include the equipped reagent bag in the default MUI inventory display and category views. Count its capacity in the inventory data text without counting it twice.
+- Display the active talent group as Primary or Secondary instead of expecting a Retail specialization. The tooltip explains locked secondary groups; talent-group switching remains in Blizzard's talent window.
+
+### Compatibility and validation
+
+- Keep the existing Retail/Classic paths and saved profile formats; no installer rerun or profile reset is required.
+- Blizzard buff/debuff icons remain in use on Forever. The experimental replacement is not included; MUI timer bars remain independently optional.
+- User testing confirmed the raid-manager appearance, character/spellbook movement and combat cancellation, targeted font changes, the error-report button and appearance, guild-window movement and the Primary label. Persisted guild-window position after reload, reagent-bag handling and Secondary switching still need in-game verification.
+- The reported SUF party-position reset remains under investigation; this release does not claim to fix it. Full client regression testing remains incomplete.
+- Lua syntax, isolated logic tests and package/load checks were performed. These do not replace in-game regression testing.
+
 ## 1.0.3 – 2026-11-07
 
 - Fix missing minimap addon icons with MBB enabled: leave button collection to MBB instead of moving LibDBIcon buttons into MUI's context menu. User confirmed the missing icons are visible again.
@@ -13,7 +33,7 @@
 - Correct unit-panel layering so SUF frames remain visible above the panels.
 - Guard missing specialization keys after level-up and omit Forever realm placeholders from the AFK display.
 - Localize compatibility notices; retain the tested Forever raid-manager correction.
-- Replace destructive combined-bag suppression on Forever with deferred hiding. Bank-purchase correction still needs verification with an unpurchased first slot.
+- Replace destructive combined-bag suppression on Forever with deferred hiding. User confirmed the bank fix with a new character on 2026-11-07.
 - Update all installed/public version markers to 1.0.3.
 
 Forever limits: reload after timer-bar settings/profile changes; player/target only; filter-list fields skipped; separate buff/debuff limits and sorting; incomplete legacy visual options. Custom aura frames remain disabled there.

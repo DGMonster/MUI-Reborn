@@ -1,27 +1,33 @@
-# MUI Reborn 1.0.3 – 07.11.2026
+# MUI Reborn 1.0.4 – 08.11.2026
 
-## Änderungen
-- MBB-Kompatibilität korrigiert: MUI verschiebt Addon-Symbole bei aktivem MBB nicht mehr ins eigene Rechtsklickmenü. Die zuvor fehlenden Symbole sind laut Nutzertest wieder sichtbar; ohne MBB bleibt die bisherige Option erhalten.
-- Veralteten Forever-Zauberleistenhinweis entfernt; Aurenhinweis auf Deutsch/Englisch unterscheidet Blizzard-Symbole von MUI-Timerleisten.
-- Blizzard-Gruppen-/Raidmanager in Forever mit 10 UI-Einheiten Abstand unter dem oberen linken MUI-Chat positioniert. Verschiebung nur außerhalb des Kampfes; native Bedienelemente bleiben erhalten.
-- Eigene Spieler- und Ziel-Timerleisten in WoW Forever wieder nutzbar, mit Blizzards nativer Aurenanzeige. Automatischer Start anhand des vorhandenen Profils; kein zusätzlicher AuraTimers-Download erforderlich.
-- Zielwechsel aktualisieren die Timerleisten; kein Ziel oder totes Ziel blendet die Zielgruppe aus, soweit der Client den Einheitenzustand freigibt.
-- Forever-Spielerzauberleiste im MUI-Stil, an das SUF-Porträt angelegt. Blizzard steuert weiterhin Zauberdauer und Ereignisse.
-- Ebenen der Einheitenpanels korrigiert: SUF-Porträts und Lebensleisten erscheinen vor den Panels.
-- Fehlende Spezialisierung beim Levelaufstieg abgefangen, insbesondere vor der Talentfreischaltung.
-- Forever-Realm-Platzhalter aus der AFK-Anzeige entfernt; interne Charakter-/Realm-Schlüssel bleiben erhalten.
-- Auren- und Zauberleisten-Kompatibilitätshinweise lokalisiert.
-- Bestätigte Raid-Manager-Korrektur für den Forever-Bearbeitungsmodus beibehalten.
-- Forever-Inventar: Kombinierte Blizzard-Taschen werden ohne Überschreiben von Show und ohne Umhängen ausgeblendet. Dies ist eine noch zu bestätigende Bankkauf-Korrektur.
-- Versionsnummer und öffentliche Updatekennung aller vier TOCs auf 1.0.3 gesetzt.
+## Änderungen für WoW Forever
 
-## Installation
-WoW schließen und den vollständigen Ordner MUI-Reborn im passenden Interface/AddOns-Verzeichnis ersetzen. SavedVariables behalten; kein erneutes Setup nötig. Bartender4 und die passende SUF-Ausgabe separat installieren: Redux für Retail/Forever, Original für Era/TBC/MoP. Optionale Addons werden nicht mitgeliefert.
+- MUI-Gestaltung des Blizzard-Gruppen-/Raidmanagers wiederhergestellt, einschließlich Pfeilen im geöffneten und geschlossenen Zustand.
+- Charakterfenster, Zauberbuch und Gilde/Communitys am gepunkteten Griff in der Titelleiste verschiebbar. Positionen werden gespeichert; bei Kampfbeginn wird ein laufendes Verschieben abgebrochen. Steuerung über die vorhandene Option für Blizzard-Fenster und `/muimove`.
+- Zauberbuch-Schaltfläche am MUI-Chat an Blizzards native Micro-Schaltfläche angebunden. Korrigiert den gemeldeten Bearbeitungsmodus-Fehler nach Nutzung dieses Öffnungswegs.
+- Bestehende Master-Schrift-Option wirkt auf ausgewählte Überschriften von Charakterfenster und Zauberbuch. Globale Blizzard-Schriftobjekte werden dabei nicht ersetzt.
+- Natives Lua-Fehlerfenster im MUI-Stil und zusätzlicher Knopf zum bestehenden MUI-Fehlerbericht. Fehlertext und native Aktionen bleiben erhalten. `/muierrorstyle off` stellt die Originaloptik für diese Sitzung wieder her.
+- Ausgerüstete Reagenzientasche in die Standard-Inventaransicht und Kategorien einbezogen. Die Taschenanzeige in der Datenleiste zählt ihre Plätze zusätzlich, ohne doppelte Zählung.
+- Talentgruppenanzeige „Primär“ beziehungsweise „Sekundär“ statt der unpassenden Retail-Spezialisierung. Tooltip mit Hinweis auf eine noch gesperrte zweite Gruppe. Umschalten weiterhin im Blizzard-Talentfenster; kein Retail-Beutespezialisierungsmenü in Forever.
 
-## TimerBars in Forever
-Aktivierte Spieler-/Zielfelder starten automatisch. /muitimers zeigt sie an, /muitimers off blendet sie bis zum nächsten UI-Neustart aus. Nach Einstellungs- oder Profiländerungen /reload verwenden. Filterlisten werden noch nicht unterstützt; entsprechende Felder werden mit Hinweis übersprungen. Buffs und Debuffs haben getrennte Maximalzahlen und Sortierung. Nicht alle alten Darstellungsoptionen sind umgesetzt. Andere Einheiten sind noch nicht angebunden. Die alten eigenen Aurenframes bleiben unter Forever deaktiviert. Die neue Zauberleistenanpassung betrifft die Spielerleiste; kein vollständiger Ersatz aller alten Zauberleisten.
+## Update und bestehende Einstellungen
 
-## Prüfstand und offene Punkte
-Vom Nutzer bestätigt: Timerleisten mit Countdown und Ablauf im Kampf, korrekte Zielwechsel, verbesserte Panel-/Zauberleistendarstellung. Nach Inventar-Reaktivierung funktioniert normales Banköffnen; der ursprüngliche Kauf des ersten Bankfachs konnte nach der letzten Änderung nicht erneut getestet werden, weil das Fach bereits gekauft war. Dieser Fix gilt ausdrücklich nicht als bestätigt.
+WoW schließen und den vollständigen Ordner `MUI-Reborn` im passenden `Interface/AddOns/`-Verzeichnis ersetzen. Gespeicherte Einstellungen behalten. Kein erneuter Installer-Durchlauf und kein Profilreset nötig.
 
-Automatischer TimerBars-Start ist neu in diesem Release und benötigt noch Nutzerprüfung nach /reload. Auch die neue Raidmanager-Positionierung benötigt noch Prüfung von Aus-/Einklappen, Markierungen, Bearbeitungsmodus und möglichen Taint-Meldungen im Client. Era-Trackingmenü und MoP-Dungeonbrowser bleiben offene Prüfungen. Kein vollständiger Test aller fünf Clients. Statische Paket-/Ladeverweisprüfungen sind keine WoW-Laufzeittests. Kein Lua-Compiler oder Luacheck in der Arbeitsumgebung verfügbar.
+Bartender4 und die zum Client passende SUF-Ausgabe bleiben separate Pflichtaddons. Bestehende Retail-/Classic-Wege und gespeicherte Profilformate wurden für dieses Update nicht umgestellt. 
+
+Blizzards Buff-/Debuff-Symbole bleiben in Forever aktiv. Der verworfene Symbolversuch ist nicht enthalten. Die MUI-Timerleisten sind unabhängig davon optional: `/muitimers off` blendet sie für diese Sitzung aus. Für dauerhaftes Abschalten das Modul oder ein einzelnes Feld in der Konfiguration deaktivieren und `/reload` verwenden. Nach Timerleisten-Einstellungs- oder Profiländerungen weiterhin neu laden; nur Spieler/Ziel, keine Filterlisten und nicht sämtliche alten Darstellungsoptionen unterstützt.
+
+## Bestätigte Nutzertests
+
+Bestätigt wurden die Raidmanager-Gestaltung, Bewegung von Charakterfenster und Zauberbuch einschließlich Kampf-Abbruch, ausgewählte Schriftänderungen, Fehlerbericht-Knopf und Fehlerfenster-Optik, das Verschieben von Gilde/Communitys und die Anzeige „Primär“. Die zuvor behobene Bankproblematik wurde bereits mit einem neuen Charakter erfolgreich vom Nutzer geprüft.
+
+## Prüfgrenzen und offene Punkte
+
+- Beibehalten der neuen Gildenfenster-Position nach `/reload` ist noch nicht ausdrücklich bestätigt.
+- Reagenzientaschen-Inhalte, Filter, Gegenstandsbewegung und Taschenwechsel benötigen den Nutzertest. Freie Plätze einer Spezialtasche sind nicht für beliebige Gegenstände verwendbar.
+- Anzeige „Sekundär“ und Aktualisierung beim echten Talentgruppenwechsel sind noch nicht im Client geprüft.
+- Der gemeldete Verlust einer SUF-Gruppenposition wird weiter untersucht. Dieses Update behauptet keine Korrektur dafür; gefundene Speicherstände enthielten bereits die MUI-Voreinstellung.
+- Kein vollständiger Test aller Clients. Era-Trackingmenü und MoP-Dungeonbrowser bleiben offene Prüfungen.
+
+Lua-Syntax der geänderten Quelldateien, isolierte Logiktests sowie Ladeverweise und Paketinhalt wurden geprüft. Diese automatisierten Prüfungen ersetzen keine WoW-Laufzeittests; die oben genannten Bestätigungen stammen aus Nutzertests.

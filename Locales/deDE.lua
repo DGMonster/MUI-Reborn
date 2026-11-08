@@ -1027,3 +1027,41 @@ L["Timer bars cannot be configured while aura data is restricted."] = "Timerleis
 L["Timer bars are unavailable: required Blizzard display interfaces are missing."] = "Timerleisten nicht verfügbar: Erforderliche Blizzard-Anzeigeschnittstellen fehlen.";
 L["Timer bars: fields with active filter lists are not supported on WoW Forever."] = "Timerleisten: Felder mit aktiven Filterlisten werden in WoW Forever noch nicht unterstützt.";
 L["Timer bars could not be created: %s"] = "Timerleisten konnten nicht erstellt werden: %s";
+
+-- Forever restoration: raid manager test
+L["Raid manager test: /muiraidstyle on or /muiraidstyle off."] = "Raidmanager-Test: /muiraidstyle on oder /muiraidstyle off.";
+L["Change the raid manager appearance outside combat."] = "Die Raidmanager-Gestaltung bitte außerhalb des Kampfes ändern.";
+
+L["Raid manager test status: enabled=%s; state=%s; hidden textures=%d; background=%s"] = "Raidmanager-Test: aktiv=%s; Zustand=%s; ausgeblendete Texturen=%d; Hintergrund=%s";
+L["Raid manager frame: %s; strata=%s; level=%s"] = "Raidmanager-Fenster: %s; Ebene=%s; Stufe=%s";
+L["Raid manager texture: %s; layer=%s"] = "Raidmanager-Textur: %s; Zeichenebene=%s";
+
+L["Raid manager styled toggle buttons: %d"] = "Raidmanager: gestaltete Auf-/Zuklappknöpfe: %d";
+
+-- Forever window movement test
+L["Move window"] = "Verschieben";
+L["Window movement test: /muimove on or /muimove off."] = "Fenster-Test: /muimove on oder /muimove off.";
+L["Window movement can only be changed outside combat after login."] = "Fensterverschiebung nur nach dem Einloggen und außerhalb des Kampfes ändern.";
+L["Window movement enabled: drag the dotted title-bar grip on supported windows."] = "Fensterverschiebung aktiv: Am gepunkteten Griff in der Titelleiste unterstützter Fenster ziehen.";
+L["Window movement disabled; session anchors restored."] = "Fensterverschiebung aus; ursprüngliche Fensteranker dieser Sitzung wiederhergestellt.";
+
+-- Permanent Forever window movement
+L["Make Blizzard windows movable"] = "Blizzard-Fenster verschiebbar machen";
+L["Move the character, spellbook and guild/community windows using the dotted title-bar grip. Only outside combat."] = "Charakterfenster, Zauberbuch und Gilde/Communitys am gepunkteten Griff in der Titelleiste verschieben. Nur außerhalb des Kampfes.";
+L["Hold the left mouse button to move this window. Only available outside combat."] = "Mit gedrückter linker Maustaste verschieben. Nur außerhalb des Kampfes verfügbar.";
+
+L["Apply the MUI master font to MUI elements and the character/spellbook headings. Global Blizzard fonts remain unchanged."] = "MUI-Hauptschrift für MUI-Elemente und Überschriften von Charakterfenster/Zauberbuch verwenden. Globale Blizzard-Schriften bleiben unverändert.";
+
+-- Independent Forever error report shortcut
+L["Open MUI error report"] = "MUI-Fehlerbericht öffnen";
+L["Open the MUI report form. Copy the Lua error from Blizzard's window into the report if needed."] = "Öffnet den MUI-Bericht. Die Lua-Fehlermeldung bei Bedarf aus dem Blizzard-Fenster in den Bericht kopieren.";
+
+-- Forever error window appearance
+L["Error window appearance: /muierrorstyle on or /muierrorstyle off."] = "Fehlerfenster-Gestaltung: /muierrorstyle on oder /muierrorstyle off.";
+L["Change the error window appearance outside combat."] = "Die Gestaltung des Fehlerfensters bitte außerhalb des Kampfes ändern.";
+
+L["Talent Group"] = "Talentgruppe";
+L["Primary Talent Group"] = "Primär";
+L["Secondary Talent Group"] = "Sekundär";
+L["Manage talent groups in Blizzard's talent window."] = "Talentgruppen werden im Blizzard-Talentfenster verwaltet.";
+L["Secondary talent group is not unlocked."] = "Die sekundäre Talentgruppe ist noch nicht freigeschaltet.";
