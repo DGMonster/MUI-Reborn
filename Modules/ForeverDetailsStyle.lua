@@ -2,7 +2,6 @@
 local _G = _G;
 local MayronUI = _G.MayronUI;
 local tk, db, _, _, _, L = MayronUI:GetCoreComponents();
-if (not tk:IsForever()) then return end
 
 local plainSkinName = "MUI Reborn";
 -- User-approved saved appearance: base 41/255, wallpaper and overlay 77/255.
@@ -25,14 +24,14 @@ end
 local function RegisterSkin()
   if (registered) then return true end
   local details = _G.Details;
-  if (not ready or not details or not details.InstallSkin or not details.skins or
+  if (not ready or not details or not details.InstallSkin or not details.GetAllInstances or not details.skins or
       not details.skins["Minimalistic v2"] or not tk.Constants.LSM) then return false end
   local media = tk.Constants.LSM;
   media:Register("background", "MUI Details Background", "Interface\\Buttons\\WHITE8X8");
   local skin = Copy(details.skins["Minimalistic v2"]);
   skin.author = "Monster";
   skin.site = "https://github.com/DGMonster/MUI-Reborn";
-  skin.version = "1.0.6-rc.1";
+  skin.version = "1.0.7";
   skin.desc = L["MUI styling with class colors, a translucent background and consistent bar spacing."];
   skin.no_cache = true;
   skin.is_cached_skin = nil;
@@ -90,18 +89,18 @@ local function RegisterSkin()
         -- Upgrade the previous MUI header defaults without resetting the window/rows.
         if (instance.titlebar_height == 26) then instance.titlebar_height = 22; end
         local text = instance.attribute_text;
-        if (text and text.anchor and text.anchor[1] == 6 and text.anchor[2] == 8) then
+        if (instance.AttributeMenu and text and text.anchor and text.anchor[1] == 6 and text.anchor[2] == 8) then
           text.anchor[2] = 6; text.shadow = false; text.text_color = { 1, 0.82, 0, 1 };
           instance:AttributeMenu();
         end
         local menu = instance.menu_anchor;
-        if (menu and menu[1] == 8 and menu[2] == 7) then
+        if (instance.LeftMenuAnchorSide and menu and menu[1] == 8 and menu[2] == 7) then
           menu[2] = 5; instance:LeftMenuAnchorSide();
         end
         instance:RefreshTitleBar();
         -- Upgrade only the previous MUI defaults; retain user-adjusted opacity.
-        if (instance.bg_alpha == 0.95) then instance:SetBackgroundAlpha(backgroundAlpha); end
-        if (instance.wallpaper and instance.wallpaper.alpha == 0.9) then
+        if (instance.SetBackgroundAlpha and instance.bg_alpha == 0.95) then instance:SetBackgroundAlpha(backgroundAlpha); end
+        if (instance.InstanceWallpaper and instance.wallpaper and instance.wallpaper.alpha == 0.9) then
           instance.wallpaper.alpha = wallpaperAlpha;
           instance.wallpaper.overlay = Copy(skin.instance_cprops.wallpaper.overlay);
           instance:InstanceWallpaper(instance.wallpaper.enabled);
@@ -127,10 +126,10 @@ function controller:SetEnabled(enabled)
   if (not ready or _G.InCombatLockdown()) then
     tk:Print(L["Details styling can only be changed outside combat after login."]); return false;
   end
-  if (not RegisterSkin()) then
+  local details = _G.Details;
+  if (not RegisterSkin() or not details.GetCurrentProfileName or not details.instance_skin_ignored_values) then
     tk:Print(L["MUI Details skin is unavailable. Load Details first."]); return false;
   end
-  local details = _G.Details;
   local backups = Backups(details);
   local restored = true;
   for _, instance in _G.pairs(details:GetAllInstances()) do

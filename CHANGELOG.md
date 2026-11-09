@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.7
+
+- Prepare character-specific addon presets before activating them, avoiding intermediate Shadowed Unit Frames profile switches during setup.
+- Preserve AceDB defaults during preset imports, including the fade delay used by Bartender4's micro menu.
+- Provide a fallback for missing debuff colors used by Shadowed Unit Frames on supported Classic clients.
+- Guard Retail cast bars against restricted cast data and preserve full realm names in Retail profile labels.
+- Make the Details skin and Questie styling available on supported clients where the respective addon is loaded.
+- Extend compatible Blizzard UI styling and window controls from Forever to Retail.
+
 ## 1.0.6-rc.1 – 2026-11-08
 
 ### Fixes

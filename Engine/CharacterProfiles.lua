@@ -41,15 +41,11 @@ local function Exists(database, name)
   return false;
 end
 
-function MayronUI:GetCharacterAddonProfile(addonName, source)
-  if (not supported[addonName]) then return source end
-  local database = tk.Tables:GetDBObject(addonName);
-  if (not database) then return source end
+local function ResolveCharacterProfile(addonName, database, source)
   if (not db.global.core.setup.profilePerCharacter) then
     return source or database:GetCurrentProfile();
   end
   if (_G.InCombatLockdown()) then error("Character profiles must be selected outside combat."); end
-  source = source or database:GetCurrentProfile();
   local mappings = Registry(addonName);
   -- A layout may already contain this character's resolved profile name.
   for _, destination in pairs(mappings) do
@@ -64,6 +60,17 @@ function MayronUI:GetCharacterAddonProfile(addonName, source)
     local tail = ":" .. suffix;
     destination = Truncate(base, 50 - #tail) .. tail;
   end
+  return destination, mappings;
+end
+
+function MayronUI:GetCharacterAddonProfile(addonName, source)
+  if (not supported[addonName]) then return source end
+  local database = tk.Tables:GetDBObject(addonName);
+  if (not database) then return source end
+  source = source or database:GetCurrentProfile();
+  local destination, mappings = ResolveCharacterProfile(addonName, database, source);
+  if (not mappings) then return destination end
+
   local previous = database:GetCurrentProfile();
   local canCopy = Exists(database, source);
   database:SetProfile(destination);
@@ -108,15 +115,33 @@ function MayronUI:InstallCharacterAddonPreset(addonName, settings)
   assert(database and supported[addonName], "Missing character-profile database: " .. addonName);
   local previous = database:GetCurrentProfile();
   local selected;
-  local function Fill(target, source)
-    for key in pairs(target) do target[key] = nil; end
-    for key, value in pairs(source) do target[key] = Copy(value); end
+  local function ApplyPreset(target, source)
+    for key, value in pairs(source) do
+      if (type(value) == "table" and type(target[key]) == "table") then
+        ApplyPreset(target[key], value);
+      else
+        target[key] = Copy(value);
+      end
+    end
+  end
+  local function Fill(target, source, activeDatabase)
+    if (activeDatabase) then
+      -- Keep AceDB defaults for live addon configs until the installer reloads.
+      activeDatabase:ResetProfile(true, true);
+    else
+      for key in pairs(target) do target[key] = nil; end
+    end
+    ApplyPreset(target, source);
   end
   for source, preset in pairs(settings.profiles or {}) do
-    local destination = self:GetCharacterAddonProfile(addonName, source);
+    local destination, mappings = ResolveCharacterProfile(addonName, database, source);
     if (source == "MayronUI") then selected = destination; end
-    local target = database.profiles[destination];
-    Fill(target, preset);
+    local active = database:GetCurrentProfile() == destination;
+    local profiles = database.profiles;
+    -- Stage inactive presets before notifying the addon of a profile change.
+    if (not active) then profiles[destination] = profiles[destination] or {}; end
+    local target = active and database.profile or profiles[destination];
+    Fill(target, preset, active and database);
     for namespace, data in pairs(settings.namespaces or {}) do
       local values = data.profiles and data.profiles[source];
       if (values) then
@@ -126,9 +151,12 @@ function MayronUI:InstallCharacterAddonPreset(addonName, settings)
         saved[namespace].profiles = saved[namespace].profiles or {};
         local profiles = saved[namespace].profiles;
         profiles[destination] = profiles[destination] or {};
-        Fill(profiles[destination], values);
+        local activeNamespace = active and database:GetNamespace(namespace, true);
+        local namespaceProfile = activeNamespace and activeNamespace.profile or profiles[destination];
+        Fill(namespaceProfile, values, activeNamespace);
       end
     end
+    if (mappings) then mappings[source] = destination; end
   end
   database:SetProfile(selected or previous);
 end

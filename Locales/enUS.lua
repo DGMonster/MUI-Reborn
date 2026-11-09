@@ -1036,3 +1036,5 @@ L["Change micro-menu visibility outside combat after login."] = "Change micro-me
 L["The Bartender4 micro-menu module must be enabled."] = "The Bartender4 micro-menu module must be enabled.";
 
 L["Loot appearance: /muilootstyle on or /muilootstyle off."] = "Loot appearance: /muilootstyle on or /muilootstyle off.";
+
+L["Timer bars: fields with active filter lists are not supported on this client."] = "Timer bars: fields with active filter lists are not supported on this client.";

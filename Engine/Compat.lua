@@ -12,6 +12,22 @@ _G.MUI_REBORN_ADDON_NAME = addonName or "MUI-Reborn"
 
 local _G = _G
 
+-- Older SUF Classic builds still index this legacy Blizzard palette.
+local project = _G.WOW_PROJECT_ID
+if not _G.DebuffTypeColor and project and
+    (project == _G.WOW_PROJECT_CLASSIC or project == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC or
+     project == _G.WOW_PROJECT_MISTS_CLASSIC) then
+  local default = { r = 0.8, g = 0, b = 0 }
+  _G.DebuffTypeColor = setmetatable({
+    none = default,
+    [""] = default,
+    Magic = { r = 0.2, g = 0.6, b = 1 },
+    Curse = { r = 0.6, g = 0, b = 1 },
+    Disease = { r = 0.6, g = 0.4, b = 0 },
+    Poison = { r = 0, g = 0.6, b = 0 },
+  }, { __index = function() return default end })
+end
+
 -- =========================
 -- C_AddOns (Retail)
 -- =========================

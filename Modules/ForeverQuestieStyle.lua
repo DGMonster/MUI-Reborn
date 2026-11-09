@@ -1,8 +1,7 @@
--- Optional Forever presentation for Questie. Questie owns content and interaction.
+-- Optional presentation for Questie. Questie owns content and interaction.
 local _G = _G;
 local MayronUI = _G.MayronUI;
 local tk, db, _, gui, _, L = MayronUI:GetCoreComponents();
-if (not tk:IsForever()) then return end
 
 db:AddToDefaults("global.foreverQuestie", { enabled = false });
 local ready, panel, tracker = false, nil, nil;

@@ -2,7 +2,7 @@
 local _G = _G;
 local MayronUI = _G.MayronUI;
 local tk, db = MayronUI:GetCoreComponents();
-if (not tk:IsForever()) then return end
+if (not tk:IsRetail()) then return end
 
 local ready = false;
 local elapsedTotal = 0;

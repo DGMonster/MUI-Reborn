@@ -2,9 +2,9 @@
 local _G = _G;
 local MayronUI = _G.MayronUI;
 local tk, _, _, gui, _, L = MayronUI:GetCoreComponents();
-if (not tk:IsForever()) then return end
+if (not tk:IsRetail()) then return end
 
-local enabled = true;
+local enabled = tk:IsForever();
 local initialized = false;
 local background;
 local originals = {};

@@ -37,6 +37,25 @@ if (tk:IsClassic()) then
   end
 end
 
+local issecretvalue = _G.issecretvalue;
+if (tk:IsRetail() and issecretvalue) then
+  -- The legacy bars need readable values for timing, colors and spell lookup.
+  local function ReadableCastInfo(...)
+    for index = 1, select("#", ...) do
+      if (issecretvalue(select(index, ...))) then return nil end
+    end
+    return ...;
+  end
+
+  local getCastInfo, getChannelInfo = UnitCastingInfo, UnitChannelInfo;
+  UnitCastingInfo = function(unit)
+    return ReadableCastInfo(getCastInfo(unit));
+  end
+  UnitChannelInfo = function(unit)
+    return ReadableCastInfo(getChannelInfo(unit));
+  end
+end
+
 -- Objects -----------------------------
 ---@class CastBarsModule : BaseModule
 local C_CastBarsModule = MayronUI:RegisterModule("CastBarsModule", L["Cast Bars"]);
@@ -784,7 +803,12 @@ function C_CastBar:StartCasting(data, channelling, fadeIn, auraInfo)
 		local isChargeSpell = numStages > 0;
 
 		if (isChargeSpell) then
-			endTime = endTime + _G.GetUnitEmpowerHoldAtMaxTime(data.unitID);
+			local holdTime = _G.GetUnitEmpowerHoldAtMaxTime(data.unitID);
+      if (issecretvalue and issecretvalue(holdTime)) then
+        self:StopCasting();
+        return;
+      end
+      endTime = endTime + holdTime;
       channelling = false;
 		end
   end

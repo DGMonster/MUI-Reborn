@@ -94,9 +94,9 @@ function Inventory:Update(data, refreshSettings)
     slots = slots + (GetContainerNumFreeSlots(i) or 0);
   end
 
-  -- Forever equips a separate reagent bag beyond the four normal bag slots.
+  -- Some clients expose the reagent bag outside the normal bag slot range.
   local reagentBag = _G.Enum and _G.Enum.BagIndex and _G.Enum.BagIndex.ReagentBag;
-  if (tk:IsForever() and reagentBag and reagentBag > NUM_BAG_SLOTS) then
+  if (tk:IsRetail() and reagentBag and reagentBag > NUM_BAG_SLOTS) then
     totalSlots = totalSlots + (GetContainerNumSlots(reagentBag) or 0);
     slots = slots + (GetContainerNumFreeSlots(reagentBag) or 0);
   end

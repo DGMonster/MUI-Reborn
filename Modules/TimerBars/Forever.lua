@@ -3,7 +3,8 @@
 local _G = _G;
 local MayronUI = _G.MayronUI;
 local tk, _, _, _, _, L = MayronUI:GetCoreComponents();
-if (not tk:IsForever()) then return end
+local _, _, _, interfaceVersion = _G.GetBuildInfo();
+if (not tk:IsForever() and (not tk:IsRetail() or (tonumber(interfaceVersion) or 0) < 120100)) then return end
 
 local holders = {};
 local running = false;
@@ -106,7 +107,8 @@ local function StartFields()
     _G.C_AddOns.LoadAddOn("Blizzard_AuraContainer");
   end
   if (not _G.CustomAuraContainerGroupDefaultOptions or not _G.AnchorUtil or
-      not _G.Enum.StatusBarTimerDirection or _G.Enum.StatusBarTimerDirection.RemainingTime == nil) then
+      not _G.AuraContainerSortMethod or not _G.AuraContainerSortDirection or
+      not _G.Enum or not _G.Enum.StatusBarTimerDirection or _G.Enum.StatusBarTimerDirection.RemainingTime == nil) then
     tk:Print(L["Timer bars are unavailable: required Blizzard display interfaces are missing."]);
     return;
   end
@@ -134,7 +136,7 @@ local function StartFields()
     if (field.enabled and (field.unitID == "player" or field.unitID == "target") and
         (field.filters.showBuffs or field.filters.showDebuffs)) then
       if (field.filters.enableWhiteList or field.filters.enableBlackList) then
-        tk:Print(L["Timer bars: fields with active filter lists are not supported on WoW Forever."]);
+        tk:Print(L["Timer bars: fields with active filter lists are not supported on this client."]);
       else
         local holder = _G.CreateFrame("Frame", nil, _G.UIParent);
         holder.unitID = field.unitID;

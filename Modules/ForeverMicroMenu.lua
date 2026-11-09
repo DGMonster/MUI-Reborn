@@ -2,7 +2,7 @@
 local _G = _G;
 local MayronUI = _G.MayronUI;
 local tk, db, _, _, _, L = MayronUI:GetCoreComponents();
-if (not tk:IsForever()) then return end
+if (not tk:IsRetail()) then return end
 
 db:AddToDefaults("global.foreverMicroMenu", { hidden = true });
 local ready, lastProfile, elapsedTotal = false, nil, 0;

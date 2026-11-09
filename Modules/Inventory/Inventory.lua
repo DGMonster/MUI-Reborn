@@ -334,7 +334,7 @@ do
           local isKeyring = bag.bagIndex == BagIndexes.Keyring;
           local isReagentBag = bag.bagIndex == BagIndexes.ReagentBag;
 
-          local shown = not (isKeyring or (isReagentBag and not tk:IsForever()));
+          local shown = not (isKeyring or (isReagentBag and not tk:IsRetail()));
           bag:SetShown(shown);
 
           if (shown) then
@@ -596,7 +596,7 @@ end
 ---@param slot MayronUI.Inventory.Slot
 local function SetDefaultBagSlotBorderColor(slot)
   local bag = slot:GetParent();
-  if (tk:IsForever() and bag and bag.bagIndex == BagIndexes.ReagentBag) then
+  if (tk:IsRetail() and bag and bag.bagIndex == BagIndexes.ReagentBag) then
     local r, g, b = tk:GetClassColor();
     slot:SetGridColor(r * 0.7, g * 0.7, b * 0.7);
   else
@@ -1336,7 +1336,7 @@ local function SetCharacterInventory(info, inventoryFrame)
       local isKeyring = bag.bagIndex == BagIndexes.Keyring;
       local isReagentBag = bag.bagIndex == BagIndexes.ReagentBag;
 
-      local shown = not (isKeyring or (isReagentBag and not tk:IsForever()));
+      local shown = not (isKeyring or (isReagentBag and not tk:IsRetail()));
       bag:SetShown(shown);
 
       if (not (isBackpack or isKeyring)) then
@@ -1401,7 +1401,7 @@ local function SetCharacterInventory(info, inventoryFrame)
       local isKeyring = bag.bagIndex == BagIndexes.Keyring;
       local isReagentBag = bag.bagIndex == BagIndexes.ReagentBag;
 
-      local shown = not (isKeyring or (isReagentBag and not tk:IsForever()));
+      local shown = not (isKeyring or (isReagentBag and not tk:IsRetail()));
       bag:SetShown(shown);
 
       if (not (isBackpack or isKeyring)) then
@@ -2221,7 +2221,7 @@ function C_InventoryModule:OnInitialize()
     if (tk:IsRetail()) then
       inventoryFrame:RegisterEvent("UNIT_INVENTORY_CHANGED");
       inventoryFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
-      if (tk:IsForever()) then
+      do
         -- Keep Blizzard's methods and parent intact for the bank's secure flow.
         local hookedFrames = {};
         local maskedFrames = {};
@@ -2267,8 +2267,6 @@ function C_InventoryModule:OnInitialize()
         bagWatcher:RegisterEvent("BAG_UPDATE_DELAYED");
         bagWatcher:SetScript("OnEvent", BindCombinedBags);
         BindCombinedBags();
-      else
-        tk:KillElement(_G["ContainerFrameCombinedBags"]);
       end
     end
 
@@ -2323,7 +2321,7 @@ function C_InventoryModule:OnInitialize()
       bagFrame:SetPoint("TOPRIGHT");
       bagFrame:SetHeight(1);
 
-      if (bagIndex == BagIndexes.Keyring or (bagIndex == BagIndexes.ReagentBag and not tk:IsForever())) then
+      if (bagIndex == BagIndexes.Keyring or (bagIndex == BagIndexes.ReagentBag and not tk:IsRetail())) then
         bagFrame:Hide();
       end
 

@@ -2,7 +2,7 @@
 local _G = _G;
 local MayronUI = _G.MayronUI;
 local tk, db, _, _, _, L = MayronUI:GetCoreComponents();
-if (not tk:IsForever()) then return end
+if (not tk:IsRetail()) then return end
 
 db:AddToDefaults("global.foreverMovable", { enabled = true; clampToScreen = true; positions = {} });
 local enabled, ready = false, false;
@@ -98,7 +98,7 @@ local function Refresh()
   for _, name in _G.ipairs(names) do
     local frame = _G[name];
     local entry = entries[name];
-    if (frame and not entry) then
+    if (frame and not entry and (tk:IsForever() or not frame:IsProtected())) then
       entry = CreateHandle(name, frame);
       entries[name] = entry;
     end
