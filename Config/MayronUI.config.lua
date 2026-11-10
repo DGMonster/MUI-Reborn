@@ -1,4 +1,5 @@
 -- luacheck: ignore MayronUI self 143 631
+local _, addon = ...;
 local _G = _G;
 local MayronUI = _G.MayronUI;
 local tk, db, _, gui, obj, L = MayronUI:GetCoreComponents();
@@ -134,6 +135,57 @@ function C_ConfigMenu:GetConfigTable()
             gui:UpdateMuiFrameColor(value.r, value.g, value.b);
           end;
         };
+        {
+          name = L["MUI Style for Blizzard Windows"];
+          tooltip = L["MUI_WINDOW_STYLE_WIP"];
+          type = "check";
+          shown = tk:IsForever();
+          dbPath = "global.foreverWindowStyle";
+          requiresReload = true;
+        };
+        {
+          name = L["MUI Font for Friendly Nameplates"];
+          tooltip = L["Apply the MUI font to friendly player nameplates in name-only mode."];
+          type = "check";
+          shown = tk:IsForever();
+          dbPath = "profile.friendlyNameplates.muiFont";
+          requiresReload = true;
+        };
+        {
+          name = L["Use Guild Name Color"];
+          type = "check";
+          shown = tk:IsForever();
+          enabled = tk:IsForever() and db.profile.friendlyNameplates.muiFont;
+          dbPath = "profile.friendlyNameplates.guildColorEnabled";
+          requiresReload = true;
+        };
+        {
+          name = L["Guild Name Color"];
+          type = "color";
+          shown = tk:IsForever();
+          enabled = tk:IsForever() and db.profile.friendlyNameplates.muiFont;
+          dbPath = "profile.friendlyNameplates.guildColor";
+          requiresReload = true;
+        };
+        {
+          name = L["Show Guild Names on Nameplates"];
+          type = "check";
+          shown = tk:IsForever();
+          enabled = tk:IsForever() and db.profile.friendlyNameplates.muiFont;
+          dbPath = "profile.friendlyNameplates.showGuildNames";
+          OnValueChanged = function()
+            local nameplates = MayronUI:GetComponent("ForeverFriendlyNameplates");
+            if (nameplates.Refresh) then nameplates.Refresh(); end
+          end;
+        };
+        {
+          name = L["Show Guild Star"];
+          type = "check";
+          shown = tk:IsForever();
+          enabled = tk:IsForever() and db.profile.friendlyNameplates.muiFont;
+          dbPath = "profile.friendlyNameplates.guildStar";
+          requiresReload = true;
+        };
         { type = "divider"};
         {
           name = L["Override Master Font"];
@@ -177,6 +229,20 @@ function C_ConfigMenu:GetConfigTable()
           description = L["These settings are applied account-wide"];
         };
         {
+          name = L["MUI Language"];
+          type = "dropdown";
+          width = 230;
+          dbPath = "global.core.language";
+          requiresReload = true;
+          GetOptions = function()
+            local options = { [L["Use WoW Client Language"]] = "client" };
+            for code, label in pairs(addon.muiLanguages) do options[label] = code; end
+            return options;
+          end;
+          GetValue = function()
+            return addon.NormalizeMuiLanguage(db.global.core.language);
+          end;
+        }; { type = "divider" }; {
           name = L["Display Lua Errors"];
           type = "check";
 

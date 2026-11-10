@@ -16,7 +16,8 @@ local tk = {};
 ---@class MayronUI.GUIBuilder
 local gui = {};
 
-local db = obj:Import("MayronDB").Static:CreateDatabase(addOnName, "MayronUIdb", nil, "MayronUI"); ---@type MayronDB
+-- Saved variables load early for localization; start the database on ADDON_LOADED.
+local db = obj:Import("MayronDB").Static:CreateDatabase(addOnName, "MayronUIdb", true, "MayronUI"); ---@type MayronDB
 local L = _G.LibStub("AceLocale-3.0"):GetLocale("MayronUI"); ---@type AceLocale.Localizations
 
 -- Keep the legacy locale keys for compatibility, but show the Reborn name to players.

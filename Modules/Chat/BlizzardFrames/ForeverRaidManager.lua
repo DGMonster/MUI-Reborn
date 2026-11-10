@@ -9,7 +9,6 @@ local initialized = false;
 local background;
 local originals = {};
 local elapsedSinceRefresh = 0;
-local lastState = "idle";
 local toggleStyles = {};
 
 local function StyleToggleButton(button, expanded)
@@ -96,16 +95,15 @@ local function Refresh()
     HideNativeBackground(manager);
   end
   if (not display or not display:IsVisible()) then
-    lastState = not manager and "manager missing" or (not display and "display missing" or "display hidden");
     if (background) then background:Hide(); end
     return;
   end
   -- Never alter native regions or read/compute native geometry during combat.
-  if (_G.InCombatLockdown()) then lastState = "combat"; return end
+  if (_G.InCombatLockdown()) then return end
   local left, bottom, width, height = display:GetRect();
   if (_G.issecretvalue and (_G.issecretvalue(left) or _G.issecretvalue(bottom) or
-      _G.issecretvalue(width) or _G.issecretvalue(height))) then lastState = "secret geometry"; return end
-  if (not left or not bottom or not width or not height) then lastState = "geometry unavailable"; return end
+      _G.issecretvalue(width) or _G.issecretvalue(height))) then return end
+  if (not left or not bottom or not width or not height) then return end
   if (not background) then
     background = _G.CreateFrame("Frame", "MUI_ForeverRaidManagerBackground", _G.UIParent);
     background:EnableMouse(false);
@@ -127,7 +125,6 @@ local function Refresh()
   HideNativeBackground(manager.NineSlice);
   HideNativeBackground(display.NineSlice);
   background:Show();
-  lastState = "drawn";
 end
 
 MayronUI:Hook("CoreModule", "OnInitialized", function()
@@ -151,44 +148,11 @@ events:SetScript("OnUpdate", function(_, elapsed)
   end
 end);
 
-local function PrintStatus()
-  local count = 0;
-  for _ in _G.pairs(originals) do count = count + 1; end
-  local buttons = 0;
-  for _ in _G.pairs(toggleStyles) do buttons = buttons + 1; end
-  tk:Print(L["Raid manager styled toggle buttons: %d"]:format(buttons));
-  tk:Print(L["Raid manager test status: enabled=%s; state=%s; hidden textures=%d; background=%s"]:format(
-    _G.tostring(enabled), lastState, count,
-    _G.tostring(background and background:IsShown() or false)));
-  local manager = _G.CompactRaidFrameManager;
-  local display = manager and (manager.displayFrame or _G.CompactRaidFrameManagerDisplayFrame);
-  if (display) then
-    local name = display:GetName() or "anonymous";
-    tk:Print(L["Raid manager frame: %s; strata=%s; level=%s"]:format(
-      name, display:GetFrameStrata(), _G.tostring(display:GetFrameLevel())));
-    -- Only frame artwork metadata, no protected unit/combat data.
-    for _, region in _G.ipairs({ display:GetRegions() }) do
-      if (region:IsObjectType("Texture")) then
-        tk:Print(L["Raid manager texture: %s; layer=%s"]:format(
-          region:GetName() or "anonymous", region:GetDrawLayer()));
-      end
-    end
-  end
-end
-
 _G.SLASH_MUIRAIDSTYLE1 = "/muiraidstyle";
 _G.SlashCmdList.MUIRAIDSTYLE = function(message)
   local option = _G.strtrim(message or ""):lower();
-  if (option == "status") then
-    if (_G.InCombatLockdown()) then
-      tk:Print(L["Change the raid manager appearance outside combat."]);
-      return;
-    end
-    PrintStatus();
-    return;
-  end
   if (option ~= "on" and option ~= "off") then
-    tk:Print(L["Raid manager test: /muiraidstyle on or /muiraidstyle off."]);
+    tk:Print(L["Raid manager appearance: /muiraidstyle on or /muiraidstyle off."]);
     return;
   end
   if (_G.InCombatLockdown()) then
@@ -196,6 +160,5 @@ _G.SlashCmdList.MUIRAIDSTYLE = function(message)
     return;
   end
   enabled = option == "on";
-  if (enabled) then Refresh(); else Restore(); lastState = "off"; end
-  PrintStatus();
+  if (enabled) then Refresh(); else Restore(); end
 end;

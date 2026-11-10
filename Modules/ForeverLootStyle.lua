@@ -88,6 +88,7 @@ local function BindLootFrame()
   end
 end
 MayronUI:Hook("CoreModule", "OnInitialized", function()
+  if (tk:IsForever() and _G.MayronUIdb.global.foreverWindowStyle ~= true) then return end
   ready = true;
   local watcher = _G.CreateFrame("Frame");
   watcher:RegisterEvent("LOOT_OPENED"); watcher:RegisterEvent("LOOT_CLOSED");
@@ -102,6 +103,7 @@ end);
 
 _G.SLASH_MUILOOTSTYLE1 = "/muilootstyle";
 _G.SlashCmdList.MUILOOTSTYLE = function(message)
+  if (tk:IsForever() and _G.MayronUIdb.global.foreverWindowStyle ~= true) then return end
   local option = _G.strtrim(message or ""):lower();
   if (option ~= "on" and option ~= "off") then
     tk:Print(L["Loot appearance: /muilootstyle on or /muilootstyle off."]); return;

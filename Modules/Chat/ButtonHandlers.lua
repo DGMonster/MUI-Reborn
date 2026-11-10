@@ -1,4 +1,5 @@
 -- luacheck: ignore MayronUI self 143
+local _, addon = ...;
 local _G = _G;
 local MayronUI, table = _G.MayronUI, _G.table;
 local tk, _, em, _, _, L = MayronUI:GetCoreComponents();
@@ -103,7 +104,7 @@ local function SetForeverSecureAction(button)
     return;
   end
 
-  local buttonText = button:GetText();
+  local buttonText = button.muiShortcutAction or button:GetText();
   button:SetAttribute("type", nil);
   button:SetAttribute("clickbutton", nil);
   button:SetAttribute("macrotext", nil);
@@ -343,7 +344,7 @@ local function ChatButton_OnClick(self)
     return;
   end
 
-	local handler = clickHandlers[self:GetText()];
+	local handler = clickHandlers[self.muiShortcutAction or self:GetText()];
 	if (obj:IsFunction(handler)) then
 		handler();
 	end
@@ -351,7 +352,7 @@ end
 
 local function ChatButton_PostClick(self)
   if (tk:IsForever()) then
-    local buttonText = self:GetText();
+    local buttonText = self.muiShortcutAction or self:GetText();
 
     -- SecureActionButtonTemplate already ran the matching Blizzard action.
     if ((buttonText == buttonKeys.Character or buttonText == buttonKeys.SpellBook or
@@ -388,7 +389,7 @@ local function ChatFrame_OnModifierStateChanged(_, _, data)
     for _, buttonStateData in ipairs(data.settings.buttons) do
       if (not buttonStateData.key or tk:IsModComboActive(buttonStateData.key)) then
         for index = 1, 3 do
-          local text = buttonStateData[index];
+          local text = addon.LocalizeChatShortcut(buttonStateData[index], C_ChatModule.Static.ButtonNames);
           -- Preserve saved bindings while replacing the obsolete MoP skills tab.
           if (isMistsClassic and text == L["Skills"]) then
             text = L["LFD"];
@@ -405,9 +406,100 @@ local function ChatFrame_OnModifierStateChanged(_, _, data)
   end
 end
 
+local shortcutIconCells = {
+  Character = 0;
+  SpellBook = 1;
+  Talents = 2;
+  Reputation = 3;
+  LFD = 4;
+  QuestLog = 5;
+  Friends = 6;
+  Guild = 7;
+  Macros = 8;
+  Achievements = 9;
+  CollectionsJournal = 10;
+  EncounterJournal = 11;
+  Skills = 12;
+};
+local shortcutIcons = {};
+for key, label in pairs(buttonKeys) do
+  shortcutIcons[label] = shortcutIconCells[key];
+end
+
+local function SetUpIconButtons(data, buttonSettings)
+  if (InCombatLockdown()) then
+    local pending = data.iconButtonsPending;
+    if (not pending) then
+      pending = _G.CreateFrame("Frame");
+      pending:SetScript("OnEvent", function(frame)
+        frame:UnregisterEvent("PLAYER_REGEN_ENABLED");
+        SetUpIconButtons(data, data.settings.buttons);
+      end);
+      data.iconButtonsPending = pending;
+    end
+    pending:RegisterEvent("PLAYER_REGEN_ENABLED");
+    return;
+  end
+
+  data.iconButtons = data.iconButtons or {};
+  local buttons = data.iconButtons;
+  for layer = 1, 3 do
+    local settings = buttonSettings[layer];
+    for slot = 1, 3 do
+      local index = (layer - 1) * 3 + slot;
+      local button = buttons[index];
+      if (not button) then
+        local template = tk:IsForever() and "SecureActionButtonTemplate" or nil;
+        button = tk:CreateFrame("Button", data.buttonsBar, nil, template);
+        local original = data.buttons[index == 1 and 1 or index == 9 and 3 or 2];
+        local width = data.buttonsBar:GetWidth() / 9;
+        if (index == 1) then
+          button:SetPoint("TOPLEFT");
+        else
+          button:SetPoint("LEFT", buttons[index - 1], "RIGHT");
+        end
+        button:SetSize(width, data.buttonsBar:GetHeight());
+        local normal, highlight = original:GetNormalTexture(), original:GetHighlightTexture();
+        button:SetNormalTexture(normal:GetTexture());
+        button:SetHighlightTexture(highlight:GetTexture());
+        button:GetNormalTexture():SetTexCoord(normal:GetTexCoord());
+        button:GetHighlightTexture():SetTexCoord(highlight:GetTexCoord());
+        button.icon = button:CreateTexture(nil, "OVERLAY", nil, 7);
+        button.icon:SetPoint("CENTER");
+        button.icon:SetSize(16, 16);
+        if (tk:IsForever()) then
+          button:SetScript("PostClick", ChatButton_PostClick);
+          foreverSecureButtons[button] = true;
+        else
+          button:SetScript("OnClick", ChatButton_OnClick);
+        end
+        buttons[index] = button;
+      end
+
+      local text = addon.LocalizeChatShortcut(settings and settings[slot] or "", C_ChatModule.Static.ButtonNames);
+      if (isMistsClassic and text == L["Skills"]) then text = L["LFD"]; end
+      button.muiShortcutAction = text;
+      local cell = shortcutIcons[text] or 13;
+      local left, top = (cell % 8) / 8, math.floor(cell / 8) / 2;
+      button.icon:SetTexture(tk:GetAssetFilePath("Icons\\ChatShortcutIcons"));
+      button.icon:SetTexCoord(left, left + 1 / 8, top, top + 1 / 2);
+      tk:ApplyThemeColor(button.icon);
+      tk:SetBasicTooltip(button, text, "ANCHOR_TOP");
+      SetForeverSecureAction(button);
+      button:SetShown(text ~= "");
+    end
+  end
+
+  for _, button in ipairs(data.buttons) do button:Hide(); end
+end
+
 obj:DefineParams("table")
 function C_ChatFrame:SetUpButtonHandler(data, buttonSettings)
   data.settings.buttons = buttonSettings;
+  if (data.chatModuleSettings.shortcutBarStyle == "icons") then
+    SetUpIconButtons(data, buttonSettings);
+    return;
+  end
 
   local listenerID = data.anchorName .. "_OnModifierStateChanged";
   local listener = em:GetEventListenerByID(listenerID);

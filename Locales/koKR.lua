@@ -1,7 +1,11 @@
-local L = _G.LibStub("AceLocale-3.0"):NewLocale("MayronUI", "koKR");
+local _, addon = ...;
+local L = addon.RegisterMuiLocale("koKR");
 if not L then
   return
 end
+
+L["MUI Language"] = "MUI 언어";
+L["Use WoW Client Language"] = "WoW 클라이언트 언어 사용";
 
 L["Character"] = "캐릭터";
 L["Bags"] = "바지";

@@ -1,3 +1,19 @@
+# MUI Reborn 1.0.8-rc
+
+## WoW Forever
+
+- Eigene MUI-Einheitenrahmen als Vorschau und Alternative zu Shadowed Unit Frames. Enthalten sind Spieler, Ziel, Begleiter, Ziel des Ziels, Gruppe, Aura-Filter und eine 40er-Layoutvorschau. Die Aura-Optionen an echten Schlachtzugsrahmen müssen noch im Spiel getestet werden.
+- Optionales MUI-Design für Blizzard-Fenster wie Gilde & Communitys, Post, Zauberbuch, Händler, Beute, Questdialoge und Questtracker. Die Überarbeitung ist in Arbeit und standardmäßig ausgeschaltet. Fenster lassen sich weiterhin separat verschieben.
+- Optionale Gildennamen auf freundlichen Namensplaketten und Hervorhebung der eigenen Gilde.
+- Die Spieler-Zauberleiste kann nach dem Kampf wieder am eingestellten Porträt verankert werden.
+
+## Allgemein
+
+- Sprachauswahl für MUI und optionales Symbollayout für die Chat-Kurzbefehle.
+- Überarbeitete Verwaltung von Charakterprofilen und Layout-Einstellungen.
+
+---
+
 # MUI Reborn 1.0.6-rc.1 – 08.11.2026
 
 ## Fehlerkorrekturen

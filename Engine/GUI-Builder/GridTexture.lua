@@ -163,3 +163,117 @@ function gui:CreateGridTexture(frame, textureFilePath, cornerSize, padding, orig
 
   return Mixin(frame, GridTextureMixin);
 end
+-- Decorative inset for native windows. Keep the grid below the native controls.
+function gui:CreateWindowSkinSurface(parent, topLeft, bottomRight, left, top, right, bottom)
+  local tk = MayronUI:GetCoreComponents();
+  local surface = _G.CreateFrame("Frame", nil, parent);
+  surface:EnableMouse(false);
+  surface:SetFrameLevel(parent:GetFrameLevel());
+  surface:SetPoint("TOPLEFT", topLeft, "TOPLEFT", left, top);
+  surface:SetPoint("BOTTOMRIGHT", bottomRight, "BOTTOMRIGHT", right, bottom);
+  self:CreateGridTexture(surface, tk:GetAssetFilePath("Textures\\DialogBox\\Dialog-Medium"),
+    10, 0, 674, 674);
+  local red, green, blue = tk:GetClassColor();
+  surface:SetGridColor(red, green, blue, 0.9);
+  surface.c:SetVertexColor(0.72, 0.72, 0.76, 0.85);
+  return surface;
+end
+
+function gui:CreateWindowSkinTitle(title, width)
+  local tk = MayronUI:GetCoreComponents();
+  local texture = title:CreateTexture(nil, "BACKGROUND", nil, 1);
+  texture:SetTexture(tk:GetAssetFilePath("Textures\\DialogBox\\TitleBar"));
+  texture:SetPoint("LEFT", title, "LEFT", 3, 1);
+  texture:SetSize(width, 24);
+  texture:Hide();
+  local text = title.TitleText;
+  local points, justify;
+  local style = { texture = texture };
+
+  function style:SetShown(shown)
+    if (shown and text and not points) then
+      points, justify = {}, text:GetJustifyH();
+      for index = 1, text:GetNumPoints() do points[index] = { text:GetPoint(index) }; end
+      text:ClearAllPoints();
+      text:SetPoint("LEFT", texture, "LEFT", 9, 0);
+      text:SetPoint("RIGHT", texture, "RIGHT", -15, 0);
+      text:SetJustifyH("LEFT");
+    elseif (not shown and points) then
+      text:ClearAllPoints();
+      for _, point in ipairs(points) do text:SetPoint(_G.unpack(point)); end
+      text:SetJustifyH(justify);
+      points = nil;
+    end
+    texture:SetShown(shown);
+  end
+
+  return style;
+end
+
+-- Applies the inventory-style shell to a native window with its own title.
+function gui:CreateWindowSkinChrome(frame, titleWidth, extraLeft)
+  local tk = MayronUI:GetCoreComponents();
+  local surface = self:CreateWindowSkinSurface(frame, frame, frame, -3 - (extraLeft or 0), -2, 3, -3);
+  local backing = surface:CreateTexture(nil, "BACKGROUND", nil, -1);
+  backing:SetPoint("TOPLEFT", surface, "TOPLEFT", 8, -8);
+  backing:SetPoint("BOTTOMRIGHT", surface, "BOTTOMRIGHT", -8, 8);
+  backing:SetColorTexture(0.035, 0.035, 0.045, 0.96);
+  surface:SetGridAlphaType("Low");
+  surface:Hide();
+
+  local title = frame.TitleContainer;
+  local plate = title and self:CreateWindowSkinTitle(title, titleWidth);
+  local titleText = title and title.TitleText;
+  local close = frame.CloseButton;
+  local closeSkin, closeBackground;
+  if (close) then
+    closeSkin = _G.CreateFrame("Frame", nil, close);
+    closeSkin:EnableMouse(false);
+    closeSkin:SetAllPoints(close);
+    closeBackground = closeSkin:CreateTexture(nil, "BACKGROUND");
+    closeBackground:SetAllPoints(closeSkin);
+    closeBackground:SetTexture(tk:GetAssetFilePath("Textures\\Widgets\\Button"));
+    self:CreateIconTexture("cross", closeSkin, false);
+    closeSkin:Hide();
+  end
+
+  local originalAlphas, originalTextColor = {};
+  local function HideArt(region)
+    if (not region) then return end
+    if (originalAlphas[region] == nil) then originalAlphas[region] = region:GetAlpha(); end
+    region:SetAlpha(0);
+  end
+
+  return function(shown)
+    surface:SetShown(shown);
+    if (plate) then plate:SetShown(shown); end
+    if (closeSkin) then closeSkin:SetShown(shown); end
+    if (not shown) then
+      for region, alpha in _G.pairs(originalAlphas) do region:SetAlpha(alpha); end
+      originalAlphas = {};
+      if (originalTextColor) then
+        titleText:SetTextColor(_G.unpack(originalTextColor));
+        originalTextColor = nil;
+      end
+      return;
+    end
+
+    local red, green, blue = tk:GetClassColor();
+    HideArt(frame.Bg);
+    HideArt(frame.NineSlice);
+    if (frame.Inset) then
+      HideArt(frame.Inset.Bg);
+      HideArt(frame.Inset.NineSlice);
+    end
+    if (plate) then plate.texture:SetVertexColor(red * 0.85, green * 0.85, blue * 0.85); end
+    if (titleText) then
+      originalTextColor = originalTextColor or { titleText:GetTextColor() };
+      titleText:SetTextColor(0.96, 0.96, 1);
+    end
+    if (closeSkin) then
+      HideArt(close:GetNormalTexture());
+      HideArt(close:GetPushedTexture());
+      closeBackground:SetVertexColor(red * 0.85, green * 0.85, blue * 0.85);
+    end
+  end;
+end

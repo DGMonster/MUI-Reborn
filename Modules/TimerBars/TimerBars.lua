@@ -10,7 +10,8 @@ local tk, _, em, _, obj, L = MayronUI:GetCoreComponents();
 local MayronDB = obj:Import("MayronDB");
 
 ---@type MayronDB
-local db = MayronDB.Static:CreateDatabase(addOnName, "MUI_TimerBarsDb", nil, "MUI TimerBars");
+-- Saved variables load early for localization; start the database on ADDON_LOADED.
+local db = MayronDB.Static:CreateDatabase(addOnName, "MUI_TimerBarsDb", true, "MUI TimerBars");
 
 _G.MUI_TimerBars = {}; -- Create new global
 

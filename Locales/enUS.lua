@@ -1,7 +1,19 @@
-local L = _G.LibStub("AceLocale-3.0"):NewLocale("MayronUI", "enUS", true);
+local _, addon = ...;
+local L = addon.RegisterMuiLocale("enUS");
 if not L then
   return
 end
+
+L["MUI Language"] = "MUI Language";
+L["MUI Font for Friendly Nameplates"] = "MUI font for friendly nameplates";
+L["Use Guild Name Color"] = "Use a separate guild name color";
+L["Guild Name Color"] = "Guild name color";
+L["Show Guild Names on Nameplates"] = "Show guild names on nameplates";
+L["MUI Style for Blizzard Windows"] = "MUI style for Blizzard windows";
+L["MUI_WINDOW_STYLE_WIP"] = "Work in progress. Some windows already use the MUI style, while others still show parts of the Blizzard design. Windows remain movable.";
+L["Show Guild Star"] = "Show guild star";
+L["Apply the MUI font to friendly player nameplates in name-only mode."] = "Apply the MUI font to friendly player nameplates in name-only mode.";
+L["Use WoW Client Language"] = "Use WoW Client Language";
 
 ---------------------------------
 --- SMALL TEXT:
@@ -54,6 +66,9 @@ L["Enable Chat Frame"] = "Enable Chat Frame";
 L["Options"] = "Options";
 L["Button Swapping in Combat"] = "Button Swapping in Combat";
 L["Standard Chat Buttons"] = "Standard Chat Buttons";
+L["Chat Shortcut Bar Style"] = "Chat shortcut bar style";
+L["Three Text Buttons"] = "Three text buttons";
+L["Nine Icon Buttons"] = "Nine icon buttons";
 L["Left Button"] = "Left Button";
 L["Middle Button"] = "Middle Button";
 L["Right Button"] = "Right Button";
@@ -978,15 +993,11 @@ L["Timer bars are unavailable: required Blizzard display interfaces are missing.
 L["Timer bars: fields with active filter lists are not supported on WoW Forever."] = "Timer bars: fields with active filter lists are not supported on WoW Forever.";
 L["Timer bars could not be created: %s"] = "Timer bars could not be created: %s";
 
--- Forever restoration: raid manager test
-L["Raid manager test: /muiraidstyle on or /muiraidstyle off."] = "Raid manager test: /muiraidstyle on or /muiraidstyle off.";
+-- Raid manager appearance
+L["Raid manager appearance: /muiraidstyle on or /muiraidstyle off."] = "Raid manager appearance: /muiraidstyle on or /muiraidstyle off.";
 L["Change the raid manager appearance outside combat."] = "Change the raid manager appearance outside combat.";
 
-L["Raid manager test status: enabled=%s; state=%s; hidden textures=%d; background=%s"] = "Raid manager test status: enabled=%s; state=%s; hidden textures=%d; background=%s";
-L["Raid manager frame: %s; strata=%s; level=%s"] = "Raid manager frame: %s; strata=%s; level=%s";
-L["Raid manager texture: %s; layer=%s"] = "Raid manager texture: %s; layer=%s";
 
-L["Raid manager styled toggle buttons: %d"] = "Raid manager styled toggle buttons: %d";
 
 -- Forever window movement test
 L["Move window"] = "Move window";

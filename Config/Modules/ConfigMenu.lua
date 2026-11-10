@@ -972,6 +972,22 @@ do
     -- order and position buttons:
     tk.Tables:OrderBy(data.menuButtons, "id", "name");
 
+    -- Keep the built-in unit-frame entry immediately below the cast bars.
+    for index, button in ipairs(data.menuButtons) do
+      if (button.configTable.module == "NativeUnitFrames") then
+        table.remove(data.menuButtons, index);
+        local insertAt = #data.menuButtons + 1;
+        for position, other in ipairs(data.menuButtons) do
+          if (other.configTable.module == "CastBarsModule") then
+            insertAt = position + 1;
+            break;
+          end
+        end
+        table.insert(data.menuButtons, insertAt, button);
+        break;
+      end
+    end
+
     for id, menuButton in ipairs(data.menuButtons) do
       if (id == 1) then
         -- first menu button (does not need to be anchored to a previous button)

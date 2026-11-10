@@ -1,4 +1,4 @@
--- Limited Forever restoration: no ShowUIPanel hooks or native drag-handler changes.
+-- Movable Forever windows keep Blizzard's panel and drag handlers.
 local _G = _G;
 local MayronUI = _G.MayronUI;
 local tk, db, _, _, _, L = MayronUI:GetCoreComponents();
@@ -93,6 +93,28 @@ local function CreateHandle(name, frame)
   return entry;
 end
 
+local function HasSavedAnchor(frame, saved)
+  if (frame:GetNumPoints() ~= 1) then return false end
+  local point, relative, relativePoint, x, y = frame:GetPoint(1);
+  if (_G.issecretvalue and (_G.issecretvalue(point) or _G.issecretvalue(relative) or
+      _G.issecretvalue(relativePoint) or _G.issecretvalue(x) or _G.issecretvalue(y))) then return true end
+  return point == "BOTTOMLEFT" and relative == _G.UIParent and relativePoint == "BOTTOMLEFT" and
+    x == saved.x and y == saved.y;
+end
+
+local function RestoreSavedPosition(entry)
+  -- Blizzard lays out the guild window and its management panel together.
+  if (entry.name == "CommunitiesFrame" and tk:IsForever() and
+      _G.GuildControlUI and _G.GuildControlUI:IsShown()) then return end
+  local saved = db.global.foreverMovable.positions[entry.name];
+  if (not saved or _G.type(saved.x) ~= "number" or _G.type(saved.y) ~= "number") then return end
+  if (HasSavedAnchor(entry.frame, saved)) then return end
+
+  Capture(entry);
+  entry.frame:ClearAllPoints();
+  entry.frame:SetPoint("BOTTOMLEFT", _G.UIParent, "BOTTOMLEFT", saved.x, saved.y);
+end
+
 local function Refresh()
   if (not enabled or not ready or _G.InCombatLockdown()) then return end
   for _, name in _G.ipairs(names) do
@@ -101,16 +123,23 @@ local function Refresh()
     if (frame and not entry and (tk:IsForever() or not frame:IsProtected())) then
       entry = CreateHandle(name, frame);
       entries[name] = entry;
+      if (name == "CommunitiesFrame" and tk:IsForever()) then
+        local function RestoreAfterLayout()
+          if (enabled and ready and not _G.InCombatLockdown() and active ~= entry and frame:IsVisible()) then
+            RestoreSavedPosition(entry);
+          end
+        end
+        for _, method in _G.ipairs({ "UpdateCommunitiesTabs", "ToggleSubPanel" }) do
+          if (type(frame[method]) == "function") then
+            _G.hooksecurefunc(frame, method, RestoreAfterLayout);
+          end
+        end
+      end
     end
     if (entry) then
       if (frame:IsVisible()) then
-        if (not entry.wasVisible) then
-          local saved = db.global.foreverMovable.positions[name];
-          if (saved and _G.type(saved.x) == "number" and _G.type(saved.y) == "number") then
-            Capture(entry);
-            frame:ClearAllPoints();
-            frame:SetPoint("BOTTOMLEFT", _G.UIParent, "BOTTOMLEFT", saved.x, saved.y);
-          end
+        if (not entry.wasVisible or (name == "CommunitiesFrame" and tk:IsForever() and active ~= entry)) then
+          RestoreSavedPosition(entry);
         end
         entry.wasVisible = true;
         local x, y, w, h = SafeRect(frame);

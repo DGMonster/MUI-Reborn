@@ -72,15 +72,16 @@ function MayronUI:GetCharacterAddonProfile(addonName, source)
   if (not mappings) then return destination end
 
   local previous = database:GetCurrentProfile();
-  local canCopy = Exists(database, source);
-  database:SetProfile(destination);
-  local success, message = pcall(function()
-    if (canCopy) then database:CopyProfile(source); end
-  end);
-  if (not success) then
-    database:SetProfile(previous);
-    error(message);
+  local profiles = database.profiles;
+  local template = Exists(database, source) and source or previous;
+  -- Profile-change callbacks must see the copied settings on the first switch.
+  profiles[destination] = Copy(profiles[template] or {});
+  for _, namespace in pairs(database.sv.namespaces or {}) do
+    if (namespace.profiles and namespace.profiles[template]) then
+      namespace.profiles[destination] = Copy(namespace.profiles[template]);
+    end
   end
+  database:SetProfile(destination);
   mappings[source] = destination;
   return destination;
 end
@@ -98,6 +99,13 @@ function MayronUI:EnsureCharacterProfiles()
       if (marker) then sv.appended["profile." .. key] = Copy(marker); end
     end
     db:SetProfile(key);
+  end
+  if (tk:IsForever() and type(_G.GetUnitName) == "function") then
+    local displayName = _G.GetUnitName("player", true);
+    if (type(displayName) == "string" and displayName ~= "") then
+      sv.global.foreverProfileLabels = sv.global.foreverProfileLabels or {};
+      sv.global.foreverProfileLabels[key] = displayName;
+    end
   end
   for addonName in pairs(supported) do
     local database = tk.Tables:GetDBObject(addonName);

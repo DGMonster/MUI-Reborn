@@ -1,7 +1,11 @@
-local L = _G.LibStub("AceLocale-3.0"):NewLocale("MayronUI", "esES");
+local _, addon = ...;
+local L = addon.RegisterMuiLocale("esES");
 if not L then
   return
 end
+
+L["MUI Language"] = "Idioma de MUI";
+L["Use WoW Client Language"] = "Usar el idioma del cliente de WoW";
 
 ---------------------------------
 --- SMALL TEXT:

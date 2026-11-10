@@ -3,6 +3,143 @@ local _G = _G;
 local MayronUI = _G.MayronUI;
 local tk, db, em, gui, obj, L = MayronUI:GetCoreComponents(); -- luacheck: ignore
 
+if (tk:IsForever()) then
+  local heading, accent, surface, originalAlpha, hookedTracker, hookedQuestie, hookedSidebar;
+  local originalX, appliedX, appliedPoint, appliedRelative, appliedRelativePoint, appliedY;
+  local refreshQueued, moving;
+
+  local function MoveAwayFromSidebar(tracker, sidebar)
+    if (tracker:GetNumPoints() ~= 1) then
+      appliedX = nil;
+      return;
+    end
+
+    local point, relative, relativePoint, x, y = tracker:GetPoint();
+    if (not point) then return end
+    if (x ~= appliedX or point ~= appliedPoint or relative ~= appliedRelative
+        or relativePoint ~= appliedRelativePoint or y ~= appliedY) then
+      originalX = x;
+    end
+
+    local offset = 0;
+    local right = tracker:GetRight();
+    local left = sidebar and sidebar:GetLeft();
+    if (right and left and sidebar:IsVisible() and sidebar:GetWidth() > 1) then
+      local scale = tracker:GetEffectiveScale();
+      local originalRight = (right + originalX - x) * scale;
+      offset = math.max(0, (originalRight - left * sidebar:GetEffectiveScale()) / scale + 20);
+    end
+
+    local nextX = originalX - offset;
+    appliedX, appliedPoint, appliedRelative, appliedRelativePoint, appliedY =
+      nextX, point, relative, relativePoint, y;
+    if (math.abs(nextX - x) > 0.01) then
+      moving = true;
+      tracker:SetPoint(point, relative, relativePoint, nextX, y);
+      moving = false;
+    end
+  end
+
+  local RefreshForeverTracker;
+
+  local function QueueRefresh()
+    if (refreshQueued or moving) then return end
+    refreshQueued = true;
+    _G.C_Timer.After(0, function()
+      refreshQueued = false;
+      RefreshForeverTracker();
+    end);
+  end
+
+  RefreshForeverTracker = function()
+    if (_G.InCombatLockdown()) then return end
+
+    local tracker = _G.ObjectiveTrackerFrame;
+    local header = tracker and tracker.Header;
+    local background = header and header.Background;
+    if (not background) then return end
+
+    if (hookedTracker ~= tracker) then
+      tracker:HookScript("OnShow", QueueRefresh);
+      _G.hooksecurefunc(tracker, "SetPoint", QueueRefresh);
+      _G.hooksecurefunc(tracker, "Update", QueueRefresh);
+      hookedTracker = tracker;
+    end
+
+    local sidebar = _G.MUI_SideBar;
+    if (sidebar and hookedSidebar ~= sidebar) then
+      sidebar:HookScript("OnSizeChanged", QueueRefresh);
+      sidebar:HookScript("OnShow", QueueRefresh);
+      sidebar:HookScript("OnHide", QueueRefresh);
+      hookedSidebar = sidebar;
+    end
+
+    local questie = _G.Questie_BaseFrame;
+    if (questie and hookedQuestie ~= questie) then
+      questie:HookScript("OnShow", QueueRefresh);
+      questie:HookScript("OnHide", QueueRefresh);
+      hookedQuestie = questie;
+    end
+
+    local useNativeStyle = not (questie and questie:IsVisible());
+    local editMode = _G.EditModeManagerFrame;
+    if (not (editMode and editMode:IsEditModeActive())) then
+      MoveAwayFromSidebar(tracker, useNativeStyle and sidebar or nil);
+    end
+
+    if (not useNativeStyle or db.global.foreverWindowStyle ~= true) then
+      if (surface) then surface:Hide(); end
+      if (heading) then heading:Hide(); accent:Hide(); end
+      if (originalAlpha ~= nil) then
+        background:SetAlpha(originalAlpha);
+        originalAlpha = nil;
+      end
+      return;
+    end
+
+    local contents = tracker.NineSlice;
+    if (not surface) then
+      surface = gui:CreateWindowSkinSurface(tracker, header, header, -22, 3, 16, -4);
+      surface:SetGridAlphaType("Low");
+      heading = header:CreateTexture(nil, "BACKGROUND", nil, 1);
+      heading:SetPoint("TOPLEFT", surface.c, "TOPLEFT");
+      heading:SetPoint("TOPRIGHT", surface.c, "TOPRIGHT");
+      heading:SetPoint("BOTTOM", header, "BOTTOM");
+      heading:SetTexture(tk:GetAssetFilePath("Textures\\Widgets\\Button"));
+      accent = header:CreateTexture(nil, "BORDER");
+      accent:SetPoint("TOPLEFT", surface.c, "TOPLEFT");
+      accent:SetPoint("TOPRIGHT", surface.c, "TOPRIGHT");
+      accent:SetHeight(2);
+    end
+
+    surface:ClearAllPoints();
+    surface:SetPoint("TOPLEFT", header, "TOPLEFT", -22, 3);
+    surface:SetPoint("TOPRIGHT", header, "TOPRIGHT", 16, 3);
+    surface:SetPoint("BOTTOM", contents and contents:IsShown() and contents or header, "BOTTOM", 0, -4);
+
+    local fr, fg, fb = gui:GetMuiFrameColor();
+    surface:SetGridColor(fr, fg, fb);
+    local red, green, blue = tk:GetThemeColor();
+    heading:SetVertexColor(red * 0.4, green * 0.4, blue * 0.4, 0.65);
+    accent:SetColorTexture(red, green, blue, 0.85);
+    originalAlpha = originalAlpha or background:GetAlpha();
+    background:SetAlpha(0);
+    surface:Show();
+    heading:Show();
+    accent:Show();
+  end;
+
+  MayronUI:Hook("CoreModule", "OnInitialized", function()
+    local watcher = _G.CreateFrame("Frame");
+    watcher:RegisterEvent("ADDON_LOADED");
+    watcher:RegisterEvent("PLAYER_REGEN_ENABLED");
+    watcher:SetScript("OnEvent", QueueRefresh);
+    QueueRefresh();
+  end);
+  return;
+end
+
+
 if (not tk:IsRetail()) then
   return
 end

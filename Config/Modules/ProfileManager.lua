@@ -8,15 +8,28 @@ local tk, db, _, _, obj, L = MayronUI:GetCoreComponents(); -- luacheck: ignore
 local C_ConfigMenuModule = MayronUI:GetModuleClass("ConfigMenu");
 local components = {};
 
+local function GetForeverProfileLabel(profileName)
+  local labels = _G.MayronUIdb.global.foreverProfileLabels;
+  if (labels and labels[profileName]) then return labels[profileName] end
+
+  local suffix = "-" .. _G.GetRealmName():gsub("%s+", "");
+  if (profileName:sub(-#suffix) == suffix and #profileName > #suffix) then
+    return profileName:sub(1, -#suffix - 1);
+  end
+
+  return profileName:match("^(.+)%-CAMWOW[A-Z]+%d+Realm%d+%a+$") or profileName;
+end
+
 local function GetProfileLabel(profileName)
   if (not tk:IsForever()) then return profileName end
-  local suffix = "-" .. _G.GetRealmName():gsub("%s+", "");
-  if (profileName:sub(-#suffix) ~= suffix) then return profileName end
-  local label = profileName:sub(1, -#suffix - 1);
-  if (label == "") then return profileName end
-  -- A custom profile may already have this short name; keep those distinct.
+  local label = GetForeverProfileLabel(profileName);
+  if (label == profileName) then return label end
+
+  -- The dropdown uses labels as keys, so keep colliding profiles distinct.
   for _, other in ipairs(db:GetProfiles()) do
-    if (other ~= profileName and other == label) then return profileName end
+    if (other ~= profileName and (other == label or GetForeverProfileLabel(other) == label)) then
+      return profileName;
+    end
   end
   return label;
 end
@@ -193,9 +206,10 @@ local configTable = {
 
       OnClick = function()
         local profileName = db:GetCurrentProfile();
+        local profileLabel = GetProfileLabel(profileName);
         MayronUI:TriggerCommand("profile", "delete", profileName, function()
           local currentProfile = db:GetCurrentProfile();
-          components.chooseProfileDropDown:RemoveOptionByLabel(GetProfileLabel(profileName));
+          components.chooseProfileDropDown:RemoveOptionByLabel(profileLabel);
           components.chooseProfileDropDown:SetLabel(GetProfileLabel(currentProfile));
           components.deleteProfileButton:SetEnabled(currentProfile ~= "Default");
         end);

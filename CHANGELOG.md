@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.8-rc
+
+### WoW Forever
+
+- Preview built-in MUI unit frames as an alternative to Shadowed Unit Frames. Includes player, target, pet, target-of-target and party displays, configurable party layout and aura filters, and a 40-player layout preview. Aura options on live Blizzard raid frames still need in-game raid testing.
+- Add an optional MUI style for Blizzard windows, including Guild & Communities, mail, spellbook, merchant, loot, quest dialogs and objective tracker. This work in progress is off by default. Window movement remains available separately.
+- Add optional friendly nameplate guild labels and highlighting for members of your own guild.
+- Refresh the player cast bar after combat so its configured portrait anchor can be reapplied.
+
+### General
+
+- Add a language selector for the MUI interface and an optional icon layout for chat shortcuts.
+- Refine character profile handling and restore layout settings without renaming existing profiles.
+
 ## 1.0.7
 
 - Prepare character-specific addon presets before activating them, avoiding intermediate Shadowed Unit Frames profile switches during setup.

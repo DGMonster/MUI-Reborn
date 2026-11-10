@@ -1,4 +1,5 @@
 -- luacheck: ignore MayronUI self 143
+local _, addon = ...;
 local _G = _G;
 local MayronUI = _G.MayronUI;
 local tk, db, _, _, obj, L = MayronUI:GetCoreComponents();
@@ -53,6 +54,10 @@ function C_ChatModule:GetConfigTable(_, configModule)
   local function CreateButtonConfigTable(dbPath, buttonID, chatFrame, addWidget)
     local configTable = obj:PopTable();
 
+    local function GetShortcutValue(_, value)
+      return addon.LocalizeChatShortcut(value, C_ChatModule.Static.ButtonNames);
+    end
+
     if (buttonID == 1) then
       table.insert(configTable, {
         name = L["Standard Chat Buttons"],
@@ -68,6 +73,7 @@ function C_ChatModule:GetConfigTable(_, configModule)
     table.insert(configTable, {
       name = L["Left Button"],
       dbPath = string.format("%s.buttons[%d][1]", dbPath, buttonID),
+      GetValue = GetShortcutValue,
       enabled = chatFrame ~= nil,
       OnLoad = addWidget
     });
@@ -75,6 +81,7 @@ function C_ChatModule:GetConfigTable(_, configModule)
     table.insert(configTable, {
       name = L["Middle Button"],
       dbPath = string.format("%s.buttons[%d][2]", dbPath, buttonID),
+      GetValue = GetShortcutValue,
       enabled = chatFrame ~= nil,
       OnLoad = addWidget
     });
@@ -82,6 +89,7 @@ function C_ChatModule:GetConfigTable(_, configModule)
     table.insert(configTable, {
       name = L["Right Button"],
       dbPath = string.format("%s.buttons[%d][3]", dbPath, buttonID),
+      GetValue = GetShortcutValue,
       enabled = chatFrame ~= nil,
       OnLoad = addWidget
     });
@@ -323,6 +331,16 @@ function C_ChatModule:GetConfigTable(_, configModule)
         requiresReload = true, -- TODO: Maybe modules can be global? - move module enable/disable to general menu?
         dbPath = "enabled",
       },
+      {
+        name = L["Chat Shortcut Bar Style"];
+        type = "dropdown";
+        dbPath = "shortcutBarStyle";
+        options = {
+          [L["Three Text Buttons"]] = "text";
+          [L["Nine Icon Buttons"]] = "icons";
+        };
+        requiresReload = true;
+      };
       { type = "divider" };
       { name = L["Text Highlighting"];
         tooltip = L["MANAGE_TEXT_HIGHLIGHTING"];

@@ -1250,12 +1250,16 @@ local function SetUpForeverPlayerCastBar(settings)
       if (region and obj:IsFunction(region.SetAlpha)) then region:SetAlpha(0); end
     end
 
-    local sufAnchor = GetSUFPortraitAnchor("player", settings.Player);
-    if (sufAnchor) then
-      -- Match the legacy outer portrait bounds plus its configured fill inset.
+    local anchor = GetSUFPortraitAnchor("player", settings.Player);
+    local nativeFrame = _G.MUI_NativePlayerFrame;
+    if (not anchor and settings.Player.anchorToSUF and nativeFrame) then
+      anchor = nativeFrame.castAnchor;
+    end
+    if (anchor) then
+      -- Match the portrait bounds plus the configured fill inset.
       bar:ClearAllPoints();
-      bar:SetPoint("TOPLEFT", sufAnchor, "TOPLEFT", inset - 1, 1 - inset);
-      bar:SetPoint("BOTTOMRIGHT", sufAnchor, "BOTTOMRIGHT", 1 - inset, inset - 1);
+      bar:SetPoint("TOPLEFT", anchor, "TOPLEFT", inset - 1, 1 - inset);
+      bar:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", 1 - inset, inset - 1);
     else
       bar:SetSize(math.max(1, settings.Player.width - 2 * inset),
         math.max(1, settings.Player.height - 2 * inset));
@@ -1273,7 +1277,11 @@ local function SetUpForeverPlayerCastBar(settings)
   end
 
   ApplyAppearance();
+  _G.C_Timer.After(0, ApplyAppearance);
   bar:HookScript("OnShow", ApplyAppearance);
+  local watcher = _G.CreateFrame("Frame");
+  watcher:RegisterEvent("PLAYER_REGEN_ENABLED");
+  watcher:SetScript("OnEvent", ApplyAppearance);
   -- Native cast types can replace the fill after OnShow. Touch only its texture.
   _G.hooksecurefunc(bar, "SetStatusBarTexture", ApplyFill);
   _G.hooksecurefunc(bar, "SetStatusBarColor", ApplyFill);

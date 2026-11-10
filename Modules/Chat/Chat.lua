@@ -24,6 +24,7 @@ local C_ChatModule = MayronUI:RegisterModule("ChatModule", L["Chat Frames"]);
 -- Database Defaults -----------------
 local defaults = {
 	enabled = true;
+	shortcutBarStyle = "text";
 	swapInCombat = false;
 	chatFrames = {
 		-- these tables will contain the templateMuiChatFrame data (using SetParent)

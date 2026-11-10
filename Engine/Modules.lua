@@ -25,6 +25,7 @@ local unsupportedFont = locale == "ruRU" or locale == "zhCN" or locale == "zhTW"
 -- Load Database Defaults -------------
 
 db:AddToDefaults("global", {
+  foreverWindowStyle = false;
   layouts = {
     DPS = { ["ShadowUF"] = "MayronUI"; ["MUI TimerBars"] = "Default" };
     Healer = { ["ShadowUF"] = "MayronUIH"; ["MUI TimerBars"] = "Healer" };
@@ -36,6 +37,7 @@ db:AddToDefaults("global", {
     uiScale = tonumber(_G.GetCVar("uiscale")) or 1;
     maxCameraZoom = true;
     useLocalization = true;
+    language = "client";
 
     fonts = {
       master = "MUI_Font";

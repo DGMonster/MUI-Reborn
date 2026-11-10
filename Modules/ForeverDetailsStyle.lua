@@ -31,7 +31,7 @@ local function RegisterSkin()
   local skin = Copy(details.skins["Minimalistic v2"]);
   skin.author = "Monster";
   skin.site = "https://github.com/DGMonster/MUI-Reborn";
-  skin.version = "1.0.7";
+  skin.version = "1.0.8-rc";
   skin.desc = L["MUI styling with class colors, a translucent background and consistent bar spacing."];
   skin.no_cache = true;
   skin.is_cached_skin = nil;

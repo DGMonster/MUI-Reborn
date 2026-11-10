@@ -2,6 +2,8 @@
   <Script file="MainContainer.lua" />
 
   <Script file="UnitPanels.lua" />
+  <Script file="NativeUnitFrames.lua" />
+  <Script file="ForeverFriendlyNameplates.lua" />
   <Script file="UnitPanels\UnitNames.lua" />
   <Script file="UnitPanels\PortraitGradient.lua" />
   <Script file="UnitPanels\RestingPulse.lua" />
@@ -28,6 +30,11 @@
   <Script file="MovableFrames.lua" />
   <Script file="ForeverMovableFrames.lua" />
   <Script file="ForeverWindowFonts.lua" />
+  <Script file="ForeverSpellBookStyle.lua" />
+  <Script file="ForeverMailStyle.lua" />
+  <Script file="ForeverGuildStyle.lua" />
+  <Script file="ForeverQuestDialogStyle.lua" />
+  <Script file="ForeverMerchantStyle.lua" />
   <Script file="Tutorial.lua" />
 
   <Script file="Auras\Auras.lua" />
