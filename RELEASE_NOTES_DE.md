@@ -16,6 +16,8 @@
 
 ## Fehlerkorrekturen
 
+- Chatnachrichten behalten ihre vollständigen Argumente. Geschützter Text wird ohne Formatierung weitergereicht, und jedes Chatfenster behält seinen eigenen Verweis auf die ursprüngliche Funktion. Der Retail-Schlachtfeldfehler aus Issue #1 muss noch im Spiel geprüft werden.
+
 - Queststarter zeigen ein gelbes Ausrufezeichen. Die Taschenmarkierung wird bei Questannahme und bei Änderungen im Questlog aktualisiert.
 - Fehlende Schriftarten werden in der Konfiguration deaktiviert. Der Zurück-Pfeil ist gegen einen leeren Menüverlauf abgesichert.
 - Die Dialoge zum Erstellen und Umbenennen von Layouts sowie zum Anlegen zugeordneter Addon-Profile funktionieren mit Blizzards neuerem Eingabefeld.

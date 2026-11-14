@@ -155,8 +155,15 @@ do
   local After = _G.C_Timer.After;
   local classInfoRegex = "|Hplayer:.-:%d-:.-|h%[(.-)%]|h";
   -- example (classic): "|Hchannel:channel:1|h[1. General - Mulgore]|h |Hplayer:Toppg:2:CHANNEL:1|h[Toppg]|h: hello"
-  NewAddMessage = function(self, settings, text, r, g, b, ...)
-    if (not text) then return end
+  local isSecret = _G.issecretvalue;
+  NewAddMessage = function(self, addMessage, settings, text, r, g, b, ...)
+    if (isSecret and (isSecret(text) or isSecret(r) or isSecret(g) or isSecret(b))) then
+      return addMessage(self, text, r, g, b, ...);
+    end
+    if (text == nil) then return end
+    if (type(text) ~= "string") then
+      return addMessage(self, text, r, g, b, ...);
+    end
 
     if (classColorsDisabled) then
       local playerName = string.match(text, classInfoRegex);
@@ -171,7 +178,7 @@ do
             local args = obj:PopTable(...);
 
             After(1, function()
-              NewAddMessage(self, settings, text, r, g, b, obj:UnpackTable(args));
+              NewAddMessage(self, addMessage, settings, text, r, g, b, obj:UnpackTable(args));
             end);
 
             return
@@ -211,7 +218,7 @@ do
     end
 
     local newText = text:gsub("[wWhH][wWtT][wWtT][\46pP]%S+[^%p%s]", GetChatLink);
-    self:oldAddMessage(newText, r, g, b, ...);
+    return addMessage(self, newText, r, g, b, ...);
   end
 end
 
@@ -363,10 +370,9 @@ function C_ChatModule:SetUpBlizzardChatFrame(data, chatFrameName)
 
 	if (chatFrame:GetID() ~= 2) then
 		-- if not combat log...
-		chatFrame.oldAddMessage = chatFrame.AddMessage;
-
-		chatFrame.AddMessage = function(self, text, r, g, b)
-      NewAddMessage(self, data.settings, text, r, g, b);
+    local addMessage = chatFrame.AddMessage;
+    chatFrame.AddMessage = function(self, text, r, g, b, ...)
+      return NewAddMessage(self, addMessage, data.settings, text, r, g, b, ...);
     end;
 
 		chatFrame:SetScript("OnHyperLinkEnter", OnHyperLinkEnter);

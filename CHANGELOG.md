@@ -18,6 +18,8 @@
 
 ### Fixes
 
+- Preserve chat message arguments and pass protected chat text through without formatting. Keep the original chat handler local to each frame. The Retail battleground report (#1) still needs an in-game retest.
+
 - Mark items that start an unaccepted quest with a yellow exclamation mark. Refresh bag markers on quest acceptance and quest log updates.
 - Disable unavailable font choices in configuration previews and guard the Back button when there is no previous page.
 - Fix layout creation, layout renaming, and addon profile creation dialogs on clients using Blizzard's newer edit-box field.
