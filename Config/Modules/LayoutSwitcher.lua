@@ -170,7 +170,7 @@ function C_LayoutSwitcher:CreateNewAddOnProfile(data, dropdown, addOnName, dbObj
     hasEditBox = true;
     preferredIndex = 3;
     OnAccept = function(dialog)
-      local text = dialog.editBox:GetText();
+      local text = (dialog.EditBox or dialog.editBox):GetText();
 
       _G.UIDropDownMenu_SetText(dialog, text);
 
@@ -220,10 +220,11 @@ function C_LayoutSwitcher:CreateLayout(data)
     hasEditBox = true;
     preferredIndex = 3;
     OnShow = function(dialog)
-      dialog.editBox:SetText(L["Layout"] .. " " .. (length + 1));
+      local editBox = dialog.EditBox or dialog.editBox;
+      editBox:SetText(L["Layout"] .. " " .. (length + 1));
     end;
     OnAccept = function(dialog)
-      local layout = dialog.editBox:GetText();
+      local layout = (dialog.EditBox or dialog.editBox):GetText();
 
       if (not db.global.layouts[layout]) then
         db.global.layouts[layout] = obj:PopTable();
@@ -257,7 +258,7 @@ function C_LayoutSwitcher:RenameLayout(data)
     hasEditBox = true;
     preferredIndex = 3;
     OnAccept = function(dialog)
-      local layout = dialog.editBox:GetText();
+      local layout = (dialog.EditBox or dialog.editBox):GetText();
 
       if (db.global.layouts[layout]) then
         return;

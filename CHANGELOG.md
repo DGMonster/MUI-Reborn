@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.0.9-rc
+
+### Unit frames and layouts
+
+- Make Shadowed Unit Frames optional in WoW Forever, Retail, Mists Classic, TBC Anniversary, and Classic Era. Bartender4 remains required.
+- Extend the built-in MUI unit-frame preview to Retail and the supported Classic clients. It covers player, target, pet, target of target, and party frames. Aura support depends on the client. These frames provide the core MUI layout and a limited set of options compared with SUF.
+- Add party indicators for incoming healing and damage shields on clients that provide the necessary data, plus an aggro marker. The five-player preview demonstrates healing, shielding, aggro, offline status, and a normal frame.
+- Default custom party positioning to the lower-left screen edge at X = 0 and Y = 0. Group anchor choices by side and update the party preview when the anchor or offsets change.
+- Restore player and target cast-bar portrait anchoring when using MUI unit frames where supported. In Forever, switching between DPS and Healer layouts changes the player health and resource bar proportions while keeping the frame height.
+- Add a live layout editor for party frames, cast bars, and timer bars. Open it with /muilayout or from General settings. Dragging saves positions when released, and dropping a cast bar on its portrait restores the full-width anchor. Reset Positions restores the default placement without resetting the profile.
+
+### WoW Forever
+
+- Show full character names on accessible friendly nameplates and style guild names in blue with angle brackets. Retry styling when Blizzard updates a name or the player is targeted.
+- Organize Friendly Nameplates and Fonts into compact submenus in General settings.
+
+### Fixes
+
+- Mark items that start an unaccepted quest with a yellow exclamation mark. Refresh bag markers on quest acceptance and quest log updates.
+- Disable unavailable font choices in configuration previews and guard the Back button when there is no previous page.
+- Fix layout creation, layout renaming, and addon profile creation dialogs on clients using Blizzard's newer edit-box field.
+- Disable manual action-bar paging in new MUI Bartender4 presets for Mists Classic, preventing duplicate shortcuts caused by swapping to a page already on screen.
+
+Startup without SUF was checked on all five clients. Live party and raid behavior still needs broader testing.
+
+
 ## 1.0.8-rc
 
 ### WoW Forever

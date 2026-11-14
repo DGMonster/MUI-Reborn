@@ -78,7 +78,12 @@ function Components.dropdown(parent, config, value)
 
     if (config.media == tk.Constants.LSM.MediaType.FONT) then
       local fontType = tk.Constants.LSM:Fetch(config.media, key);
-      option:GetFontString():SetFont(fontType, 11);
+      local label = option:GetFontString();
+      local ok, applied = _G.pcall(label.SetFont, label, fontType, 11);
+      if (not ok or applied == false) then
+        option:SetDisabledFontObject("GameFontDisable");
+        option:Disable();
+      end
     elseif (
       config.media == tk.Constants.LSM.MediaType.BACKGROUND or
       config.media == tk.Constants.LSM.MediaType.STATUSBAR) then

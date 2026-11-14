@@ -50,7 +50,7 @@ setup.import["Bartender4"] = function()
                   ["always"] = false,
                 },
                 ["states"] = {
-                  ["actionbar"] = true,
+                  ["actionbar"] = _G.WOW_PROJECT_ID ~= _G.WOW_PROJECT_MISTS_CLASSIC,
                   ["stance"] = {
                     ["WARRIOR"] = {
                       ["berserker"] = 8,

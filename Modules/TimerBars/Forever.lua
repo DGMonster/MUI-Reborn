@@ -7,6 +7,8 @@ local _, _, _, interfaceVersion = _G.GetBuildInfo();
 if (not tk:IsForever() and (not tk:IsRetail() or (tonumber(interfaceVersion) or 0) < 120100)) then return end
 
 local holders = {};
+local layoutHolders = {};
+MayronUI:GetComponent("LayoutEditor").TimerHolders = layoutHolders;
 local running = false;
 local unpack = _G.unpack;
 
@@ -141,8 +143,12 @@ local function StartFields()
         local holder = _G.CreateFrame("Frame", nil, _G.UIParent);
         holder.unitID = field.unitID;
         holder:SetSize(field.bar.width, 1);
-        local position = field.position;
-        holder:SetPoint(position[1], _G[position[2]] or _G.UIParent, position[3], position[4], position[5]);
+        holder.UpdateLayoutPosition = function()
+          local position = database.profile.fields[fieldName].position;
+          holder:ClearAllPoints();
+          holder:SetPoint(position[1], _G[position[2]] or _G.UIParent, position[3], position[4], position[5]);
+        end;
+        holder.UpdateLayoutPosition();
         local ok, err = _G.pcall(function()
           local container = _G.CreateFrame("AuraContainer", nil, holder, "CustomAuraContainerTemplate");
           holder.container = container;
@@ -174,6 +180,7 @@ local function StartFields()
           tk:Print(L["Timer bars could not be created: %s"]:format(_G.tostring(err)));
         else
           holders[#holders + 1] = holder;
+          layoutHolders[fieldName] = holder;
         end
       end
     end

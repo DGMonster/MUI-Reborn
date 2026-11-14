@@ -45,6 +45,15 @@ end
 local C_TimerBars = MayronUI:RegisterModule("TimerBars", L["Timer Bars"], true); -- initialized on demand
 MayronUI:AddComponent("TimerBarsDatabase", db);
 
+local function GetDefaultTimerPosition(name)
+  if (name == "Player") then
+    return { "BOTTOMLEFT", "MUI_PlayerName", "TOPLEFT", 12, 2 };
+  elseif (name == "Target") then
+    return { "BOTTOMRIGHT", "MUI_TargetName", "TOPRIGHT", -10, 2 };
+  end
+end
+MayronUI:GetComponent("LayoutEditor").GetDefaultTimerPosition = GetDefaultTimerPosition;
+
 ---@type TimerBars
 local TimerBars = MayronUI:ImportModule("TimerBars");
 
@@ -1420,7 +1429,7 @@ function C_TimerBars:ApplyProfileSettings(data)
       };
       fields = {
         Player = {
-          position = { "BOTTOMLEFT", "MUI_PlayerName", "TOPLEFT", 12, 2 },
+          position = GetDefaultTimerPosition("Player"),
           unitID = "player";
         };
       };
@@ -1434,11 +1443,11 @@ function C_TimerBars:ApplyProfileSettings(data)
       };
       fields = {
         Player = {
-          position = { "BOTTOMLEFT", "MUI_PlayerName", "TOPLEFT", 12, 2 },
+          position = GetDefaultTimerPosition("Player"),
           unitID = "player";
         };
         Target = {
-          position = { "BOTTOMRIGHT", "MUI_TargetName", "TOPRIGHT", -10, 2 },
+          position = GetDefaultTimerPosition("Target"),
           unitID = "target";
         };
       };

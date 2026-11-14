@@ -385,6 +385,8 @@ function C_ConfigMenuModule:OpenMenu(data, menuButton)
 
   if (menuButton.type == "menu" or menuButton.type == "tab") then
     history:Clear();
+    data.configPanel.back:Disable();
+    data.configPanel.back:Hide();
   else
     tk:Assert(menuButton.type == "submenu", "Menu or Sub-Menu expected, got '%s'.", menuButton.type);
   end
@@ -845,6 +847,7 @@ function C_ConfigMenuModule:SetUpWindow(data)
   backBtn:GetHighlightTexture():SetRotation(radians(90));
 
   data.configPanel.back:SetScript("OnClick", function()
+    if (data.history:GetSize() <= 1) then return end
     data.history:RemoveBack(); -- remove current
     local menuButton = data.history:GetBack();
     data.history:RemoveBack(); -- remove previous so that SetSelectedButton re-adds it.

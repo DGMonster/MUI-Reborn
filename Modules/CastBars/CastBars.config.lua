@@ -258,7 +258,9 @@ function C_CastBarsModule:GetConfigTable()
                     },
                     -- 4: Remove for Mirror and Power
                     {
-                      name = L["Anchor to SUF Portrait Bar"],
+                      name = (tk:IsRetail() and (name == "Player" or name == "Target")) and
+                        (_G.GetLocale() == "deDE" and "An der Porträtleiste verankern" or "Anchor to portrait bar")
+                        or L["Anchor to SUF Portrait Bar"],
                       type = "check",
                       OnLoad = function(_, container)
                         sufAnchor_CheckButtons[name] = container.btn;
@@ -271,7 +273,9 @@ function C_CastBarsModule:GetConfigTable()
                       SetValue = function(self, newValue)
                         local unitframe = _G["SUFUnit"..name:lower()];
 
-                        if (newValue and not (unitframe and unitframe.portrait)) then
+                        local nativeFrame = name == "Player" and _G.MUI_NativePlayerFrame
+                          or (name == "Target" and _G.MUI_NativeTargetFrame);
+                        if (newValue and not (unitframe and unitframe.portrait) and not (nativeFrame and nativeFrame.castAnchor)) then
                           self.container.btn:SetChecked(false);
                           tk:Print(string.format(L["The %s Unit Frames's Portrait Bar needs to be enabled to use this feature."], name));
                           return;
@@ -279,6 +283,10 @@ function C_CastBarsModule:GetConfigTable()
 
                         db:SetPathValue(self.dbPath, newValue);
                         SetPositionTextFieldsEnabled(not newValue, name);
+                        if (tk:IsForever() and name == "Player") then
+                          local refresh = MayronUI:GetComponent("LayoutEditor").RefreshPlayerCastBar;
+                          if (refresh) then refresh(); end
+                        end
                       end
                     },
                     -- 5: Remove for Power

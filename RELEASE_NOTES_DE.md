@@ -1,3 +1,31 @@
+# MUI Reborn 1.0.9-rc
+
+## Einheitenrahmen und Layouts
+
+- Shadowed Unit Frames ist in WoW Forever, Retail, Mists Classic, TBC Anniversary und Classic Era optional. Bartender4 bleibt erforderlich.
+- Die Vorschau der eigenen MUI-Einheitenrahmen ist auch in Retail und den unterstützten Classic-Clients verfügbar. Sie umfasst Spieler, Ziel, Begleiter, Ziel des Ziels und Gruppe. Die Aura-Funktionen hängen vom Client ab. MUI deckt die Grundfunktionen ab und bietet weniger Einstellungen als SUF.
+- Gruppenrahmen zeigen eingehende Heilung und Schadensabsorption an, sofern der Client die Daten bereitstellt. Aggro wird am Rahmen markiert. Die Fünfer-Vorschau zeigt Heilung, Schild, Aggro, Offline-Status und einen normalen Rahmen.
+- Die eigene Gruppenposition liegt standardmäßig links unten am Bildschirmrand bei X = 0 und Y = 0. Die Ankerpunkte sind nach Bildschirmseite gruppiert. Änderungen von Anker und Versatz erscheinen direkt in der Gruppenvorschau.
+- Die Zauberleisten für Spieler und Ziel können auf unterstützten Clients an den MUI-Porträts andocken. In Forever stellt der DPS-/Heilerwechsel am Spielerrahmen die Höhe von Lebens- und Ressourcenbalken um. Die Gesamthöhe bleibt gleich.
+- Mit /muilayout oder „Layout verschieben“ unter „Allgemein“ lassen sich Gruppe, Zauberleisten und Timerleisten direkt im Spiel verschieben. MUI speichert die Position beim Loslassen. Eine aufs Porträt gezogene Zauberleiste rastet wieder über die volle Breite ein. „Positionen zurücksetzen“ stellt die Standardpositionen wieder her und behält das übrige Profil bei.
+
+## WoW Forever
+
+- Zugängliche freundliche Namensplaketten zeigen den vollständigen Charakternamen. Gildennamen erscheinen in Blau und in spitzen Klammern. MUI prüft die Gestaltung erneut, wenn Blizzard einen Namen aktualisiert oder ein Spieler anvisiert wird.
+- Freundliche Namensplaketten und Schriftarten haben eigene kompakte Untermenüs unter „Allgemein“.
+
+## Fehlerkorrekturen
+
+- Queststarter zeigen ein gelbes Ausrufezeichen. Die Taschenmarkierung wird bei Questannahme und bei Änderungen im Questlog aktualisiert.
+- Fehlende Schriftarten werden in der Konfiguration deaktiviert. Der Zurück-Pfeil ist gegen einen leeren Menüverlauf abgesichert.
+- Die Dialoge zum Erstellen und Umbenennen von Layouts sowie zum Anlegen zugeordneter Addon-Profile funktionieren mit Blizzards neuerem Eingabefeld.
+- Neue MUI-Bartender4-Voreinstellungen für Mists Classic deaktivieren die manuelle Seitenumschaltung. Damit werden beim Wechsel auf eine bereits sichtbare Aktionsseite keine Symbole doppelt dargestellt.
+
+Der Start ohne SUF wurde auf allen fünf Clients geprüft. Die Gruppen- und Schlachtzugsfunktionen brauchen noch weitere Tests im Spiel.
+
+---
+
+
 # MUI Reborn 1.0.8-rc
 
 ## WoW Forever

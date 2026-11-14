@@ -116,6 +116,120 @@ function C_ConfigMenu:GetConfigTable()
       children = {
         { type = "title"; name = L["Appearance Settings"]; marginTop = 0; };
         {
+          name = (_G.GetLocale() == "deDE") and "Layout verschieben" or "Move layout";
+          type = "button";
+          minWidth = 190;
+          OnClick = function() MayronUI:GetComponent("LayoutEditor").Toggle(); end;
+        };
+        {
+          name = (_G.GetLocale() == "deDE") and "Positionen zurücksetzen" or "Reset positions";
+          tooltip = (_G.GetLocale() == "deDE")
+            and "Setzt die Positionen von Gruppenrahmen, Zauberleisten und Timerleisten auf Standard zurück. Die Spieler-Zauberleiste dockt wieder am Porträt an."
+            or "Restores the default positions of party frames, cast bars, and timer bars. The player cast bar snaps back to the portrait.";
+          type = "button";
+          minWidth = 190;
+          padding = 12;
+          OnClick = function() MayronUI:GetComponent("LayoutEditor").ResetPositions(); end;
+        };
+        {
+          name = (_G.GetLocale() == "deDE") and "Schriftarten" or "Fonts";
+          type = "submenu";
+          compact = true;
+          minWidth = 190;
+          children = {
+            {
+              name = L["Override Master Font"];
+              height = 42;
+              verticalAlignment = "BOTTOM";
+              tooltip = L[tk:IsRetail() and "Apply the MUI master font to MUI elements and the character/spellbook headings. Global Blizzard fonts remain unchanged." or
+                "Uncheck to prevent MUI from changing the game font."];
+              requiresReload = true;
+              width = 180;
+              dbPath = "global.core.fonts.useMasterFont";
+              type = "check";
+            };
+            {
+              name = L["Master Font"];
+              type = "dropdown";
+              media = "font";
+              dbPath = "global.core.fonts.master";
+              requiresRestart = true;
+            };
+            { type = "divider"};
+            {
+              name = L["Override Combat Font"];
+              height = 42;
+              width = 180;
+              verticalAlignment = "BOTTOM";
+              tooltip = L["Uncheck to prevent MUI from changing the game font."];
+              requiresRestart = true;
+              dbPath = "global.core.fonts.useCombatFont";
+              type = "check";
+            };
+            {
+              name = L["Combat Font"];
+              tooltip = L["This font is used to display the damage and healing combat numbers."];
+              type = "dropdown";
+              media = "font";
+              dbPath = "global.core.fonts.combat";
+              requiresRestart = true;
+            };
+          };
+        };
+        {
+          name = (_G.GetLocale() == "deDE") and "Freundliche Namensplaketten" or "Friendly nameplates";
+          type = "submenu";
+          compact = true;
+          minWidth = 190;
+          shown = tk:IsForever();
+          children = {
+            {
+              name = L["MUI Font for Friendly Nameplates"];
+              tooltip = L["Apply the MUI font to friendly player nameplates in name-only mode."];
+              type = "check";
+              shown = tk:IsForever();
+              dbPath = "profile.friendlyNameplates.muiFont";
+              requiresReload = true;
+            };
+            {
+              name = L["Use Guild Name Color"];
+              type = "check";
+              shown = tk:IsForever();
+              enabled = tk:IsForever() and db.profile.friendlyNameplates.muiFont;
+              dbPath = "profile.friendlyNameplates.guildColorEnabled";
+              requiresReload = true;
+            };
+            {
+              name = L["Guild Name Color"];
+              type = "color";
+              shown = tk:IsForever();
+              enabled = tk:IsForever() and db.profile.friendlyNameplates.muiFont;
+              dbPath = "profile.friendlyNameplates.guildColor";
+              requiresReload = true;
+            };
+            {
+              name = L["Show Guild Names on Nameplates"];
+              type = "check";
+              shown = tk:IsForever();
+              enabled = tk:IsForever() and db.profile.friendlyNameplates.muiFont;
+              dbPath = "profile.friendlyNameplates.showGuildNames";
+              OnValueChanged = function()
+                local nameplates = MayronUI:GetComponent("ForeverFriendlyNameplates");
+                if (nameplates.Refresh) then nameplates.Refresh(); end
+              end;
+            };
+            {
+              name = L["Show Guild Star"];
+              type = "check";
+              shown = tk:IsForever();
+              enabled = tk:IsForever() and db.profile.friendlyNameplates.muiFont;
+              dbPath = "profile.friendlyNameplates.guildStar";
+              requiresReload = true;
+            };
+          };
+        };
+        { type = "divider"; };
+        {
           name = L["Set Theme Color"];
           type = "color";
           dbPath = "profile.theme.color";
@@ -126,7 +240,7 @@ function C_ConfigMenu:GetConfigTable()
           end;
         };
         {
-          name = "Set MUI Frames Color";
+          name = (_G.GetLocale() == "deDE") and "MUI-Rahmenfarbe" or "MUI frame color";
           type = "color";
           tooltip = L["MUI_FRAMES_COLOR_TOOLTIP"];
           dbPath = "profile.theme.frameColor";
@@ -142,87 +256,6 @@ function C_ConfigMenu:GetConfigTable()
           shown = tk:IsForever();
           dbPath = "global.foreverWindowStyle";
           requiresReload = true;
-        };
-        {
-          name = L["MUI Font for Friendly Nameplates"];
-          tooltip = L["Apply the MUI font to friendly player nameplates in name-only mode."];
-          type = "check";
-          shown = tk:IsForever();
-          dbPath = "profile.friendlyNameplates.muiFont";
-          requiresReload = true;
-        };
-        {
-          name = L["Use Guild Name Color"];
-          type = "check";
-          shown = tk:IsForever();
-          enabled = tk:IsForever() and db.profile.friendlyNameplates.muiFont;
-          dbPath = "profile.friendlyNameplates.guildColorEnabled";
-          requiresReload = true;
-        };
-        {
-          name = L["Guild Name Color"];
-          type = "color";
-          shown = tk:IsForever();
-          enabled = tk:IsForever() and db.profile.friendlyNameplates.muiFont;
-          dbPath = "profile.friendlyNameplates.guildColor";
-          requiresReload = true;
-        };
-        {
-          name = L["Show Guild Names on Nameplates"];
-          type = "check";
-          shown = tk:IsForever();
-          enabled = tk:IsForever() and db.profile.friendlyNameplates.muiFont;
-          dbPath = "profile.friendlyNameplates.showGuildNames";
-          OnValueChanged = function()
-            local nameplates = MayronUI:GetComponent("ForeverFriendlyNameplates");
-            if (nameplates.Refresh) then nameplates.Refresh(); end
-          end;
-        };
-        {
-          name = L["Show Guild Star"];
-          type = "check";
-          shown = tk:IsForever();
-          enabled = tk:IsForever() and db.profile.friendlyNameplates.muiFont;
-          dbPath = "profile.friendlyNameplates.guildStar";
-          requiresReload = true;
-        };
-        { type = "divider"};
-        {
-          name = L["Override Master Font"];
-          height = 42;
-          verticalAlignment = "BOTTOM";
-          tooltip = L[tk:IsRetail() and "Apply the MUI master font to MUI elements and the character/spellbook headings. Global Blizzard fonts remain unchanged." or
-            "Uncheck to prevent MUI from changing the game font."];
-          requiresReload = true;
-          width = 180;
-          dbPath = "global.core.fonts.useMasterFont";
-          type = "check";
-        };
-        {
-          name = L["Master Font"];
-          type = "dropdown";
-          media = "font";
-          dbPath = "global.core.fonts.master";
-          requiresRestart = true;
-        };
-        { type = "divider"};
-        {
-          name = L["Override Combat Font"];
-          height = 42;
-          width = 180;
-          verticalAlignment = "BOTTOM";
-          tooltip = L["Uncheck to prevent MUI from changing the game font."];
-          requiresRestart = true;
-          dbPath = "global.core.fonts.useCombatFont";
-          type = "check";
-        };
-        {
-          name = L["Combat Font"];
-          tooltip = L["This font is used to display the damage and healing combat numbers."];
-          type = "dropdown";
-          media = "font";
-          dbPath = "global.core.fonts.combat";
-          requiresRestart = true;
         };
         { type = "title";
           name = L["Global Settings"];

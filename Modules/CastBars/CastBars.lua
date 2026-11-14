@@ -776,6 +776,13 @@ function C_CastBar:StartCasting(data, channelling, fadeIn, auraInfo)
   local numStages = 0;
   local bar = self:GetFrame();
 
+  -- The frame can stay shown at zero alpha between casts.
+  if (data.settings.anchorToSUF and bar:GetParent() == _G.UIParent
+      and ((data.unitID == "player" and _G.MUI_NativePlayerFrame)
+        or (data.unitID == "target" and _G.MUI_NativeTargetFrame))) then
+    self:PositionCastBar();
+  end
+
   if (not obj:IsTable(auraInfo)) then
     if (channelling) then
       name, text, texture, startTime, endTime, _, notInterruptible, _, _, numStages = UnitChannelInfo(data.unitID);
@@ -888,8 +895,13 @@ function C_CastBar:PositionCastBar(data)
     data.square:ClearAllPoints();
   end
 
-  local sufAnchor = GetSUFPortraitAnchor(data.unitID, data.settings);
-  local manualPosition = not sufAnchor;
+  local portraitAnchor = GetSUFPortraitAnchor(data.unitID, data.settings);
+  if (not portraitAnchor and data.settings.anchorToSUF) then
+    local nativeFrame = data.unitID == "player" and _G.MUI_NativePlayerFrame
+      or (data.unitID == "target" and _G.MUI_NativeTargetFrame);
+    portraitAnchor = nativeFrame and nativeFrame.castAnchor;
+  end
+  local manualPosition = not portraitAnchor;
 
   if (manualPosition) then
     local point = data.settings.position[1];
@@ -911,15 +923,15 @@ function C_CastBar:PositionCastBar(data)
       data.square:SetPoint("TOPRIGHT", data.frame, "TOPLEFT", -2, 0);
       data.square:SetPoint("BOTTOMRIGHT", data.frame, "BOTTOMLEFT", -2, 0);
     end
-  elseif (sufAnchor) then
-    data.frame:SetParent(sufAnchor);
+  else
+    data.frame:SetParent(portraitAnchor);
     data.frame:SetPoint("BOTTOMRIGHT", 1, -1);
 
-    -- anchor to ShadowedUnitFrames
+    -- Anchor to the active unit frame portrait.
     if (data.square and data.settings.showIcon) then
-      data.square:SetPoint("TOPLEFT", sufAnchor, "TOPLEFT", -1, 1);
-      data.square:SetPoint("BOTTOMLEFT", sufAnchor, "BOTTOMLEFT", -1, -1);
-      local height = sufAnchor:GetHeight();
+      data.square:SetPoint("TOPLEFT", portraitAnchor, "TOPLEFT", -1, 1);
+      data.square:SetPoint("BOTTOMLEFT", portraitAnchor, "BOTTOMLEFT", -1, -1);
+      local height = portraitAnchor:GetHeight();
       data.square:SetWidth(height);
       data.frame:SetPoint("TOPLEFT", data.square, "TOPRIGHT", 0, 0);
     else
@@ -1261,6 +1273,11 @@ local function SetUpForeverPlayerCastBar(settings)
       bar:SetPoint("TOPLEFT", anchor, "TOPLEFT", inset - 1, 1 - inset);
       bar:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", 1 - inset, inset - 1);
     else
+      local position = settings.Player.position;
+      if (not settings.Player.anchorToSUF and position[1] and position[3]) then
+        bar:ClearAllPoints();
+        bar:SetPoint(position[1], _G[position[2]] or _G.UIParent, position[3], position[4], position[5]);
+      end
       bar:SetSize(math.max(1, settings.Player.width - 2 * inset),
         math.max(1, settings.Player.height - 2 * inset));
     end
@@ -1276,6 +1293,7 @@ local function SetUpForeverPlayerCastBar(settings)
     end
   end
 
+  MayronUI:GetComponent("LayoutEditor").RefreshPlayerCastBar = ApplyAppearance;
   ApplyAppearance();
   _G.C_Timer.After(0, ApplyAppearance);
   bar:HookScript("OnShow", ApplyAppearance);

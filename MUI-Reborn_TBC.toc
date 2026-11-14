@@ -3,12 +3,12 @@
 ## IconTexture: Interface/AddOns/MUI-Reborn/Assets/Logo
 ## SavedVariables: MayronUIdb, MUI_TimerBarsDb, MUI_AurasDB, MUI_InventoryDB
 ## LoadSavedVariablesFirst: 1
-## Dependencies: ShadowedUnitFrames, Bartender4
-## OptionalDeps: Masque, Bagnon, MBB
+## Dependencies: Bartender4
+## OptionalDeps: Masque, Bagnon, MBB, ShadowedUnitFrames
 ## Notes: TBC Classic version of MUI Reborn.
 ## Author: Mayron and contributors; MUI Reborn maintained by Monster
-## Version: 1.0.8-rc
-## X-Public-Version: 1.0.8-rc
+## Version: 1.0.9-rc
+## X-Public-Version: 1.0.9-rc
 ## X-Curse-Project-ID: 1750080
 ## X-Discord: https://discord.gg/eqpFHhJyyV
 ## X-GitHub-Repo: https://github.com/DGMonster/MUI-Reborn

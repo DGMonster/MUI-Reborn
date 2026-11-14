@@ -1,8 +1,10 @@
--- Built-in MUI unit frames for WoW Forever.
+-- Built-in MUI unit frames for WoW Forever, Retail, and supported Classic clients.
 local _G = _G;
 local MayronUI = _G.MayronUI;
 local tk, db = MayronUI:GetCoreComponents();
-if (not tk:IsForever()) then return end
+local _, _, _, interfaceVersion = _G.GetBuildInfo();
+local isMists = _G.WOW_PROJECT_MISTS_CLASSIC and _G.WOW_PROJECT_ID == _G.WOW_PROJECT_MISTS_CLASSIC;
+if (not isMists and not tk:IsClassic() and not tk:IsBCClassic() and not tk:IsForever() and (not tk:IsRetail() or (tonumber(interfaceVersion) or 0) < 120100)) then return end
 
 local german = _G.GetLocale() == "deDE";
 local title = german and "MUI-Einheitenrahmen" or "MUI Unit Frames";
@@ -13,7 +15,7 @@ db:AddToDefaults("profile.nativeUnitFrames", {
   target = { enabled = true; zoom = 1 };
   healthColor = { r = 0.29; g = 0.33; b = 0.37; a = 1 };
   raid = { classColoredHealth = false; showBuffs = true; showDebuffs = true; debuffFilter = "all"; width = 110; height = 40; point = "BOTTOMLEFT"; x = 20; y = 20 };
-  party = { width = 210; height = 40; raidPreviewColumns = 5; classColoredHealth = false; showBuffs = true; showDebuffs = true; debuffFilter = "all"; showFullNames = false; customPosition = false; point = "LEFT"; x = 20; y = 0 };
+  party = { width = 210; height = 40; raidPreviewColumns = 5; classColoredHealth = false; showBuffs = true; showDebuffs = true; debuffFilter = "all"; showFullNames = false; customPosition = true; point = "BOTTOMLEFT"; x = 0; y = 0 };
 });
 
 local addons = _G.C_AddOns;
@@ -59,6 +61,17 @@ local function UpdateUnitHealthColor(color)
 end
 local previewMode, ShowGroupPreview = "off", nil;
 local partyRowGap = 3;
+local groupAnchorOptions = {
+  { german and "Links oben" or "Top left", "TOPLEFT" };
+  { german and "Links mittig" or "Middle left", "LEFT" };
+  { german and "Links unten" or "Bottom left", "BOTTOMLEFT" };
+  { german and "Mitte oben" or "Top center", "TOP" };
+  { german and "Mitte" or "Center", "CENTER" };
+  { german and "Mitte unten" or "Bottom center", "BOTTOM" };
+  { german and "Rechts oben" or "Top right", "TOPRIGHT" };
+  { german and "Rechts mittig" or "Middle right", "RIGHT" };
+  { german and "Rechts unten" or "Bottom right", "BOTTOMRIGHT" };
+};
 
 local function GetGroupRowSize(group)
   local settings = db.profile.nativeUnitFrames[group];
@@ -84,6 +97,8 @@ local function GroupSizeSlider(label, group, dimension, min, max)
 end
 local function UpdatePartyPosition()
   if (queuePartyPosition) then queuePartyPosition(); end
+  if (refreshPartySkin) then refreshPartySkin(); end
+  if (previewMode == "party") then ShowGroupPreview("party"); end
 end
 
 local function UpdateRaidPreviewPosition()
@@ -116,6 +131,91 @@ end
 function C_NativeUnitFrames:GetConfigTable()
   local healthColorPath = "profile.nativeUnitFrames.healthColor";
   local healthColorSwatch;
+  local partyOptions = {
+    name = german and "Gruppe" or "Party";
+    type = "submenu";
+    children = {
+      PreviewCheck("party", german and "Gruppenvorschau (5)" or "Party preview (5)");
+      {
+        name = german and "Klassenfarben für Lebensbalken" or "Class-colored health bars";
+        type = "check";
+        dbPath = "profile.nativeUnitFrames.party.classColoredHealth";
+        OnValueChanged = function()
+          if (refreshPartySkin) then refreshPartySkin(); end
+          if (previewMode ~= "off") then ShowGroupPreview(previewMode); end
+        end;
+      };
+      { type = "divider" };
+      {
+        name = german and "Buffs anzeigen" or "Show buffs";
+        type = "check";
+        dbPath = "profile.nativeUnitFrames.party.showBuffs";
+        OnValueChanged = function()
+          if (refreshPartySkin) then refreshPartySkin(); end
+        end;
+      }; {
+        name = german and "Debuffs anzeigen" or "Show debuffs";
+        type = "check";
+        dbPath = "profile.nativeUnitFrames.party.showDebuffs";
+        OnValueChanged = function()
+          if (refreshPartySkin) then refreshPartySkin(); end
+        end;
+      };
+      {
+        name = german and "Debuff-Filter" or "Debuff filter";
+        type = "dropdown";
+        options = {
+          [german and "Alle Debuffs" or "All debuffs"] = "all";
+          [german and "Von mir bannbar" or "Dispellable by me"] = "mine";
+          [german and "Alle bannbaren" or "All dispellable"] = "dispellable";
+        };
+        dbPath = "profile.nativeUnitFrames.party.debuffFilter";
+        OnValueChanged = function()
+          if (refreshPartySkin) then refreshPartySkin(); end
+        end;
+      };
+      GroupSizeSlider(german and "Breite der Gruppenrahmen" or "Party frame width", "party", "width", 90, 360);
+      GroupSizeSlider(german and "Höhe der Gruppenrahmen" or "Party frame height", "party", "height", 24, 48);
+      {
+        name = german and "Eigene Gruppenposition verwenden" or "Use custom party position";
+        type = "check";
+        dbPath = "profile.nativeUnitFrames.party.customPosition";
+        requiresReload = true;
+      }; {
+        name = german and "Ankerpunkt" or "Anchor point";
+        type = "dropdown";
+        options = groupAnchorOptions; disableSorting = true;
+        dbPath = "profile.nativeUnitFrames.party.point";
+        OnValueChanged = UpdatePartyPosition;
+      }; {
+        name = german and "X-Versatz" or "X offset";
+        type = "slider";
+        min = -2000;
+        max = 2000;
+        step = 0.1;
+        dbPath = "profile.nativeUnitFrames.party.x";
+        OnValueChanged = UpdatePartyPosition;
+      }; {
+        name = german and "Y-Versatz" or "Y offset";
+        type = "slider";
+        min = -2000;
+        max = 2000;
+        step = 0.1;
+        dbPath = "profile.nativeUnitFrames.party.y";
+        OnValueChanged = UpdatePartyPosition;
+      };
+    };
+  };
+  if (tk:IsForever()) then
+    table.insert(partyOptions.children, 2, {
+      name = german and "Vor- und Nachnamen anzeigen" or "Show first and last names";
+      type = "check";
+      dbPath = "profile.nativeUnitFrames.party.showFullNames";
+      OnValueChanged = function()
+        if (refreshPartySkin) then refreshPartySkin(); end
+      end;
+    });
+  end
   return {
     module = "NativeUnitFrames";
     children = {
@@ -196,89 +296,7 @@ function C_NativeUnitFrames:GetConfigTable()
         end;
       };
       { type = "divider" };
-      {
-        name = german and "Gruppe" or "Party";
-        type = "submenu";
-        children = {
-          PreviewCheck("party", german and "Gruppenvorschau (5)" or "Party preview (5)");
-          {
-            name = german and "Vor- und Nachnamen anzeigen" or "Show first and last names";
-            type = "check";
-            dbPath = "profile.nativeUnitFrames.party.showFullNames";
-            OnValueChanged = function()
-              if (refreshPartySkin) then refreshPartySkin(); end
-            end;
-          };
-          {
-            name = german and "Klassenfarben für Lebensbalken" or "Class-colored health bars";
-            type = "check";
-            dbPath = "profile.nativeUnitFrames.party.classColoredHealth";
-            OnValueChanged = function()
-              if (refreshPartySkin) then refreshPartySkin(); end
-              if (previewMode ~= "off") then ShowGroupPreview(previewMode); end
-            end;
-          };
-          { type = "divider" };
-          {
-            name = german and "Buffs anzeigen" or "Show buffs";
-            type = "check";
-            dbPath = "profile.nativeUnitFrames.party.showBuffs";
-            OnValueChanged = function()
-              if (refreshPartySkin) then refreshPartySkin(); end
-            end;
-          }; {
-            name = german and "Debuffs anzeigen" or "Show debuffs";
-            type = "check";
-            dbPath = "profile.nativeUnitFrames.party.showDebuffs";
-            OnValueChanged = function()
-              if (refreshPartySkin) then refreshPartySkin(); end
-            end;
-          };
-          {
-            name = german and "Debuff-Filter" or "Debuff filter";
-            type = "dropdown";
-            options = {
-              [german and "Alle Debuffs" or "All debuffs"] = "all";
-              [german and "Von mir bannbar" or "Dispellable by me"] = "mine";
-              [german and "Alle bannbaren" or "All dispellable"] = "dispellable";
-            };
-            dbPath = "profile.nativeUnitFrames.party.debuffFilter";
-            OnValueChanged = function()
-              if (refreshPartySkin) then refreshPartySkin(); end
-            end;
-          };
-          GroupSizeSlider(german and "Breite der Gruppenrahmen" or "Party frame width", "party", "width", 90, 360);
-          GroupSizeSlider(german and "Höhe der Gruppenrahmen" or "Party frame height", "party", "height", 24, 48);
-          {
-            name = german and "Eigene Gruppenposition verwenden" or "Use custom party position";
-            type = "check";
-            dbPath = "profile.nativeUnitFrames.party.customPosition";
-            requiresReload = true;
-          }; {
-            name = german and "Ankerpunkt" or "Anchor point";
-            type = "dropdown";
-            options = tk.Constants.POINT_OPTIONS;
-            dbPath = "profile.nativeUnitFrames.party.point";
-            OnValueChanged = UpdatePartyPosition;
-          }; {
-            name = german and "X-Versatz" or "X offset";
-            type = "slider";
-            min = -2000;
-            max = 2000;
-            step = 0.1;
-            dbPath = "profile.nativeUnitFrames.party.x";
-            OnValueChanged = UpdatePartyPosition;
-          }; {
-            name = german and "Y-Versatz" or "Y offset";
-            type = "slider";
-            min = -2000;
-            max = 2000;
-            step = 0.1;
-            dbPath = "profile.nativeUnitFrames.party.y";
-            OnValueChanged = UpdatePartyPosition;
-          };
-        };
-      };
+      partyOptions;
       {
         name = german and "Schlachtzug" or "Raid";
         type = "submenu";
@@ -336,7 +354,7 @@ function C_NativeUnitFrames:GetConfigTable()
           {
             name = german and "Ankerpunkt" or "Anchor point";
             type = "dropdown";
-            options = tk.Constants.POINT_OPTIONS;
+            options = groupAnchorOptions; disableSorting = true;
             dbPath = "profile.nativeUnitFrames.raid.point";
             OnValueChanged = UpdateRaidPreviewPosition;
           }; {
@@ -393,6 +411,35 @@ end
 
 local preview;
 local previewClasses = { "WARRIOR", "MAGE", "DRUID", "PRIEST", "ROGUE", "WARLOCK", "HUNTER", "SHAMAN", "PALADIN" };
+local function CreatePartyStatusIndicators(life, showPrediction)
+  local incomingHeal, damageShield;
+  if (showPrediction) then
+    life:SetClipsChildren(true);
+    incomingHeal = _G.CreateFrame("StatusBar", nil, life);
+    incomingHeal:SetPoint("TOP");
+    incomingHeal:SetPoint("BOTTOM");
+    incomingHeal:SetPoint("LEFT", life:GetStatusBarTexture(), "RIGHT");
+    incomingHeal:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8");
+    incomingHeal:SetStatusBarColor(0.2, 0.85, 0.39, 0.72);
+    life:HookScript("OnSizeChanged", function(_, width) incomingHeal:SetWidth(width); end);
+
+    damageShield = _G.CreateFrame("StatusBar", nil, life);
+    damageShield:SetPoint("TOPLEFT");
+    damageShield:SetPoint("TOPRIGHT");
+    damageShield:SetHeight(3);
+    damageShield:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8");
+    damageShield:SetStatusBarColor(0.38, 0.8, 1);
+  end
+
+  local aggro = life:CreateTexture(nil, "OVERLAY");
+  aggro:SetPoint("TOPLEFT", 0, 0);
+  aggro:SetPoint("BOTTOMLEFT", 0, 0);
+  aggro:SetWidth(2);
+  aggro:SetColorTexture(1, 0.18, 0.12);
+  aggro:Hide();
+  return incomingHeal, damageShield, aggro;
+end
+
 function ShowGroupPreview(mode)
   previewMode = mode;
   if (mode == "off") then
@@ -418,11 +465,15 @@ function ShowGroupPreview(mode)
   if (mode ~= "party") then
     local raid = db.profile.nativeUnitFrames.raid;
     preview:SetPoint(raid.point, uiParent, raid.point, raid.x, raid.y);
+  elseif (db.profile.nativeUnitFrames.party.customPosition) then
+    local settings = db.profile.nativeUnitFrames.party;
+    preview:SetPoint(settings.point, uiParent, settings.point, settings.x, settings.y);
+    if (party) then scale = party:GetEffectiveScale() / uiParent:GetEffectiveScale(); end
   elseif (party and party:GetNumPoints() > 0) then
     preview:SetPoint("BOTTOMLEFT", party, "BOTTOMLEFT");
     scale = party:GetEffectiveScale() / uiParent:GetEffectiveScale();
   else
-    preview:SetPoint("LEFT", uiParent, "LEFT", 20, 0);
+    preview:SetPoint("BOTTOMLEFT", uiParent, "BOTTOMLEFT");
   end
   local count = mode == "party" and 5 or 40;
   local width, height = GetGroupRowSize(mode);
@@ -454,27 +505,36 @@ function ShowGroupPreview(mode)
       local resource = CreateBar(row, 5, 0.22, 0.49, 0.86);
       resource:SetPoint("BOTTOMLEFT", 1, 1);
       resource:SetPoint("BOTTOMRIGHT", -1, 1);
-      local name = life:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
+      local labels = _G.CreateFrame("Frame", nil, life);
+      labels:SetAllPoints();
+      labels:SetFrameLevel(life:GetFrameLevel() + 2);
+      local name = labels:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
       local font, size = name:GetFont();
       name:SetFont(font, size + 1, "OUTLINE");
       name:SetPoint("LEFT", 4, -2);
-      name:SetText((german and "Beispiel " or "Sample ")..index);
-      local percent = life:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
+      local percent = labels:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
       percent:SetPoint("RIGHT", -4, -2);
       percent:SetTextColor(0.48, 1, 0.32);
       local health = 100 - ((index - 1) % 5) * 12;
       life:SetMinMaxValues(0, 100);
       life:SetValue(health);
-      percent:SetFormattedText("%d%%", health);
       resource:SetMinMaxValues(0, 100);
       resource:SetValue(100 - ((index - 1) % 5) * 8);
       row.life = life;
       row.label = name;
+      row.percent = percent;
+      row.sampleHealth = health;
       preview.rows[index] = row;
     end
 
     row:ClearAllPoints();
-    row:SetPoint("BOTTOMLEFT", preview, "BOTTOMLEFT", column * (width + gap), slot * (height + gap));
+    local fromTop = mode == "party" and db.profile.nativeUnitFrames.party.customPosition
+      and not db.profile.nativeUnitFrames.party.point:find("BOTTOM");
+    if (fromTop) then
+      row:SetPoint("TOPLEFT", preview, "TOPLEFT", column * (width + gap), -titleHeight - slot * (height + gap));
+    else
+      row:SetPoint("BOTTOMLEFT", preview, "BOTTOMLEFT", column * (width + gap), slot * (height + gap));
+    end
     slot = slot + 1;
     if (slot == rowsPerColumn + (column < tallerColumns and 1 or 0)) then
       column = column + 1;
@@ -486,6 +546,29 @@ function ShowGroupPreview(mode)
     local color = _G.RAID_CLASS_COLORS and _G.RAID_CLASS_COLORS[class];
     ColorGroupName(row.label, color, mode);
     ColorGroupHealth(row.life, color, mode);
+    local partySample = mode == "party";
+    if (partySample and not row.aggro) then
+      row.incomingHeal, row.damageShield, row.aggro = CreatePartyStatusIndicators(row.life, true);
+      row.incomingHeal:SetMinMaxValues(0, 100);
+      row.damageShield:SetMinMaxValues(0, 100);
+    end
+    if (row.aggro) then
+      row.aggro:SetShown(partySample and index == 1);
+      row.incomingHeal:SetValue(partySample and index == 2 and 24 or 0);
+      row.damageShield:SetValue(partySample and index == 3 and 40 or 0);
+    end
+    local sampleName = partySample and (
+      german and ({ "Aggro", "Heilung", "Schutzschild", "Offline", "Bereit" })[index]
+        or ({ "Aggro", "Incoming heal", "Shield", "Offline", "Ready" })[index])
+      or (german and "Beispiel " or "Sample ")..index;
+    row.label:SetText(sampleName);
+    if (partySample and index == 4) then
+      row.percent:SetText(_G.PLAYER_OFFLINE or "Offline");
+      row.percent:SetTextColor(0.8, 0.8, 0.8);
+    else
+      row.percent:SetFormattedText("%d%%", row.sampleHealth);
+      row.percent:SetTextColor(0.48, 1, 0.32);
+    end
     row:Show();
   end
   for index = count + 1, #preview.rows do preview.rows[index]:Hide(); end
@@ -581,6 +664,15 @@ local function CreateUnitDisplay(panel, name, unit)
   local power = CreateBar(frame, 9, 0.22, 0.49, 0.86);
   power:SetPoint("BOTTOMLEFT");
   power:SetPoint("BOTTOMRIGHT");
+  if (unit == "player") then
+    local function ApplyLayoutBarHeights()
+      local healer = db.profile.layout == "Healer";
+      health:SetHeight(healer and 14.5 or 20);
+      power:SetHeight(healer and 14.5 or 9);
+    end
+    ApplyLayoutBarHeights();
+    _G.hooksecurefunc(MayronUI, "SwitchLayouts", ApplyLayoutBarHeights);
+  end
   local isTarget = unit == "target";
 
   local function Refresh(_, event)
@@ -597,7 +689,16 @@ local function CreateUnitDisplay(panel, name, unit)
 
     local powerType, powerToken = _G.UnitPowerType(unit);
     local powerColors = _G.PowerBarColor;
-    local powerColor = powerColors and (powerColors[powerToken] or powerColors[powerType]);
+    local isSecret = _G.issecretvalue;
+    local powerColor;
+    if (powerColors) then
+      if (not (isSecret and isSecret(powerToken)) and powerToken) then
+        powerColor = powerColors[powerToken];
+      end
+      if (not powerColor and not (isSecret and isSecret(powerType)) and powerType) then
+        powerColor = powerColors[powerType];
+      end
+    end
     if (powerColor) then
       power:SetStatusBarColor(powerColor.r, powerColor.g, powerColor.b);
     else
@@ -611,8 +712,8 @@ local function CreateUnitDisplay(panel, name, unit)
     healthText:SetFormattedText("%d", currentHealth);
     if (scaleTo100 and _G.UnitHealthPercent) then
       percentText:SetFormattedText("%.0f%%", _G.UnitHealthPercent(unit, false, scaleTo100));
-    elseif (_G.issecretvalue and not _G.issecretvalue(currentHealth)
-        and not _G.issecretvalue(maxHealth) and maxHealth > 0) then
+    elseif (not (_G.issecretvalue and (_G.issecretvalue(currentHealth) or _G.issecretvalue(maxHealth)))
+        and maxHealth > 0) then
       percentText:SetFormattedText("%.0f%%", currentHealth / maxHealth * 100);
     else
       percentText:SetText("");
@@ -831,7 +932,7 @@ local function PositionPetFrame()
   watcher:RegisterEvent("PLAYER_REGEN_ENABLED");
   watcher:RegisterEvent("UI_SCALE_CHANGED");
   watcher:SetScript("OnEvent", QueuePosition);
-  _G.EventRegistry:RegisterCallback("EditMode.Exit", QueuePosition, watcher);
+  if (_G.EventRegistry and _G.EditModeManagerFrame) then _G.EventRegistry:RegisterCallback("EditMode.Exit", QueuePosition, watcher); end
   QueuePosition();
 end
 
@@ -882,8 +983,7 @@ end
 
 local function SetCustomPartyPosition()
   local party = _G.PartyFrame;
-  local settings = db.profile.nativeUnitFrames.party;
-  if (not party or not settings.customPosition) then return end
+  if (not party) then return end
 
   local originalClamp = party:IsClampedToScreen();
   local queued, moving;
@@ -901,6 +1001,8 @@ local function SetCustomPartyPosition()
         return;
       end
 
+      if (not db.profile.nativeUnitFrames.party.customPosition) then return end
+
       if (party:IsClampedToScreen()) then party:SetClampedToScreen(false); end
 
       local point, relative, relativePoint, x, y = party:GetPoint();
@@ -917,14 +1019,52 @@ local function SetCustomPartyPosition()
     end);
   end
 
+  local layoutEditor = MayronUI:GetComponent("LayoutEditor");
+  layoutEditor.ResetPartyPosition = function()
+    local path = "profile.nativeUnitFrames.party.";
+    db:SetPathValue(path.."customPosition", db:GetDefault(path.."customPosition"));
+    db:SetPathValue(path.."point", db:GetDefault(path.."point"));
+    db:SetPathValue(path.."x", db:GetDefault(path.."x"));
+    db:SetPathValue(path.."y", db:GetDefault(path.."y"));
+    UpdatePartyPosition();
+  end
+  layoutEditor.AddParty = function(add)
+    local settings = db.profile.nativeUnitFrames.party;
+    local point = settings.point;
+    local width, height = GetGroupRowSize("party");
+    add(german and "Gruppe" or "Party", width, height, point, _G.UIParent, point, settings.x, settings.y,
+      function(_, _, handle)
+        local ui = _G.UIParent;
+        local dx, dy;
+        if (point:find("LEFT")) then
+          dx = handle:GetLeft() - ui:GetLeft();
+        elseif (point:find("RIGHT")) then
+          dx = handle:GetRight() - ui:GetRight();
+        else
+          dx = (handle:GetLeft() + handle:GetRight() - ui:GetLeft() - ui:GetRight()) / 2;
+        end
+        if (point:find("BOTTOM")) then
+          dy = handle:GetBottom() - ui:GetBottom();
+        elseif (point:find("TOP")) then
+          dy = handle:GetTop() - ui:GetTop();
+        else
+          dy = (handle:GetBottom() + handle:GetTop() - ui:GetBottom() - ui:GetTop()) / 2;
+        end
+        db:SetPathValue("profile.nativeUnitFrames.party.customPosition", true);
+        db:SetPathValue("profile.nativeUnitFrames.party.x", dx);
+        db:SetPathValue("profile.nativeUnitFrames.party.y", dy);
+        UpdatePartyPosition();
+      end);
+  end
+
   queuePartyPosition = QueuePosition;
   party:HookScript("OnShow", QueuePosition);
   _G.hooksecurefunc(party, "SetPoint", QueuePosition);
   local watcher = _G.CreateFrame("Frame");
   watcher:RegisterEvent("PLAYER_REGEN_ENABLED");
   watcher:SetScript("OnEvent", QueuePosition);
-  _G.EventRegistry:RegisterCallback("EditMode.Enter", QueuePosition, watcher);
-  _G.EventRegistry:RegisterCallback("EditMode.Exit", QueuePosition, watcher);
+  if (_G.EventRegistry and _G.EditModeManagerFrame) then _G.EventRegistry:RegisterCallback("EditMode.Enter", QueuePosition, watcher); end
+  if (_G.EventRegistry and _G.EditModeManagerFrame) then _G.EventRegistry:RegisterCallback("EditMode.Exit", QueuePosition, watcher); end
   QueuePosition();
 end
 
@@ -1020,7 +1160,7 @@ local function SkinPartyFrames()
   local scaleTo100 = _G.CurveConstants and _G.CurveConstants.ScaleTo100;
 
   local selfFrame;
-  local function SkinMember(frame, playerRow, reserveFirstRow)
+  local function SkinMember(frame, playerRow)
     local container = frame.HealthBarContainer;
     local health = container and container.HealthBar;
     if (not playerRow and (not health or not frame.ManaBar or not frame.Name
@@ -1048,14 +1188,24 @@ local function SkinPartyFrames()
       resource:SetPoint("BOTTOMLEFT", 1, 1);
       resource:SetPoint("BOTTOMRIGHT", -1, 1);
 
-      local name = life:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
+      local prediction;
+      if (_G.CreateUnitHealPredictionCalculator and _G.UnitGetDetailedHealPrediction) then
+        prediction = _G.CreateUnitHealPredictionCalculator();
+      end
+      local legacyPrediction = isMists and _G.UnitGetIncomingHeals and _G.UnitGetTotalAbsorbs;
+      local incomingHeal, damageShield, aggro = CreatePartyStatusIndicators(life, prediction or legacyPrediction);
+
+      local labels = _G.CreateFrame("Frame", nil, life);
+      labels:SetAllPoints(life);
+      labels:SetFrameLevel(life:GetFrameLevel() + 2);
+      local name = labels:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
       local font, size = name:GetFont();
       name:SetFont(font, size + 1, "OUTLINE");
       name:SetPoint("BOTTOMLEFT", life, "BOTTOMLEFT", 4, 1);
       name:SetPoint("BOTTOMRIGHT", life, "BOTTOMRIGHT", -46, 1);
       name:SetJustifyH("LEFT");
       name:SetMaxLines(1);
-      local percent = life:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
+      local percent = labels:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
       percent:SetPoint("BOTTOMRIGHT", life, "BOTTOMRIGHT", -4, 1);
       percent:SetTextColor(0.48, 1, 0.32);
 
@@ -1102,12 +1252,17 @@ local function SkinPartyFrames()
           roleIcon:Hide();
           leaderIcon:Hide();
           marker:Hide();
+          aggro:Hide();
+          if (incomingHeal) then
+            incomingHeal:SetValue(0);
+            damageShield:SetValue(0);
+          end
           row:SetAlpha(1);
           return;
         end
 
         local unitName, level = _G.UnitName(unit), _G.UnitLevel(unit);
-        if (db.profile.nativeUnitFrames.party.showFullNames and _G.GetUnitName) then
+        if (tk:IsForever() and db.profile.nativeUnitFrames.party.showFullNames and _G.GetUnitName) then
           local fullName = _G.GetUnitName(unit, true);
           if (not (isSecret and isSecret(fullName)) and type(fullName) == "string" and fullName ~= "") then
             unitName = fullName;
@@ -1148,8 +1303,9 @@ local function SkinPartyFrames()
         end
         ColorGroupName(name, color, "party");
         ColorGroupHealth(life, color, "party");
-        life:SetMinMaxValues(0, _G.UnitHealthMax(unit));
-        life:SetValue(_G.UnitHealth(unit));
+        local currentHealth, maxHealth = _G.UnitHealth(unit), _G.UnitHealthMax(unit);
+        life:SetMinMaxValues(0, maxHealth);
+        life:SetValue(currentHealth);
         resource:SetMinMaxValues(0, _G.UnitPowerMax(unit));
         resource:SetValue(_G.UnitPower(unit));
         local powerType, powerToken = _G.UnitPowerType(unit);
@@ -1172,13 +1328,37 @@ local function SkinPartyFrames()
         local dead = _G.UnitIsDeadOrGhost(unit);
         local offline = not (isSecret and isSecret(connected)) and connected == false;
         local isDead = not (isSecret and isSecret(dead)) and dead == true;
-        if (offline or isDead) then
+        local inactive = offline or isDead;
+        if (incomingHeal) then
+          if (inactive) then
+            incomingHeal:SetValue(0);
+            damageShield:SetValue(0);
+          elseif (prediction) then
+            _G.UnitGetDetailedHealPrediction(unit, nil, prediction);
+            local maximum = prediction:GetMaximumHealth();
+            incomingHeal:SetMinMaxValues(0, maximum);
+            incomingHeal:SetValue((prediction:GetIncomingHeals()));
+            damageShield:SetMinMaxValues(0, maximum);
+            damageShield:SetValue((prediction:GetDamageAbsorbs()));
+          else
+            incomingHeal:SetMinMaxValues(0, maxHealth);
+            incomingHeal:SetValue(_G.UnitGetIncomingHeals(unit) or 0);
+            damageShield:SetMinMaxValues(0, maxHealth);
+            damageShield:SetValue(_G.UnitGetTotalAbsorbs(unit) or 0);
+          end
+        end
+        local threat = not inactive and _G.UnitThreatSituation and _G.UnitThreatSituation(unit);
+        aggro:SetShown(not (isSecret and isSecret(threat)) and type(threat) == "number" and threat >= 2);
+
+        if (inactive) then
           percent:SetText(offline and (_G.PLAYER_OFFLINE or "Offline") or (_G.DEAD or "Dead"));
           percent:SetTextColor(0.8, 0.8, 0.8);
         else
           percent:SetTextColor(0.48, 1, 0.32);
           if (scaleTo100 and _G.UnitHealthPercent) then
             percent:SetFormattedText("%.0f%%", _G.UnitHealthPercent(unit, false, scaleTo100));
+          elseif (not (isSecret and (isSecret(currentHealth) or isSecret(maxHealth))) and maxHealth > 0) then
+            percent:SetFormattedText("%.0f%%", currentHealth / maxHealth * 100);
           else
             percent:SetText("");
           end
@@ -1268,6 +1448,14 @@ local function SkinPartyFrames()
       row:RegisterUnitEvent("UNIT_DISPLAYPOWER", frame.unitToken);
       row:RegisterUnitEvent("UNIT_LEVEL", frame.unitToken);
       row:RegisterUnitEvent("UNIT_CONNECTION", frame.unitToken);
+      if (_G.UnitThreatSituation) then
+        row:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", frame.unitToken);
+      end
+      if (incomingHeal) then
+        row:RegisterUnitEvent("UNIT_HEAL_PREDICTION", frame.unitToken);
+        row:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", frame.unitToken);
+        if (prediction) then row:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", frame.unitToken); end
+      end
       row:RegisterUnitEvent("UNIT_FLAGS", frame.unitToken);
       row:RegisterEvent("RAID_TARGET_UPDATE");
       row:RegisterEvent("PLAYER_LEVEL_UP");
@@ -1288,20 +1476,26 @@ local function SkinPartyFrames()
       end);
     end
     styled[frame]();
-    if (playerRow) then return end
-    local party = _G.PartyFrame;
-    local editMode = _G.EditModeManagerFrame;
-    if (db.profile.nativeUnitFrames.party.customPosition and frame.layoutIndex
-        and not (editMode and editMode:IsEditModeActive())) then
-      local _, height = GetGroupRowSize("party");
-      local offset = (frame.layoutIndex - (reserveFirstRow and 0 or 1)) * (height + partyRowGap);
-      -- The MUI artwork sits at the top of the Blizzard button.
-      local point, relative, relativePoint, x, y = frame:GetPoint();
-      if (frame:GetNumPoints() ~= 1 or point ~= "TOPLEFT" or relative ~= party
-          or relativePoint ~= "BOTTOMLEFT" or x ~= 0 or y ~= offset + height) then
-        frame:ClearAllPoints();
-        frame:SetPoint("TOPLEFT", party, "BOTTOMLEFT", 0, offset + height);
-      end
+    return true;
+  end
+
+  local function PlacePartyRow(frame, party, anchor, index, count)
+    local width, height = GetGroupRowSize("party");
+    local step = height + partyRowGap;
+    local x = anchor:find("RIGHT") and -width or (anchor:find("LEFT") and 0 or -width / 2);
+    local y;
+    if (anchor:find("BOTTOM")) then
+      y = height + (index - 1) * step;
+    elseif (anchor:find("TOP")) then
+      y = -(index - 1) * step;
+    else
+      y = (count * step - partyRowGap) / 2 - (index - 1) * step;
+    end
+    local point, relative, relativePoint, currentX, currentY = frame:GetPoint();
+    if (frame:GetNumPoints() ~= 1 or point ~= "TOPLEFT" or relative ~= party
+        or relativePoint ~= anchor or currentX ~= x or currentY ~= y) then
+      frame:ClearAllPoints();
+      frame:SetPoint("TOPLEFT", party, anchor, x, y);
     end
   end
 
@@ -1321,20 +1515,28 @@ local function SkinPartyFrames()
 
     local members = {};
     CollectMembers(party, members);
-    local first, hasPlayer;
+    local active, hasPlayer = {};
     for _, member in ipairs(members) do
-      if (member:IsShown() and member.unitToken) then
+      if (SkinMember(member, false) and member:IsShown()) then
+        active[#active + 1] = member;
         if (member.unitToken == "player") then hasPlayer = true; end
-        if (not first or (member.layoutIndex or 1) < (first.layoutIndex or 1)) then
-          first = member;
-        end
       end
     end
-
+    table.sort(active, function(a, b)
+      return (a.layoutIndex or 0) < (b.layoutIndex or 0);
+    end);
+    local first = active[1];
     local editMode = _G.EditModeManagerFrame;
-    local showPlayer = first and not hasPlayer and _G.IsInGroup() and not _G.IsInRaid()
-      and not (editMode and editMode:IsEditModeActive());
-    for _, member in ipairs(members) do SkinMember(member, false, showPlayer); end
+    local editing = editMode and editMode:IsEditModeActive();
+    local showPlayer = first and not hasPlayer and _G.IsInGroup() and not _G.IsInRaid() and not editing;
+    local settings = db.profile.nativeUnitFrames.party;
+    local customPosition = settings.customPosition and not editing;
+    local reserved = showPlayer and 1 or 0;
+    if (customPosition) then
+      for index, member in ipairs(active) do
+        PlacePartyRow(member, party, settings.point, index + reserved, #active + reserved);
+      end
+    end
 
     if (not showPlayer) then
       if (selfFrame) then selfFrame:Hide(); end
@@ -1352,10 +1554,10 @@ local function SkinPartyFrames()
       selfFrame:SetAttribute("*type2", "togglemenu");
     end
     SkinMember(selfFrame, true);
-    selfFrame:ClearAllPoints();
-    if (db.profile.nativeUnitFrames.party.customPosition) then
-      selfFrame:SetPoint("BOTTOMLEFT", party, "BOTTOMLEFT");
+    if (customPosition) then
+      PlacePartyRow(selfFrame, party, settings.point, 1, #active + 1);
     else
+      selfFrame:ClearAllPoints();
       selfFrame:SetPoint("BOTTOMLEFT", first, "TOPLEFT", 0, partyRowGap);
     end
     selfFrame:Show();
@@ -1366,8 +1568,8 @@ local function SkinPartyFrames()
   watcher:RegisterEvent("PLAYER_REGEN_ENABLED");
   watcher:RegisterEvent("GROUP_ROSTER_UPDATE");
   watcher:SetScript("OnEvent", Refresh);
-  _G.EventRegistry:RegisterCallback("EditMode.Enter", Refresh, watcher);
-  _G.EventRegistry:RegisterCallback("EditMode.Exit", Refresh, watcher);
+  if (_G.EventRegistry and _G.EditModeManagerFrame) then _G.EventRegistry:RegisterCallback("EditMode.Enter", Refresh, watcher); end
+  if (_G.EventRegistry and _G.EditModeManagerFrame) then _G.EventRegistry:RegisterCallback("EditMode.Exit", Refresh, watcher); end
   local party = _G.PartyFrame;
   if (party and party.UpdatePaddingAndLayout) then
     _G.hooksecurefunc(party, "UpdatePaddingAndLayout", function()
@@ -1463,7 +1665,7 @@ MayronUI:Hook("CoreModule", "OnInitialized", function()
     EnableUnitMenu(player, "player", "MUI_NativePlayerMenuButton");
     local target = CreateUnitDisplay(_G.MUI_UnitPanelRight, "MUI_NativeTargetFrame", "target"); 
     EnableUnitMenu(target, "target", "MUI_NativeTargetMenuButton");
-    PositionPetFrame();
+    if (_G.MUI_UnitPanelCenter) then PositionPetFrame(); end
     CreateTargetOfTargetDisplay(_G.MUI_UnitPanelCenter);
     SkinPartyFrames();
     SetupRaidAuras();

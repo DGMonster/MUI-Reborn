@@ -56,6 +56,34 @@ MayronUI:Hook("CoreModule", "OnInitialized", function()
   local names, stars, guildLabels = {}, {}, {};
   local isSecret = _G.issecretvalue;
 
+  local playerLabels = {};
+
+  local function GetDisplayName(original, unit)
+    local name = original.name;
+    local fullName = _G.GetUnitName and _G.GetUnitName(unit, true);
+    local label = playerLabels[original.frame];
+    if ((isSecret and isSecret(fullName)) or type(fullName) ~= "string" or fullName == "") then
+      if (label) then label:Hide(); end
+      if (original.replaced) then name:SetAlpha(original.alpha); end
+      original.replaced = nil;
+      return name;
+    end
+
+    if (not label) then
+      label = original.frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
+      tk:SetMasterFont(label, 15, "");
+      label:SetShadowColor(0, 0, 0, 0);
+      playerLabels[original.frame] = label;
+    end
+    label:ClearAllPoints();
+    label:SetPoint("CENTER", name, "CENTER");
+    label:SetText(fullName);
+    label:SetShown(name:IsShown());
+    original.replaced = true;
+    name:SetAlpha(0);
+    return label;
+  end
+
   local function StyleGuildName(frame, unit, name)
     local settings = db.profile.friendlyNameplates;
     local guild;
@@ -77,12 +105,17 @@ MayronUI:Hook("CoreModule", "OnInitialized", function()
     if (showGuild and not label) then
       label = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
       label:SetPoint("TOP", name, "BOTTOM", 0, -1);
-      tk:SetMasterFont(label, 11, "OUTLINE");
+      tk:SetMasterFont(label, 14, "");
+      label:SetShadowColor(0, 0, 0, 0);
       label:SetTextColor(playerNameColor, playerNameColor, 1);
       guildLabels[frame] = label;
     end
     if (label and not label:IsForbidden()) then
-      if (showGuild) then label:SetText(guild); end
+      if (showGuild) then
+        label:ClearAllPoints();
+        label:SetPoint("TOP", name, "BOTTOM", 0, -1);
+        label:SetFormattedText("<%s>", guild);
+      end
       label:SetShown(showGuild);
     end
 
@@ -102,7 +135,13 @@ MayronUI:Hook("CoreModule", "OnInitialized", function()
       star:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcon_1");
       stars[frame] = star;
     end
-    if (star) then star:SetShown(showStar); end
+    if (star) then
+      if (showStar) then
+        star:ClearAllPoints();
+        star:SetPoint("RIGHT", name, "LEFT", -3, 0);
+      end
+      star:SetShown(showStar);
+    end
   end
 
   local function Restore(unit)
@@ -113,22 +152,30 @@ MayronUI:Hook("CoreModule", "OnInitialized", function()
     if (star and not star:IsForbidden()) then star:Hide(); end
     local label = guildLabels[original.frame];
     if (label and not label:IsForbidden()) then label:Hide(); end
+    local playerLabel = playerLabels[original.frame];
+    if (playerLabel and not playerLabel:IsForbidden()) then playerLabel:Hide(); end
     local name = original.name;
     if (name:IsForbidden()) then return end
     name:SetFont(original.file, original.size, original.flags);
+    if (original.replaced) then name:SetAlpha(original.alpha); end
     name:SetShadowOffset(original.x, original.y);
     name:SetShadowColor(unpack(original.shadow));
     name:SetTextColor(unpack(original.color));
   end
 
-  local function Apply(unit)
-    local player, hostile = _G.UnitIsPlayer(unit), _G.UnitCanAttack("player", unit);
-    if ((isSecret and (isSecret(player) or isSecret(hostile))) or not player or hostile) then return end
+  local function Apply(unit, expectedFrame)
+    if ((isSecret and isSecret(unit)) or type(unit) ~= "string" or _G.GetCVar(nameOnlyCVar) ~= "1") then return end
 
     local plate = _G.C_NamePlate.GetNamePlateForUnit(unit);
     if (not plate or plate:IsForbidden()) then return end
     local frame = plate.UnitFrame;
-    if (not frame or frame:IsForbidden()) then return end
+    if (not frame or frame:IsForbidden() or (expectedFrame and frame ~= expectedFrame)) then return end
+
+    local player, hostile = _G.UnitIsPlayer(unit), _G.UnitCanAttack("player", unit);
+    if ((isSecret and (isSecret(player) or isSecret(hostile))) or not player or hostile) then
+      Restore(unit);
+      return;
+    end
     local name = frame.name;
     if (not name or name:IsForbidden()) then return end
 
@@ -136,12 +183,12 @@ MayronUI:Hook("CoreModule", "OnInitialized", function()
       local file, size, flags = name:GetFont();
       if (not file) then return end
       local x, y = name:GetShadowOffset();
-      names[unit] = { frame = frame; name = name; file = file; size = size; flags = flags;
+      names[unit] = { frame = frame; name = name; file = file; size = size; flags = flags; alpha = name:GetAlpha();
         x = x; y = y; shadow = {name:GetShadowColor()}; color = {name:GetTextColor()} };
     end
 
     tk:SetMasterFont(name, 15, "");
-    StyleGuildName(frame, unit, name);
+    StyleGuildName(frame, unit, GetDisplayName(names[unit], unit));
     name:SetShadowOffset(1, -1);
     name:SetShadowColor(0, 0, 0, 0);
   end
@@ -160,17 +207,8 @@ MayronUI:Hook("CoreModule", "OnInitialized", function()
     _G.hooksecurefunc("CompactUnitFrame_UpdateName", function(frame)
       if (frame:IsForbidden()) then return end
       local unit = frame.unit;
-      if ((isSecret and isSecret(unit)) or not unit) then return end
-      local original = names[unit];
-      if (original and original.name == frame.name and not original.name:IsForbidden()
-          and _G.GetCVar(nameOnlyCVar) == "1") then
-        local hostile = _G.UnitCanAttack("player", unit);
-        if (not (isSecret and isSecret(hostile)) and not hostile) then
-          StyleGuildName(frame, unit, original.name);
-        else
-          Restore(unit);
-        end
-      end
+      if ((isSecret and isSecret(unit)) or type(unit) ~= "string" or not unit:match("^nameplate%d+$")) then return end
+      Apply(unit, frame);
     end);
   end
 
@@ -192,10 +230,7 @@ MayronUI:Hook("CoreModule", "OnInitialized", function()
     elseif (event == "PLAYER_TARGET_CHANGED") then
       local plate = _G.C_NamePlate.GetNamePlateForUnit("target");
       local unit = plate and not plate:IsForbidden() and plate.namePlateUnitToken;
-      local original = unit and names[unit];
-      if (original and not original.frame:IsForbidden() and not original.name:IsForbidden()) then
-        StyleGuildName(original.frame, unit, original.name);
-      end
+      Apply(unit);
     elseif (event == "PLAYER_GUILD_UPDATE" or value == nameOnlyCVar) then
       _G.C_Timer.After(0, Refresh);
     end

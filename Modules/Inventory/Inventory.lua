@@ -714,11 +714,18 @@ local function GetBagSlotQuestItemTexture(slot)
   local bag = slot:GetParent() --[[@as MayronUI.Inventory.BagFrame]];
 
   if (obj:IsFunction(GetContainerItemQuestInfo) and slot.questTexture) then
-    local questInfo = GetContainerItemQuestInfo(bag.bagIndex, slotIndex);-- Could also use `isActive`
-    local isQuestItem = questInfo.questId or questInfo.questID or questInfo.isQuestItem;
+    local questInfo, questID, isActive = GetContainerItemQuestInfo(bag.bagIndex, slotIndex);
+    local isQuestItem = questInfo;
+    if (obj:IsTable(questInfo)) then
+      questID = questInfo.questID or questInfo.questId;
+      isActive = questInfo.isActive;
+      isQuestItem = questInfo.isQuestItem;
+    end
 
-    if (isQuestItem) then
-      return _G[questInfo.isActive and "TEXTURE_ITEM_QUEST_BANG" or "TEXTURE_ITEM_QUEST_BORDER"];
+    if (questID and not isActive) then
+      return _G["TEXTURE_ITEM_QUEST_BANG"];
+    elseif (questID or isQuestItem) then
+      return _G["TEXTURE_ITEM_QUEST_BORDER"];
     end
 
   elseif (tk:IsClassic()) then
@@ -1695,15 +1702,12 @@ local function InventoryFrameOnEvent(inventoryFrame, event, bagIndex, slotIndex)
     return
   end
 
-	if (event == "QUEST_ACCEPTED" or event == "UNIT_QUEST_LOG_CHANGED") then
-    if (event == "UNIT_QUEST_LOG_CHANGED") then
-      local unitID = bagIndex --[[@as UnitId]]
-      if (unitID ~= "player") then return end
-    end
+  if (event == "QUEST_ACCEPTED" or event == "QUEST_LOG_UPDATE" or event == "UNIT_QUEST_LOG_CHANGED") then
+    if (event == "UNIT_QUEST_LOG_CHANGED" and bagIndex ~= "player") then return end
 
-		if (bagFrame and bagFrame:IsShown()) then
-			UpdateAllBagSlots(bagFrame);
-		end
+    for _, bag in ipairs(inventoryFrame.bags) do
+      UpdateAllBagSlots(bag);
+    end
 
     return
   end
@@ -2214,6 +2218,7 @@ function C_InventoryModule:OnInitialize()
 
     -- Wrath Only --------------:
     inventoryFrame:RegisterEvent("QUEST_ACCEPTED");
+    inventoryFrame:RegisterEvent("QUEST_LOG_UPDATE");
     inventoryFrame:RegisterEvent("UNIT_QUEST_LOG_CHANGED"); -- and arg1 == "player", then also do the same as QUEST_ACCEPTED
     ----------------------------
 

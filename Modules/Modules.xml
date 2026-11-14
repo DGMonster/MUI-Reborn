@@ -1,4 +1,5 @@
 <Ui>
+  <Script file="LayoutEditor.lua" />
   <Script file="MainContainer.lua" />
 
   <Script file="UnitPanels.lua" />
