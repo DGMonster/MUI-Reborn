@@ -1,0 +1,127 @@
+name: Label bug reports by WoW client
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  issues: write
+
+concurrency:
+  group: wow-client-label-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  label:
+    if: github.event.action == 'opened' || github.event.changes.body != null
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply WoW client label
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const clientLabels = new Map([
+              ['Retail', 'Retail'],
+              ['WoW Forever', 'Forever'],
+              ['Classic Era', 'Classic Era'],
+              ['TBC Classic', 'TBC Classic'],
+              ['MoP Classic', 'MoP Classic'],
+            ]);
+            const versionLabels = new Set(clientLabels.values());
+            const required = [
+              'MUI Reborn version',
+              'World of Warcraft client',
+              'World of Warcraft version',
+              'What happened?',
+              'Expected behavior',
+              'Steps to reproduce',
+              'Confirmation',
+            ];
+            const headings = new Set([
+              ...required,
+              'Complete Lua error',
+              'Bartender4 version',
+              'Shadowed Unit Frames / Redux version',
+              'Other active addons',
+              'Screenshots',
+              'Additional information',
+            ]);
+
+            function readClient(body) {
+              const sections = new Map();
+              let current;
+              let fence;
+              for (const line of body.trim().split(/\r?\n/)) {
+                const marker = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(line);
+                if (fence) {
+                  sections.get(current).push(line);
+                  if (marker && marker[1][0] === fence[0] &&
+                      marker[1].length >= fence.length && !marker[2].trim()) {
+                    fence = undefined;
+                  }
+                  continue;
+                }
+                const heading = /^### (.+?)\s*$/.exec(line)?.[1];
+                if (headings.has(heading)) {
+                  if (sections.has(heading)) return;
+                  current = heading;
+                  sections.set(heading, []);
+                } else if (current) {
+                  if (marker) fence = marker[1];
+                  sections.get(current).push(line);
+                } else if (line.trim()) {
+                  return;
+                }
+              }
+
+              const order = [...sections.keys()];
+              const requiredOrder = order.filter(heading => required.includes(heading));
+              if (fence || required.some((heading, i) => heading !== requiredOrder[i] ||
+                    !sections.get(heading)?.join('\n').trim() ||
+                    sections.get(heading).join('\n').trim() === '_No response_') ||
+                  required.slice(0, 6).some((heading, i) => order[i] !== heading) ||
+                  order.at(-1) !== 'Confirmation') return;
+
+              const confirmation = sections.get('Confirmation').join('\n').trim().split(/\r?\n/);
+              const expected = [
+                'I tested the problem with the latest available version of MUI Reborn.',
+                'I searched the existing issues and did not find the same problem.',
+              ];
+              if (confirmation.length !== expected.length ||
+                  expected.some((text, i) => confirmation[i].replace(/^- \[[xX]\] /, '') !== text ||
+                    !/^- \[[xX]\] /.test(confirmation[i]))) return;
+
+              return sections.get('World of Warcraft client').join('\n').trim();
+            }
+
+            // Read the current body so an older queued event cannot apply a stale selection.
+            const params = { ...context.repo, issue_number: context.issue.number };
+            const { data: issue } = await github.rest.issues.get(params);
+            const label = clientLabels.get(readClient(issue.body ?? ''));
+            if (!label) return;
+
+            const currentLabels = issue.labels.map(({ name }) => name);
+            const outdated = currentLabels.filter(name => versionLabels.has(name) && name !== label);
+            const alreadyLabeled = currentLabels.includes(label);
+            if (!outdated.length && alreadyLabeled) return;
+
+            if (!alreadyLabeled) {
+              try {
+                await github.rest.issues.getLabel({ ...context.repo, name: label });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                core.warning(`Repository label "${label}" is missing; no labels were changed.`);
+                return;
+              }
+            }
+
+            for (const name of outdated) {
+              try {
+                await github.rest.issues.removeLabel({ ...params, name });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+              }
+            }
+            if (!alreadyLabeled) {
+              await github.rest.issues.addLabels({ ...params, labels: [label] });
+            }
