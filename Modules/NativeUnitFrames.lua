@@ -615,29 +615,73 @@ local function CreateUnitDisplay(panel, name, unit)
     local vertical = math.min(1, height / width) * 0.5;
     portrait:SetTexCoord(0.5 - horizontal, 0.5 + horizontal, 0.5 - vertical, 0.5 + vertical);
   end
-  portraitBand:SetScript("OnSizeChanged", CropPortrait);
-  CropPortrait(portraitBand, portraitBand:GetSize());
+  local portraitFallback, portraitFade;
+  if (unit == "target") then
+    portrait:ClearAllPoints();
+    portrait:SetPoint("LEFT", portraitBand, "LEFT", 2, 0);
+    portrait:SetSize(44, 29);
+    CropPortrait(portraitBand, 44, 29);
+    portraitFallback = portraitBand:CreateTexture(nil, "BORDER");
+    portraitFallback:SetAllPoints(portrait);
+    portraitFallback:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark");
+    portraitFallback:Hide();
+    portraitFade = portraitBand:CreateTexture(nil, "OVERLAY");
+    portraitFade:SetPoint("TOPRIGHT", portrait, "TOPRIGHT");
+    portraitFade:SetPoint("BOTTOMRIGHT", portrait, "BOTTOMRIGHT");
+    portraitFade:SetWidth(12);
+    portraitFade:SetColorTexture(1, 1, 1, 1);
+    tk:SetGradient(portraitFade, "HORIZONTAL", r * 0.22, g * 0.22, b * 0.22, 0,
+      r * 0.22, g * 0.22, b * 0.22, 0.95);
+    portraitFade:Hide();
+  else
+    portraitBand:SetScript("OnSizeChanged", CropPortrait);
+    CropPortrait(portraitBand, portraitBand:GetSize());
+  end
+
+  local function ShowTexturePortrait()
+    model:Hide();
+    portrait:SetTexture(nil);
+    local ok = pcall(_G.SetPortraitTexture, portrait, unit);
+    portrait:SetShown(ok);
+    if (portraitFallback) then portraitFallback:Show(); end
+    if (portraitFade) then portraitFade:SetShown(ok); end
+    frame.portraitMode = "2D";
+  end
 
   local function UpdatePortrait(event)
-    if (event == "UNIT_PORTRAIT_UPDATE" and frame.portraitMode == "3D") then return end
+    if (unit == "target" and _G.IsInInstance() and _G.issecretvalue
+        and _G.issecretvalue(_G.UnitGUID(unit))) then
+      ShowTexturePortrait();
+      model:ClearModel();
+      frame.portraitError = nil;
+      return;
+    end
 
-    -- Start the model in its visible viewport. Older model methods can return
-    -- no result; only an explicit rejection or error triggers the 2D fallback.
+    if (event == "UNIT_PORTRAIT_UPDATE" and frame.portraitMode == "3D") then
+      return;
+    end
+
+    if (unit == "target") then
+      model:ClearAllPoints();
+      model:SetAllPoints();
+      ShowTexturePortrait();
+      if (event == "PLAYER_TARGET_CHANGED") then model:ClearModel(); end
+    end
+
     model:Show();
     local ok, loaded = pcall(model.SetUnit, model, unit, false);
-    if (ok and loaded ~= false) then
+    if (ok and not (_G.issecretvalue and _G.issecretvalue(loaded)) and loaded ~= false) then
       model:SetPortraitZoom(settings.zoom);
       model:SetPosition(0, 0, 0);
       model:SetAnimation(0);
       portrait:Hide();
+      if (portraitFallback) then portraitFallback:Hide(); end
+      if (portraitFade) then portraitFade:Hide(); end
       frame.portraitMode = "3D";
       frame.portraitError = nil;
     else
-      model:Hide();
-      _G.SetPortraitTexture(portrait, unit);
-      portrait:Show();
-      frame.portraitMode = "2D";
-      frame.portraitError = ok and "SetUnit returned false" or tostring(loaded);
+      if (unit == "target") then model:Hide(); else ShowTexturePortrait(); end
+      frame.portraitError = ok and "SetUnit did not confirm the model" or tostring(loaded);
     end
   end
 
@@ -683,6 +727,7 @@ local function CreateUnitDisplay(panel, name, unit)
 
     frame:Show();
     if (not event or event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TARGET_CHANGED"
+        or event == "PLAYER_REGEN_DISABLED" or event == "PLAYER_REGEN_ENABLED"
         or event == "UNIT_PORTRAIT_UPDATE" or event == "UNIT_MODEL_CHANGED") then
       UpdatePortrait(event);
     end
@@ -723,7 +768,11 @@ local function CreateUnitDisplay(panel, name, unit)
   end
 
   frame:RegisterEvent("PLAYER_ENTERING_WORLD");
-  if (unit == "target") then frame:RegisterEvent("PLAYER_TARGET_CHANGED"); end
+  if (unit == "target") then
+    frame:RegisterEvent("PLAYER_TARGET_CHANGED");
+    frame:RegisterEvent("PLAYER_REGEN_DISABLED");
+    frame:RegisterEvent("PLAYER_REGEN_ENABLED");
+  end
   frame:RegisterUnitEvent("UNIT_PORTRAIT_UPDATE", unit);
   frame:RegisterUnitEvent("UNIT_MODEL_CHANGED", unit);
   frame:RegisterUnitEvent("UNIT_HEALTH", unit);
@@ -798,6 +847,35 @@ local function EnableUnitMenu(display, unit, buttonName)
   QueuePosition();
 end
 
+local function CreateCompactHealthText(bar)
+  local text = bar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
+  text:SetPoint("RIGHT", -3, 0);
+  text:SetTextColor(0.55, 1, 0.4);
+  text:SetShadowOffset(1, -1);
+  return text;
+end
+
+local function UpdateCompactHealth(bar, text, unit)
+  local current, maximum = _G.UnitHealth(unit), _G.UnitHealthMax(unit);
+  bar:SetMinMaxValues(0, maximum);
+  bar:SetValue(current);
+
+  local scale = _G.CurveConstants and _G.CurveConstants.ScaleTo100;
+  local isSecret = _G.issecretvalue;
+  if (scale and _G.UnitHealthPercent) then
+    local percent = _G.UnitHealthPercent(unit, false, scale);
+    if ((isSecret and isSecret(percent)) or type(percent) == "number") then
+      text:SetFormattedText("%.0f%%", percent);
+      return;
+    end
+  end
+  if (not (isSecret and (isSecret(current) or isSecret(maximum))) and maximum > 0) then
+    text:SetFormattedText("%.0f%%", current / maximum * 100);
+  else
+    text:SetText("");
+  end
+end
+
 local function StylePetFrame(pet)
   local visual = _G.CreateFrame("Frame", nil, pet);
   visual:SetPoint("BOTTOM");
@@ -813,6 +891,11 @@ local function StylePetFrame(pet)
   background:SetPoint("BOTTOMRIGHT", -1, 1);
   background:SetColorTexture(0.075, 0.075, 0.085, 0.98);
 
+  local health = CreateBar(visual, 16, 0.29, 0.52, 0.25);
+  health:SetPoint("TOPLEFT", 1, -1);
+  health:SetPoint("BOTTOMRIGHT", -1, 1);
+  local percent = CreateCompactHealthText(health);
+
   local buff = _G.CreateFrame("Frame", nil, visual);
   buff:SetSize(14, 14);
   buff:SetPoint("LEFT", 2, 0);
@@ -821,9 +904,9 @@ local function StylePetFrame(pet)
   local icon = buff:CreateTexture(nil, "ARTWORK");
   icon:SetAllPoints();
 
-  local name = visual:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
+  local name = health:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
   name:SetPoint("LEFT", 4, 0);
-  name:SetPoint("RIGHT", -4, 0);
+  name:SetPoint("RIGHT", -31, 0);
   name:SetJustifyH("CENTER");
   name:SetMaxLines(1);
 
@@ -849,7 +932,9 @@ local function StylePetFrame(pet)
   buff:SetScript("OnHide", HideBuffTooltip);
 
   local function Refresh()
-    name:SetText(_G.UnitName(pet.unit or "pet") or "");
+    local unit = pet.unit or "pet";
+    name:SetText(_G.UnitName(unit));
+    UpdateCompactHealth(health, percent, unit);
     local texture;
     local auras = _G.C_UnitAuras;
     if (auras and auras.GetAuraDataByIndex and CanReadPetBuff()) then
@@ -882,6 +967,8 @@ local function StylePetFrame(pet)
   visual:SetScript("OnShow", Refresh);
   visual:RegisterUnitEvent("UNIT_PET", "player");
   visual:RegisterUnitEvent("UNIT_AURA", "pet");
+  visual:RegisterUnitEvent("UNIT_HEALTH", "pet", "player");
+  visual:RegisterUnitEvent("UNIT_MAXHEALTH", "pet", "player");
   visual:RegisterEvent("PLAYER_REGEN_DISABLED");
   visual:RegisterEvent("PLAYER_REGEN_ENABLED");
   visual:RegisterUnitEvent("UNIT_NAME_UPDATE", "pet", "player");
@@ -949,13 +1036,14 @@ local function CreateTargetOfTargetDisplay(panel)
   border:SetAllPoints();
   border:SetColorTexture(0.02, 0.02, 0.025, 1);
 
-  local health = CreateBar(frame, 16, 0.21, 0.37, 0.20);
+  local health = CreateBar(frame, 16, 0.29, 0.52, 0.25);
   health:SetPoint("TOPLEFT", 1, -1);
   health:SetPoint("BOTTOMRIGHT", -1, 1);
 
   local name = health:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
   name:SetPoint("LEFT", 4, 0);
-  name:SetPoint("RIGHT", -4, 0);
+  name:SetPoint("RIGHT", -31, 0);
+  local percent = CreateCompactHealthText(health);
   name:SetJustifyH("CENTER");
   name:SetMaxLines(1);
 
@@ -966,8 +1054,7 @@ local function CreateTargetOfTargetDisplay(panel)
     end
 
     name:SetText(_G.UnitName(unit));
-    health:SetMinMaxValues(0, _G.UnitHealthMax(unit));
-    health:SetValue(_G.UnitHealth(unit));
+    UpdateCompactHealth(health, percent, unit);
     frame:Show();
   end
 
@@ -1225,7 +1312,9 @@ local function SkinPartyFrames()
       local isSecret = _G.issecretvalue;
       local function UpdateRange()
         local unit = playerRow and "player" or frame.unit;
-        if (frame.state == "vehicle" or (isSecret and isSecret(unit)) or not unit or playerRow or not _G.UnitInRange) then
+        local state = frame.state;
+        if (isSecret and (isSecret(unit) or isSecret(state))) then return end
+        if (state == "vehicle" or not unit or playerRow or not _G.UnitInRange) then
           row:SetAlpha(1);
           return;
         end
@@ -1245,8 +1334,10 @@ local function SkinPartyFrames()
 
       local function Update()
         local unit = playerRow and "player" or frame.unit;
-        if (frame.state == "vehicle" or (isSecret and isSecret(unit))
-            or not unit or not _G.UnitExists(unit)) then
+        local state = frame.state;
+        if (isSecret and (isSecret(unit) or isSecret(state))) then return end
+        local exists = unit and _G.UnitExists(unit);
+        if (state == "vehicle" or not unit or (not (isSecret and isSecret(exists)) and not exists)) then
           name:SetText("");
           percent:SetText("");
           roleIcon:Hide();
@@ -1342,9 +1433,13 @@ local function SkinPartyFrames()
             damageShield:SetValue((prediction:GetDamageAbsorbs()));
           else
             incomingHeal:SetMinMaxValues(0, maxHealth);
-            incomingHeal:SetValue(_G.UnitGetIncomingHeals(unit) or 0);
+            local incoming = _G.UnitGetIncomingHeals(unit);
+            if (isSecret and isSecret(incoming)) then incomingHeal:SetValue(incoming);
+            else incomingHeal:SetValue(incoming or 0); end
             damageShield:SetMinMaxValues(0, maxHealth);
-            damageShield:SetValue(_G.UnitGetTotalAbsorbs(unit) or 0);
+            local absorbs = _G.UnitGetTotalAbsorbs(unit);
+            if (isSecret and isSecret(absorbs)) then damageShield:SetValue(absorbs);
+            else damageShield:SetValue(absorbs or 0); end
           end
         end
         local threat = not inactive and _G.UnitThreatSituation and _G.UnitThreatSituation(unit);

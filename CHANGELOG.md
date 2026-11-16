@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.10-rc
+
+- WoW Forever: Show the target's native 2D portrait when a dungeon target has a protected identity. Keep outdoor 3D target portraits.
+
 ## 1.0.9-rc
 
 ### Unit frames and layouts

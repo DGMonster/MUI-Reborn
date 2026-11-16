@@ -51,6 +51,27 @@ end
 
 -- Money Module ----------------
 
+local function GetCharacterLabel(characterKey, showRealm)
+  if (tk:IsForever()) then
+    local names = db:ParsePathValue(db.global, "datatext.money.characterNames");
+    local fullName = names and names[characterKey];
+
+    if (fullName) then
+      local color, realm = characterKey:match("^(|c%x%x%x%x%x%x%x%x)[^-]+(-.*)|r$");
+      if (color) then
+        return color..fullName..(showRealm and realm or "").."|r";
+      end
+    end
+  end
+
+  if (showRealm) then
+    return characterKey;
+  end
+
+  local name = strsplit("-", characterKey);
+  return name;
+end
+
 MayronUI:Hook("DataTextModule", "OnInitialize", function(self)
   local coloredKey = tk.Strings:SetTextColorByClassFileName(tk:GetPlayerKey());
 
@@ -63,6 +84,18 @@ MayronUI:Hook("DataTextModule", "OnInitialize", function(self)
 
   -- store character's money to be seen by other characters
   db.global.datatext.money.characters[coloredKey] = GetMoney();
+
+  if (tk:IsForever() and _G.GetUnitName) then
+    local fullName = _G.GetUnitName("player", true);
+    if (fullName and fullName ~= "" and fullName ~= _G.UnitName("player")) then
+      local names = db:ParsePathValue(db.global, "datatext.money.characterNames");
+      if (not names) then
+        db:SetPathValue(db.global, "datatext.money.characterNames", {});
+        names = db.global.datatext.money.characterNames;
+      end
+      names[coloredKey] = fullName;
+    end
+  end
 
   self:RegisterComponentClass("money", Money);
 end);
@@ -262,12 +295,7 @@ function Money:HandleLeftClick(data)
     nameLabel:SetNormalTexture(1);
     nameLabel:GetNormalTexture():SetColorTexture(0.2, 0.2, 0.2, 0.2);
 
-    if (data.settings.showRealm) then
-      nameLabel.name:SetText(characterName);
-    else
-      local name = strsplit("-", characterName);
-      nameLabel.name:SetText(name);
-    end
+    nameLabel.name:SetText(GetCharacterLabel(characterName, data.settings.showRealm));
 
     -- The character's money
     totalLabelsShown = totalLabelsShown + 1;
@@ -298,12 +326,7 @@ function Money:HandleRightClick(data)
     label.dbKey = characterName;
     label.isResetAll = nil;
 
-    if (data.settings.showRealm) then
-      label.name:SetText(characterName);
-    else
-      local name = strsplit("-", characterName);
-      label.name:SetText(name);
-    end
+    label.name:SetText(GetCharacterLabel(characterName, data.settings.showRealm));
   end
 
   totalLabelsShown = totalLabelsShown + 1;

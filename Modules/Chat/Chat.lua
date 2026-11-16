@@ -151,6 +151,19 @@ db:AddToDefaults("profile.chat", defaults);
 
 -- Chat Module -------------------
 
+local function GetEditBoxBackdropAlpha(alpha)
+  if (tk:IsForever() and not ChatFrame1EditBox:HasFocus()) then return 0 end
+  return alpha;
+end
+
+local function ApplyEditBoxBackdropColor(color)
+  ChatFrame1EditBox:SetBackdropColor(color.r, color.g, color.b, GetEditBoxBackdropAlpha(color.a));
+  if (tk:IsForever()) then
+    local r, g, b = ChatFrame1EditBox:GetBackdropBorderColor();
+    ChatFrame1EditBox:SetBackdropBorderColor(r, g, b, GetEditBoxBackdropAlpha(1));
+  end
+end
+
 local function LoadEditBoxBackdrop()
   if (obj:IsFunction(ChatFrame1EditBox.OnBackdropLoaded)) then
     ChatFrame1EditBox:OnBackdropLoaded();
@@ -324,7 +337,7 @@ function C_ChatModule:OnInitialize(data)
         LoadEditBoxBackdrop();
 
         local color = data.settings.editBox.backdropColor;
-        ChatFrame1EditBox:SetBackdropColor(color.r, color.g, color.b, color.a);
+        ApplyEditBoxBackdropColor(color);
       end;
 
       inset = function(value)
@@ -336,7 +349,7 @@ function C_ChatModule:OnInitialize(data)
         LoadEditBoxBackdrop();
 
         local color = data.settings.editBox.backdropColor;
-        ChatFrame1EditBox:SetBackdropColor(color.r, color.g, color.b, color.a);
+        ApplyEditBoxBackdropColor(color);
       end;
 
       borderSize = function(value)
@@ -345,12 +358,12 @@ function C_ChatModule:OnInitialize(data)
         LoadEditBoxBackdrop();
 
         local color = data.settings.editBox.backdropColor;
-        ChatFrame1EditBox:SetBackdropColor(color.r, color.g, color.b, color.a);
+        ApplyEditBoxBackdropColor(color);
       end;
 
       backdropColor = function(value)
-        ChatFrame1EditBox:SetBackdropColor(value.r, value.g, value.b, value.a);
         LoadEditBoxBackdrop();
+        ApplyEditBoxBackdropColor(value);
       end;
     };
   }, setupOptions);
@@ -371,8 +384,18 @@ function C_ChatModule:OnInitialized(data)
   hooksecurefunc("ChatEdit_UpdateHeader", function()
     local chatType = ChatFrame1EditBox:GetAttribute("chatType");
     local r, g, b = _G.GetMessageTypeColor(chatType);
-    ChatFrame1EditBox:SetBackdropBorderColor(r, g, b, 1);
+    ChatFrame1EditBox:SetBackdropBorderColor(r, g, b, GetEditBoxBackdropAlpha(1));
   end);
+
+  if (tk:IsForever()) then
+    local function RefreshEditBoxBackdrop()
+      if (data.editBoxBackdrop) then
+        ApplyEditBoxBackdropColor(data.settings.editBox.backdropColor);
+      end
+    end
+    ChatFrame1EditBox:HookScript("OnEditFocusGained", RefreshEditBoxBackdrop);
+    ChatFrame1EditBox:HookScript("OnEditFocusLost", RefreshEditBoxBackdrop);
+  end
 
   self:SetEnabled(true);
 end

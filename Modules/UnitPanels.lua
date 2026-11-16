@@ -339,7 +339,18 @@ end
 
 -- This is used by the Resting Pulse feature and by the "alpha" update function:
 function C_UnitPanels.Private:UpdateVisuals(data, frame, restingPulseAlpha)
-  local targetR, targetG, targetB = tk:GetClassColor("target");
+  local issecretvalue = _G.issecretvalue;
+  local targetExists = UnitExists("target");
+  local hasTarget = not (issecretvalue and issecretvalue(targetExists)) and targetExists;
+  local targetIsPlayer = UnitIsPlayer("target");
+  local targetR, targetG, targetB;
+
+  if (not (issecretvalue and issecretvalue(targetIsPlayer)) and targetIsPlayer) then
+    local classFilename = tk:GetClassFileNameByUnitID("target");
+    if (not (issecretvalue and issecretvalue(classFilename)) and classFilename) then
+      targetR, targetG, targetB = _G.GetClassColor(classFilename);
+    end
+  end
   local r, g, b = data.left.bg:GetVertexColor();
   local alpha = data.settings.alpha;
 
@@ -350,25 +361,25 @@ function C_UnitPanels.Private:UpdateVisuals(data, frame, restingPulseAlpha)
   end
 
   if (frame ~= data.left and frame ~= data.player) then
-    if (not (data.settings.isSymmetric or UnitExists("target"))) then
+    if (not (data.settings.isSymmetric or hasTarget)) then
       alpha = 0;
     end
   end
 
   if (frame == data.center) then
-    if (UnitIsPlayer("target") and data.settings.targetClassColored) then
+    if (targetR and data.settings.targetClassColored) then
       tk:SetGradient(frame.bg, "HORIZONTAL", r, g, b, alpha, targetR, targetG, targetB, alpha);
     else
       tk:SetGradient(frame.bg, "HORIZONTAL", r, g, b, alpha, r, g, b, alpha);
     end
   elseif (frame == data.right) then
-    if (UnitIsPlayer("target") and data.settings.targetClassColored) then
+    if (targetR and data.settings.targetClassColored) then
       frame.bg:SetVertexColor(targetR, targetG, targetB, alpha);
     else
       frame.bg:SetVertexColor(r, g, b, alpha);
     end
   elseif (frame == data.target) then
-    if (UnitIsPlayer("target") and data.settings.unitNames.targetClassColored) then
+    if (targetR and data.settings.unitNames.targetClassColored) then
       frame.bg:SetVertexColor(targetR, targetG, targetB, alpha);
     else
       frame.bg:SetVertexColor(r, g, b, alpha);
@@ -376,7 +387,7 @@ function C_UnitPanels.Private:UpdateVisuals(data, frame, restingPulseAlpha)
   elseif (frame == data.player) then
     frame.bg:SetVertexColor(r, g, b, alpha);
   else
-    if (UnitExists("target") or data.settings.isSymmetric) then
+    if (hasTarget or data.settings.isSymmetric) then
       if (frame.singleBg) then
         frame.singleBg:SetVertexColor(r, g, b, 0);
       end

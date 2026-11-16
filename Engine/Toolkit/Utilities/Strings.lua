@@ -187,6 +187,10 @@ UnitIsConnected, UnitIsAFK, UnitIsDND, UnitReaction = _G.UnitFullName, _G.UnitLe
 _G.UnitClassification, _G.tonumber, _G.UnitIsPlayer, _G.UnitAffectingCombat, _G.IsResting,
 _G.UnitIsConnected, _G.UnitIsAFK,   _G.UnitIsDND, _G.UnitReaction;
 
+local function IsSecretUnitValue(value)
+  return _G.issecretvalue and _G.issecretvalue(value);
+end
+
 function tk.Strings:GetUnitNameText(unitID, overflow, includeRealmName)
   local unitName, realm = UnitFullName(unitID);
   unitID = (unitID or ""):lower();
@@ -195,16 +199,23 @@ function tk.Strings:GetUnitNameText(unitID, overflow, includeRealmName)
   -- returns the first name there, while GetUnitName(..., true) returns the
   -- complete display name (for example "Aelyra Sternenwind").
   if (tk:IsForever() and obj:IsFunction(_G.GetUnitName)) then
-    unitName = _G.GetUnitName(unitID, true) or unitName;
+    local fullName = _G.GetUnitName(unitID, true);
+    if (IsSecretUnitValue(fullName)) then return self.Empty; end
+    unitName = fullName or unitName;
   end
 
-  if (unitID ~= "player" and includeRealmName and obj:IsString(realm) and not tk.Strings:IsNilOrWhiteSpace(realm)) then
+  if (IsSecretUnitValue(unitName)) then return self.Empty; end
+
+  if (unitID ~= "player" and includeRealmName and not IsSecretUnitValue(realm) and obj:IsString(realm) and not tk.Strings:IsNilOrWhiteSpace(realm)) then
     unitName = unitName.."-"..realm;
   end
 
   if (overflow) then
     unitName = tk.Strings:SetOverflow(unitName, overflow);
   end
+
+  local isPlayer = UnitIsPlayer(unitID);
+  if (IsSecretUnitValue(isPlayer)) then return unitName; end
 
   if (unitID == "player") then
     if (UnitAffectingCombat("player")) then
@@ -214,20 +225,24 @@ function tk.Strings:GetUnitNameText(unitID, overflow, includeRealmName)
       unitName = tk.Strings:SetTextColorByRGB(unitName, 0, 1, 1);
     else
       local _, class = UnitClass(unitID);
+      if (IsSecretUnitValue(class)) then return unitName; end
       unitName = tk.Strings:SetTextColorByClassFileName(unitName, class);
     end
-  elseif (UnitIsPlayer(unitID)) then
+  elseif (isPlayer) then
     local _, class = UnitClass(unitID);
+    if (IsSecretUnitValue(class)) then return unitName; end
     unitName = tk.Strings:SetTextColorByClassFileName(unitName, class);
   else
     local r, g, b = 1, 1, 1;
 
-    if (UnitIsTapDenied(unitID)) then
+    local tapDenied = UnitIsTapDenied(unitID);
+    if (IsSecretUnitValue(tapDenied)) then return unitName; end
+    if (tapDenied) then
       r, g, b = 0.5, 0.5, 0.5;
     else
       local reaction = UnitReaction(unitID, "player");
 
-      if (reaction) then
+      if (not IsSecretUnitValue(reaction) and reaction) then
         r = tk.Constants.FACTION_BAR_COLORS[reaction].r;
         g = tk.Constants.FACTION_BAR_COLORS[reaction].g;
         b = tk.Constants.FACTION_BAR_COLORS[reaction].b;
@@ -241,12 +256,16 @@ function tk.Strings:GetUnitNameText(unitID, overflow, includeRealmName)
 end
 
 function tk.Strings:GetUnitLevelText(unitID, unitLevel)
+  if (IsSecretUnitValue(unitLevel)) then return self.Empty; end
   unitLevel = unitLevel or UnitLevel(unitID);
+  if (IsSecretUnitValue(unitLevel) or not unitLevel) then return self.Empty; end
 
   if (unitID:lower() == "player") then
     unitLevel = tk.Strings:SetTextColorByRGB(unitLevel, 1, 0.8, 0);
   else
+    local rawLevel = unitLevel;
     local classification = UnitClassification(unitID);
+    if (IsSecretUnitValue(classification)) then return self.Empty; end
 
     if (tonumber(unitLevel) < 1) then
       unitLevel = "boss";
@@ -258,11 +277,13 @@ function tk.Strings:GetUnitLevelText(unitID, unitLevel)
       unitLevel = tk.Strings:Concat("|cffff66ff", unitLevel, "|r");
     end
 
-    local sameFaction = UnitFactionGroup(unitID) == UnitFactionGroup("player");
+    local faction = UnitFactionGroup(unitID);
+    local playerFaction = UnitFactionGroup("player");
+    local sameFaction = not (IsSecretUnitValue(faction) or IsSecretUnitValue(playerFaction)) and faction == playerFaction;
     if (classification == "worldboss" or unitLevel == "boss" or sameFaction) then
       unitLevel = tk.Strings:SetTextColorByKey(unitLevel, "yellow");
     else
-      local color = tk:GetDifficultyColor(UnitLevel(unitID));
+      local color = tk:GetDifficultyColor(rawLevel);
       unitLevel = tk.Strings:SetTextColorByRGB(unitLevel, color.r, color.g, color.b);
     end
   end
@@ -313,10 +334,12 @@ do
 end
 
 function tk.Strings:GetUnitStatusText(unitID)
-  if (UnitIsPlayer(unitID)) then
-    local status = (not UnitIsConnected(unitID) and " <DC>")
-    or (UnitIsAFK(unitID) and " <AFK>")
-    or (UnitIsDND(unitID) and " <DND>");
+  local isPlayer = UnitIsPlayer(unitID);
+  if (not IsSecretUnitValue(isPlayer) and isPlayer) then
+    local connected, afk, dnd = UnitIsConnected(unitID), UnitIsAFK(unitID), UnitIsDND(unitID);
+    local status = (not IsSecretUnitValue(connected) and not connected and " <DC>")
+    or (not IsSecretUnitValue(afk) and afk and " <AFK>")
+    or (not IsSecretUnitValue(dnd) and dnd and " <DND>");
 
     return status;
   end
@@ -324,6 +347,7 @@ end
 
 function tk.Strings:GetUnitFullNameText(unitID, unitLevel, nameOverflow, includeRealName)
   local unitName = self:GetUnitNameText(unitID, nameOverflow, includeRealName);
+  if (unitName == self.Empty) then return self.Empty; end
   unitLevel = self:GetUnitLevelText(unitID, unitLevel);
   local unitStatus = self:GetUnitStatusText(unitID);
 

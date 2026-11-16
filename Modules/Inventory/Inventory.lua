@@ -2172,16 +2172,10 @@ function C_InventoryModule:OnInitialize()
     inventoryFrame:Hide();
 
     local inventoryTogglePending = false;
-    local function ToggleMUIInventory()
-      if (inventoryTogglePending) then
-        return;
-      end
+    local bagPanelOpening = false;
+    local bagPanelSequence = 0;
 
-      inventoryTogglePending = true;
-      _G.C_Timer.After(0, function()
-        inventoryTogglePending = false;
-      end);
-
+    local function ToggleInventoryVisibility()
       if (inventoryFrame:IsShown()) then
         PlaySound(SoundKit.IG_BACKPACK_CLOSE);
         inventoryFrame:Hide();
@@ -2191,11 +2185,42 @@ function C_InventoryModule:OnInitialize()
       end
     end
 
+    local function ToggleMUIInventory()
+      if (inventoryTogglePending or bagPanelOpening) then return end
+
+      inventoryTogglePending = true;
+      local sequence = bagPanelSequence;
+      _G.C_Timer.After(0, function()
+        inventoryTogglePending = false;
+        if (tk:IsForever() and not bagPanelOpening and sequence == bagPanelSequence) then
+          ToggleInventoryVisibility();
+        end
+      end);
+
+      if (not tk:IsForever()) then ToggleInventoryVisibility(); end
+    end
+
     tk:HookFunc("ToggleAllBags", ToggleMUIInventory);
 
     if (tk:IsForever()) then
       -- Forever's default B binding calls ToggleBackpack instead of ToggleAllBags.
       tk:HookFunc("ToggleBackpack", ToggleMUIInventory);
+
+      local bagOpener = _G.CreateFrame("Frame");
+      bagOpener:RegisterEvent("BANKFRAME_OPENED");
+      bagOpener:RegisterEvent("MERCHANT_SHOW");
+      bagOpener:SetScript("OnEvent", function(_, event)
+        bagPanelOpening = true;
+        bagPanelSequence = bagPanelSequence + 1;
+        local sequence = bagPanelSequence;
+        -- Let Blizzard finish its bag and panel setup before showing MUI's inventory.
+        _G.C_Timer.After(0, function()
+          if (sequence ~= bagPanelSequence) then return end
+          bagPanelOpening = false;
+          local panel = event == "MERCHANT_SHOW" and _G.MerchantFrame or _G.BankFrame;
+          if (panel and panel:IsShown()) then inventoryFrame:Show(); end
+        end);
+      end);
     end
 
     gui:AddDialogTexture(inventoryFrame, "High");

@@ -5,19 +5,24 @@ local tk, db, _, _, _, L = MayronUI:GetCoreComponents();
 if (not tk:IsRetail()) then return end
 
 db:AddToDefaults("global.foreverMicroMenu", { hidden = true });
-local ready, lastProfile, elapsedTotal = false, nil, 0;
+local ready, elapsedTotal = false, 0;
+local lastProfile, lastHidden, lastBar;
 local function Apply(force)
   if (not ready or _G.InCombatLockdown()) then return false end
   local bt = _G.Bartender4;
   local module = bt and bt.GetModule and bt:GetModule("MicroMenu", true);
   if (not module or not module.bar or not module.db or not module.bar.SetVisibilityOption) then return false end
   local profile = module.db.profile;
-  if (force or lastProfile ~= profile) then
-    module.bar:SetVisibilityOption("always", db.global.foreverMicroMenu.hidden == true);
-    lastProfile = profile;
+  local hidden = db.global.foreverMicroMenu.hidden == true;
+  if (force or lastProfile ~= profile or lastHidden ~= hidden or lastBar ~= module.bar) then
+    module.bar:SetVisibilityOption("always", hidden);
+    lastProfile, lastHidden, lastBar = profile, hidden, module.bar;
   end
   return true;
 end
+local visibility = MayronUI:NewComponent("MicroMenuVisibility");
+visibility.Apply = Apply;
+
 MayronUI:Hook("CoreModule", "OnInitialized", function()
   ready = true;
   local watcher = _G.CreateFrame("Frame");

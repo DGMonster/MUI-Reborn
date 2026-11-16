@@ -7,6 +7,7 @@ if (not tk:IsForever()) then return end
 local setShown, hookedFrame;
 local setSettingsShown, hookedSettings;
 local originals, decorations = {}, {};
+local backgroundAlpha = 0.82;
 local buttonTexture = tk:GetAssetFilePath("Textures\\Widgets\\Button");
 
 local function HideArt(region)
@@ -17,21 +18,9 @@ end
 
 local function StyleInfoPane(pane)
   if (not pane) then return end
-  local visual = decorations[pane];
   for _, region in _G.ipairs({ pane:GetRegions() }) do
-    if ((not visual or region ~= visual.background) and region:IsObjectType("Texture")) then
-      HideArt(region);
-    end
+    if (region:IsObjectType("Texture")) then HideArt(region); end
   end
-  if (not visual) then
-    local background = pane:CreateTexture(nil, "BACKGROUND", nil, -1);
-    background:SetPoint("TOPLEFT", 4, -3);
-    background:SetPoint("BOTTOMRIGHT", -4, 3);
-    background:SetColorTexture(0.045, 0.045, 0.058, 0.94);
-    visual = { background = background };
-    decorations[pane] = visual;
-  end
-  visual.background:Show();
 end
 
 local function StyleButton(button, rotation)
@@ -91,7 +80,7 @@ local function StyleList(list)
 end
 
 local function StyleSettings(frame)
-  setSettingsShown = setSettingsShown or gui:CreateWindowSkinChrome(frame);
+  setSettingsShown = setSettingsShown or gui:CreateWindowSkinChrome(frame, nil, nil, true, backgroundAlpha);
   setSettingsShown(true);
 
   local top = _G.GuildControlUITopBg;
@@ -151,7 +140,7 @@ local function Refresh()
 
   if (settings and settings:IsVisible()) then StyleSettings(settings); end
   if (frame:IsVisible()) then
-    setShown = setShown or gui:CreateWindowSkinChrome(frame, 210, 8);
+    setShown = setShown or gui:CreateWindowSkinChrome(frame, 210, 8, true, backgroundAlpha);
     setShown(true);
     StyleList(list);
     StyleInfoPane(_G.CommunitiesFrameGuildDetailsFrameInfo);

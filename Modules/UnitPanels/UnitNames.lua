@@ -24,6 +24,14 @@ local function UpdateUnitNameText(data, unitID, unitLevel)
     end
   end
 
+  if (unitID == "target" and unitNameText == tk.Strings.Empty) then
+    local name = _G.GetUnitName and _G.GetUnitName(unitID, true);
+    if (_G.issecretvalue and _G.issecretvalue(name)) then
+      local ok = pcall(data[unitID].text.SetText, data[unitID].text, name);
+      if (ok) then return; end
+    end
+  end
+
   data[unitID].text:SetText(unitNameText);
 end
 

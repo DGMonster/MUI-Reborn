@@ -257,6 +257,16 @@ function C_ConfigMenu:GetConfigTable()
           dbPath = "global.foreverWindowStyle";
           requiresReload = true;
         };
+        {
+          name = L["Hide Micro Menu"];
+          tooltip = L["Hide the Bartender4 micro menu. Changes made during combat apply when combat ends."];
+          type = "check";
+          shown = tk:IsRetail();
+          dbPath = "global.foreverMicroMenu.hidden";
+          OnValueChanged = function()
+            MayronUI:GetComponent("MicroMenuVisibility").Apply(false);
+          end;
+        };
         { type = "title";
           name = L["Global Settings"];
           description = L["These settings are applied account-wide"];
