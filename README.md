@@ -1,14 +1,14 @@
 # MUI Reborn
 
-> A complete, customizable user interface for WoW Retail, WoW Forever, Classic Era, TBC Classic and MoP Classic.
+> A complete, customizable user interface for WoW Retail, WoW Forever, Classic Era, TBC Classic, and MoP Classic.
 
-[![Version](https://img.shields.io/badge/version-1.0.9--rc.1-orange)](https://github.com/DGMonster/MUI-Reborn)
+[![Version](https://img.shields.io/badge/version-1.0.10--rc-orange)](https://github.com/DGMonster/MUI-Reborn/releases)
 [![WoW Retail](https://img.shields.io/badge/WoW_Retail-12.1-blue)](https://worldofwarcraft.blizzard.com/)
 [![WoW Forever](https://img.shields.io/badge/WoW_Forever-1.60.1-purple)](https://worldofwarcraft.blizzard.com/)
 [![Development status](https://img.shields.io/badge/status-release_candidate-orange)](https://github.com/DGMonster/MUI-Reborn/issues)
 [![Discord](https://img.shields.io/badge/Discord-MUI_Reborn-5865F2?logo=discord&logoColor=white)](https://discord.gg/eqpFHhJyyV)
 
-**[Download MUI Reborn](https://github.com/DGMonster/MUI-Reborn/releases) | [Join our Discord](https://discord.gg/eqpFHhJyyV) | [Report a Bug](https://github.com/DGMonster/MUI-Reborn/issues)**
+**[Official Website](https://mui-reborn.com/) · [Download MUI Reborn](https://github.com/DGMonster/MUI-Reborn/releases) · [Join our Discord](https://discord.gg/eqpFHhJyyV) · [Report a Bug](https://github.com/DGMonster/MUI-Reborn/issues)**
 
 ---
 
