@@ -192,34 +192,15 @@ function gui:CreateWindowSkinTitle(title, width)
 
   function style:SetShown(shown)
     if (shown and text and not points) then
-      local originalPoints, originalJustify = {}, text:GetJustifyH();
-      local numPoints = text:GetNumPoints();
-      local issecretvalue = _G.issecretvalue;
-      -- Leave the native title anchored if Blizzard hides any restore values.
-      if (issecretvalue and (issecretvalue(numPoints) or issecretvalue(originalJustify))) then
-        texture:SetShown(shown);
-        return;
-      end
-      for index = 1, numPoints do
-        local point = { text:GetPoint(index) };
-        if (issecretvalue) then
-          for argument = 1, 5 do
-            if (issecretvalue(point[argument])) then
-              texture:SetShown(shown);
-              return;
-            end
-          end
-        end
-        originalPoints[index] = point;
-      end
-      points, justify = originalPoints, originalJustify;
+      points, justify = {}, text:GetJustifyH();
+      for index = 1, text:GetNumPoints() do points[index] = { text:GetPoint(index) }; end
       text:ClearAllPoints();
       text:SetPoint("LEFT", texture, "LEFT", 9, 0);
       text:SetPoint("RIGHT", texture, "RIGHT", -15, 0);
       text:SetJustifyH("LEFT");
     elseif (not shown and points) then
       text:ClearAllPoints();
-      for _, point in ipairs(points) do text:SetPoint(_G.unpack(point, 1, 5)); end
+      for _, point in ipairs(points) do text:SetPoint(_G.unpack(point)); end
       text:SetJustifyH(justify);
       points = nil;
     end
@@ -230,14 +211,14 @@ function gui:CreateWindowSkinTitle(title, width)
 end
 
 -- Applies the inventory-style shell to a native window with its own title.
-function gui:CreateWindowSkinChrome(frame, titleWidth, extraLeft, flatBackground, backgroundAlpha)
+function gui:CreateWindowSkinChrome(frame, titleWidth, extraLeft)
   local tk = MayronUI:GetCoreComponents();
   local surface = self:CreateWindowSkinSurface(frame, frame, frame, -3 - (extraLeft or 0), -2, 3, -3);
   local backing = surface:CreateTexture(nil, "BACKGROUND", nil, -1);
   backing:SetPoint("TOPLEFT", surface, "TOPLEFT", 8, -8);
   backing:SetPoint("BOTTOMRIGHT", surface, "BOTTOMRIGHT", -8, 8);
-  backing:SetColorTexture(0.035, 0.035, 0.045, backgroundAlpha or (flatBackground and 0.72 or 0.96));
-  surface:SetGridAlphaType(flatBackground and "None" or "Low");
+  backing:SetColorTexture(0.035, 0.035, 0.045, 0.96);
+  surface:SetGridAlphaType("Low");
   surface:Hide();
 
   local title = frame.TitleContainer;

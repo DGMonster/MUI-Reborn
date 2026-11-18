@@ -1097,6 +1097,8 @@ local function IsMUIOrBlizzardMinimapWidget(button)
 end
 
 local function NormalizeAddOnMinimapButton(data, button)
+  -- MBB owns the size of its launcher and collected addon buttons.
+  if (IsAddOnLoaded("MBB")) then return end
   if (not button or IsMUIOrBlizzardMinimapWidget(button)) then
     return
   end

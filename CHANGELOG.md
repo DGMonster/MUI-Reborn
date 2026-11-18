@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.11-rc
+
+- Retail: Disable temporary battleground join/leave batching outside combat to prevent repeated join summaries. Individual system messages remain visible. A tester confirmed the workaround on Isle of Conquest; other epic battlegrounds still need confirmation.
+- Use MUI's selected language for built-in unit-frame settings, tooltips, anchor choices and preview labels. Add English and German translations.
+- Improve handling of protected unit names and class colors.
+- Add health readouts to compact pet and target-of-target displays and improve native unit-frame updates.
+- Hide the chat input background when the input closes.
+- Keep already-open MUI bags open when visiting banks or vendors.
+- Add the micro-menu visibility setting and show full character names in the money tooltip when available.
+- Let MBB control addon-button size when active.
+- Window skins retain the 1.0.10-rc implementation. New skin work and its Retail activation are excluded.
+
+
 ## 1.0.10-rc
 
 - WoW Forever: Show the target's native 2D portrait when a dungeon target has a protected identity. Keep outdoor 3D target portraits.

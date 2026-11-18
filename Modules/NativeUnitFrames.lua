@@ -1,13 +1,12 @@
 -- Built-in MUI unit frames for WoW Forever, Retail, and supported Classic clients.
 local _G = _G;
 local MayronUI = _G.MayronUI;
-local tk, db = MayronUI:GetCoreComponents();
+local tk, db, _, _, _, L = MayronUI:GetCoreComponents();
 local _, _, _, interfaceVersion = _G.GetBuildInfo();
 local isMists = _G.WOW_PROJECT_MISTS_CLASSIC and _G.WOW_PROJECT_ID == _G.WOW_PROJECT_MISTS_CLASSIC;
 if (not isMists and not tk:IsClassic() and not tk:IsBCClassic() and not tk:IsForever() and (not tk:IsRetail() or (tonumber(interfaceVersion) or 0) < 120100)) then return end
 
-local german = _G.GetLocale() == "deDE";
-local title = german and "MUI-Einheitenrahmen" or "MUI Unit Frames";
+local title = L["MUI Unit Frames"];
 local C_NativeUnitFrames = MayronUI:RegisterModule("NativeUnitFrames", title, true);
 
 db:AddToDefaults("profile.nativeUnitFrames", {
@@ -20,12 +19,11 @@ db:AddToDefaults("profile.nativeUnitFrames", {
 
 local addons = _G.C_AddOns;
 local sufName = "ShadowedUnitFrames";
-local nativeLabel = german and "MUI (eigene Einheitenrahmen)" or "MUI (built-in unit frames)";
+local nativeLabel = L["MUI (built-in unit frames)"];
 
 local function SwitchUnitFrames(mode)
   if (_G.InCombatLockdown()) then
-    tk:Print(german and "Einheitenrahmen können nur außerhalb des Kampfes gewechselt werden."
-      or "Unit frames can only be switched out of combat.");
+    tk:Print(L["Unit frames can only be switched out of combat."]);
     return;
   end
   local character = _G.UnitName("player");
@@ -33,7 +31,7 @@ local function SwitchUnitFrames(mode)
 
   if (mode == "suf") then
     if (not addons.GetAddOnInfo(sufName)) then
-      tk:Print(german and "Shadowed Unit Frames ist nicht installiert." or "Shadowed Unit Frames is not installed.");
+      tk:Print(L["Shadowed Unit Frames is not installed."]);
       return;
     end
     addons.EnableAddOn(sufName, character);
@@ -62,15 +60,15 @@ end
 local previewMode, ShowGroupPreview = "off", nil;
 local partyRowGap = 3;
 local groupAnchorOptions = {
-  { german and "Links oben" or "Top left", "TOPLEFT" };
-  { german and "Links mittig" or "Middle left", "LEFT" };
-  { german and "Links unten" or "Bottom left", "BOTTOMLEFT" };
-  { german and "Mitte oben" or "Top center", "TOP" };
-  { german and "Mitte" or "Center", "CENTER" };
-  { german and "Mitte unten" or "Bottom center", "BOTTOM" };
-  { german and "Rechts oben" or "Top right", "TOPRIGHT" };
-  { german and "Rechts mittig" or "Middle right", "RIGHT" };
-  { german and "Rechts unten" or "Bottom right", "BOTTOMRIGHT" };
+  { L["Top left"], "TOPLEFT" };
+  { L["Middle left"], "LEFT" };
+  { L["Bottom left"], "BOTTOMLEFT" };
+  { L["Top center"], "TOP" };
+  { L["Center"], "CENTER" };
+  { L["Bottom center"], "BOTTOM" };
+  { L["Top right"], "TOPRIGHT" };
+  { L["Middle right"], "RIGHT" };
+  { L["Bottom right"], "BOTTOMRIGHT" };
 };
 
 local function GetGroupRowSize(group)
@@ -132,12 +130,12 @@ function C_NativeUnitFrames:GetConfigTable()
   local healthColorPath = "profile.nativeUnitFrames.healthColor";
   local healthColorSwatch;
   local partyOptions = {
-    name = german and "Gruppe" or "Party";
+    name = L["Party"];
     type = "submenu";
     children = {
-      PreviewCheck("party", german and "Gruppenvorschau (5)" or "Party preview (5)");
+      PreviewCheck("party", L["Party preview (5)"]);
       {
-        name = german and "Klassenfarben für Lebensbalken" or "Class-colored health bars";
+        name = L["Class-colored health bars"];
         type = "check";
         dbPath = "profile.nativeUnitFrames.party.classColoredHealth";
         OnValueChanged = function()
@@ -147,14 +145,14 @@ function C_NativeUnitFrames:GetConfigTable()
       };
       { type = "divider" };
       {
-        name = german and "Buffs anzeigen" or "Show buffs";
+        name = L["Show buffs"];
         type = "check";
         dbPath = "profile.nativeUnitFrames.party.showBuffs";
         OnValueChanged = function()
           if (refreshPartySkin) then refreshPartySkin(); end
         end;
       }; {
-        name = german and "Debuffs anzeigen" or "Show debuffs";
+        name = L["Show debuffs"];
         type = "check";
         dbPath = "profile.nativeUnitFrames.party.showDebuffs";
         OnValueChanged = function()
@@ -162,33 +160,33 @@ function C_NativeUnitFrames:GetConfigTable()
         end;
       };
       {
-        name = german and "Debuff-Filter" or "Debuff filter";
+        name = L["Debuff filter"];
         type = "dropdown";
         options = {
-          [german and "Alle Debuffs" or "All debuffs"] = "all";
-          [german and "Von mir bannbar" or "Dispellable by me"] = "mine";
-          [german and "Alle bannbaren" or "All dispellable"] = "dispellable";
+          [L["All debuffs"]] = "all";
+          [L["Dispellable by me"]] = "mine";
+          [L["All dispellable"]] = "dispellable";
         };
         dbPath = "profile.nativeUnitFrames.party.debuffFilter";
         OnValueChanged = function()
           if (refreshPartySkin) then refreshPartySkin(); end
         end;
       };
-      GroupSizeSlider(german and "Breite der Gruppenrahmen" or "Party frame width", "party", "width", 90, 360);
-      GroupSizeSlider(german and "Höhe der Gruppenrahmen" or "Party frame height", "party", "height", 24, 48);
+      GroupSizeSlider(L["Party frame width"], "party", "width", 90, 360);
+      GroupSizeSlider(L["Party frame height"], "party", "height", 24, 48);
       {
-        name = german and "Eigene Gruppenposition verwenden" or "Use custom party position";
+        name = L["Use custom party position"];
         type = "check";
         dbPath = "profile.nativeUnitFrames.party.customPosition";
         requiresReload = true;
       }; {
-        name = german and "Ankerpunkt" or "Anchor point";
+        name = L["Anchor point"];
         type = "dropdown";
         options = groupAnchorOptions; disableSorting = true;
         dbPath = "profile.nativeUnitFrames.party.point";
         OnValueChanged = UpdatePartyPosition;
       }; {
-        name = german and "X-Versatz" or "X offset";
+        name = L["X offset"];
         type = "slider";
         min = -2000;
         max = 2000;
@@ -196,7 +194,7 @@ function C_NativeUnitFrames:GetConfigTable()
         dbPath = "profile.nativeUnitFrames.party.x";
         OnValueChanged = UpdatePartyPosition;
       }; {
-        name = german and "Y-Versatz" or "Y offset";
+        name = L["Y offset"];
         type = "slider";
         min = -2000;
         max = 2000;
@@ -208,7 +206,7 @@ function C_NativeUnitFrames:GetConfigTable()
   };
   if (tk:IsForever()) then
     table.insert(partyOptions.children, 2, {
-      name = german and "Vor- und Nachnamen anzeigen" or "Show first and last names";
+      name = L["Show first and last names"];
       type = "check";
       dbPath = "profile.nativeUnitFrames.party.showFullNames";
       OnValueChanged = function()
@@ -221,12 +219,11 @@ function C_NativeUnitFrames:GetConfigTable()
     children = {
       { type = "title"; name = title };
       {
-        name = german and "Einheitenrahmen verwenden" or "Unit frame provider";
+        name = L["Unit frame provider"];
         type = "dropdown";
         width = 250;
         options = { [nativeLabel] = "mui"; ["Shadowed Unit Frames"] = "suf" };
-        tooltip = german and "Wechselt die Einheitenrahmen für diesen Charakter und lädt das Interface neu."
-          or "Switches unit frames for this character and reloads the interface.";
+        tooltip = L["Switches unit frames for this character and reloads the interface."];
         GetValue = function()
           return addons.IsAddOnLoaded(sufName) and "suf" or "mui";
         end;
@@ -236,12 +233,12 @@ function C_NativeUnitFrames:GetConfigTable()
       };
       { type = "divider" };
       {
-        name = german and "Spielerrahmen anzeigen" or "Show player frame";
+        name = L["Show player frame"];
         type = "check";
         dbPath = "profile.nativeUnitFrames.player.enabled";
         requiresReload = true;
       }; {
-        name = german and "Spielerporträt-Zoom" or "Player portrait zoom";
+        name = L["Player portrait zoom"];
         type = "slider";
         valueType = "number";
         min = 0;
@@ -250,12 +247,12 @@ function C_NativeUnitFrames:GetConfigTable()
         dbPath = "profile.nativeUnitFrames.player.zoom";
         requiresReload = true;
       }; {
-        name = german and "Zielrahmen anzeigen" or "Show target frame";
+        name = L["Show target frame"];
         type = "check";
         dbPath = "profile.nativeUnitFrames.target.enabled";
         requiresReload = true;
       }; {
-        name = german and "Zielporträt-Zoom" or "Target portrait zoom";
+        name = L["Target portrait zoom"];
         type = "slider";
         valueType = "number";
         min = 0;
@@ -264,7 +261,7 @@ function C_NativeUnitFrames:GetConfigTable()
         dbPath = "profile.nativeUnitFrames.target.zoom";
         requiresReload = true;
       }; {
-        name = german and "Lebensbalkenfarbe (Spieler und Ziel)" or "Health bar color (player and target)";
+        name = L["Health bar color (player and target)"];
         type = "color";
         dbPath = healthColorPath;
         OnValueChanged = UpdateUnitHealthColor;
@@ -282,7 +279,7 @@ function C_NativeUnitFrames:GetConfigTable()
         OnLoad = function(_, container)
           local button = container:GetChildren();
           tk:ApplyThemeColor(button:GetNormalTexture());
-          tk:SetBasicTooltip(button, german and "Auf Standard zurücksetzen" or "Reset to default", "ANCHOR_TOP");
+          tk:SetBasicTooltip(button, L["Reset to default"], "ANCHOR_TOP");
         end;
         OnClick = function()
           local default = db:GetDefault(healthColorPath);
@@ -298,25 +295,25 @@ function C_NativeUnitFrames:GetConfigTable()
       { type = "divider" };
       partyOptions;
       {
-        name = german and "Schlachtzug" or "Raid";
+        name = L["Raid"];
         type = "submenu";
         children = {
-          PreviewCheck("raid", german and "Schlachtzugsvorschau (40)" or "Raid preview (40)");
+          PreviewCheck("raid", L["Raid preview (40)"]);
           {
-            name = german and "Klassenfarben für Lebensbalken" or "Class-colored health bars";
+            name = L["Class-colored health bars"];
             type = "check";
             dbPath = "profile.nativeUnitFrames.raid.classColoredHealth";
             OnValueChanged = UpdateRaidPreviewPosition;
           };
           {
-            name = german and "Buffs anzeigen" or "Show buffs";
+            name = L["Show buffs"];
             type = "check";
             dbPath = "profile.nativeUnitFrames.raid.showBuffs";
             OnValueChanged = function()
               if (refreshRaidAuras) then refreshRaidAuras(); end
             end;
           }; {
-            name = german and "Debuffs anzeigen" or "Show debuffs";
+            name = L["Show debuffs"];
             type = "check";
             dbPath = "profile.nativeUnitFrames.raid.showDebuffs";
             OnValueChanged = function()
@@ -324,41 +321,40 @@ function C_NativeUnitFrames:GetConfigTable()
             end;
           };
           {
-            name = german and "Debuff-Filter" or "Debuff filter";
+            name = L["Debuff filter"];
             type = "dropdown";
             options = {
-              [german and "Alle Debuffs" or "All debuffs"] = "all";
-              [german and "Von mir bannbar" or "Dispellable by me"] = "mine";
-              [german and "Alle bannbaren" or "All dispellable"] = "dispellable";
+              [L["All debuffs"]] = "all";
+              [L["Dispellable by me"]] = "mine";
+              [L["All dispellable"]] = "dispellable";
             };
             dbPath = "profile.nativeUnitFrames.raid.debuffFilter";
             OnValueChanged = function()
               if (refreshRaidAuras) then refreshRaidAuras(); end
             end;
           };
-          GroupSizeSlider(german and "Breite der Schlachtzugsrahmen" or "Raid frame width", "raid", "width", 90, 360);
-          GroupSizeSlider(german and "Höhe der Schlachtzugsrahmen" or "Raid frame height", "raid", "height", 24, 72);
+          GroupSizeSlider(L["Raid frame width"], "raid", "width", 90, 360);
+          GroupSizeSlider(L["Raid frame height"], "raid", "height", 24, 72);
           {
-            name = german and "Schlachtzug-Spalten (Plätze pro Reihe)" or "Raid columns (members per row)";
+            name = L["Raid columns (members per row)"];
             type = "slider";
             min = 0;
             max = 40;
             step = 1;
             dbPath = "profile.nativeUnitFrames.party.raidPreviewColumns";
-            tooltip = german and "0 verwendet den Standard mit fünf Spalten. Gilt für die Schlachtzugsvorschau."
-              or "0 uses the default of five columns. Applies to the raid preview.";
+            tooltip = L["0 uses the default of five columns. Applies to the raid preview."];
             OnValueChanged = function()
               if (previewMode == "raid") then ShowGroupPreview(previewMode); end
             end;
           };
           {
-            name = german and "Ankerpunkt" or "Anchor point";
+            name = L["Anchor point"];
             type = "dropdown";
             options = groupAnchorOptions; disableSorting = true;
             dbPath = "profile.nativeUnitFrames.raid.point";
             OnValueChanged = UpdateRaidPreviewPosition;
           }; {
-            name = german and "X-Versatz" or "X offset";
+            name = L["X offset"];
             type = "slider";
             min = -2000;
             max = 2000;
@@ -366,7 +362,7 @@ function C_NativeUnitFrames:GetConfigTable()
             dbPath = "profile.nativeUnitFrames.raid.x";
             OnValueChanged = UpdateRaidPreviewPosition;
           }; {
-            name = german and "Y-Versatz" or "Y offset";
+            name = L["Y offset"];
             type = "slider";
             min = -2000;
             max = 2000;
@@ -454,7 +450,7 @@ function ShowGroupPreview(mode)
     preview:SetClampedToScreen(true);
     local title = preview:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
     title:SetPoint("TOPLEFT", preview, "TOPLEFT", 0, -1);
-    title:SetText(german and "MUI-Vorschau" or "MUI preview");
+    title:SetText(L["MUI preview"]);
     preview.rows = {};
   end
 
@@ -558,9 +554,8 @@ function ShowGroupPreview(mode)
       row.damageShield:SetValue(partySample and index == 3 and 40 or 0);
     end
     local sampleName = partySample and (
-      german and ({ "Aggro", "Heilung", "Schutzschild", "Offline", "Bereit" })[index]
-        or ({ "Aggro", "Incoming heal", "Shield", "Offline", "Ready" })[index])
-      or (german and "Beispiel " or "Sample ")..index;
+      ({ L["Aggro"], L["Incoming heal"], L["Shield"], L["Offline"], L["Ready"] })[index])
+      or (L["Sample "])..index;
     row.label:SetText(sampleName);
     if (partySample and index == 4) then
       row.percent:SetText(_G.PLAYER_OFFLINE or "Offline");
@@ -1119,7 +1114,7 @@ local function SetCustomPartyPosition()
     local settings = db.profile.nativeUnitFrames.party;
     local point = settings.point;
     local width, height = GetGroupRowSize("party");
-    add(german and "Gruppe" or "Party", width, height, point, _G.UIParent, point, settings.x, settings.y,
+    add(L["Party"], width, height, point, _G.UIParent, point, settings.x, settings.y,
       function(_, _, handle)
         local ui = _G.UIParent;
         local dx, dy;
