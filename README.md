@@ -2,7 +2,7 @@
 
 > A complete, customizable user interface for WoW Retail, WoW Forever, Classic Era, TBC Classic, and MoP Classic.
 
-[![Version](https://img.shields.io/badge/version-1.0.10--rc-orange)](https://github.com/DGMonster/MUI-Reborn/releases)
+[![Version](https://img.shields.io/badge/version-1.0.11--rc-orange)](https://github.com/DGMonster/MUI-Reborn/releases)
 [![WoW Retail](https://img.shields.io/badge/WoW_Retail-12.1-blue)](https://worldofwarcraft.blizzard.com/)
 [![WoW Forever](https://img.shields.io/badge/WoW_Forever-1.60.1-purple)](https://worldofwarcraft.blizzard.com/)
 [![Development status](https://img.shields.io/badge/status-release_candidate-orange)](https://github.com/DGMonster/MUI-Reborn/issues)
